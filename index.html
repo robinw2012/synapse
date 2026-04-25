@@ -1,0 +1,2918 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYNAPSE — Le quotidien généré par intelligence artificielle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,500&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f2ece0;
+    --paper-2: #ede5d4;
+    --ink: #141414;
+    --ink-2: #2a2620;
+    --muted: #6b6259;
+    --muted-2: #8a7f72;
+    --border: #cfc3ae;
+    --border-soft: #e0d6c2;
+    --accent: #a72328;
+    --accent-deep: #7d1a1e;
+    --gold: #b08a3e;
+    --green: #3a5a3a;
+    --shadow: rgba(20, 20, 20, 0.08);
+  }
+  [data-theme="dark"] {
+    --paper: #16140f;
+    --paper-2: #1f1c16;
+    --ink: #ede6d9;
+    --ink-2: #d4cdbf;
+    --muted: #928b80;
+    --muted-2: #756e63;
+    --border: #3a342a;
+    --border-soft: #2a251d;
+    --accent: #e85a60;
+    --accent-deep: #c73e44;
+    --gold: #d4a858;
+    --green: #7ba77b;
+    --shadow: rgba(0, 0, 0, 0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+  body {
+    font-family: 'Spectral', Georgia, serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+    transition: background 0.4s ease, color 0.4s ease;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(167, 35, 40, 0.03) 0%, transparent 40%),
+      radial-gradient(circle at 80% 60%, rgba(176, 138, 62, 0.04) 0%, transparent 50%);
+  }
+  [data-theme="dark"] body {
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(232, 90, 96, 0.06) 0%, transparent 40%),
+      radial-gradient(circle at 80% 60%, rgba(212, 168, 88, 0.04) 0%, transparent 50%);
+  }
+
+  /* Noise/paper texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+  }
+  [data-theme="dark"] body::before { mix-blend-mode: screen; opacity: 0.2; }
+
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+  /* === TOP BAR === */
+  .topbar {
+    position: relative;
+    z-index: 10;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+  }
+  .topbar-left, .topbar-right { display: flex; gap: 1.5rem; align-items: center; }
+  .topbar .pulse {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin-right: 0.4rem;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.6); }
+    50% { opacity: 0.7; transform: scale(1.3); box-shadow: 0 0 0 6px rgba(231, 76, 60, 0); }
+  }
+
+  .theme-toggle {
+    width: 36px; height: 20px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 20px;
+    position: relative;
+    transition: background 0.3s;
+  }
+  .theme-toggle::after {
+    content: '';
+    position: absolute;
+    width: 14px; height: 14px;
+    background: var(--paper);
+    border-radius: 50%;
+    top: 3px; left: 3px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  [data-theme="dark"] .theme-toggle::after { transform: translateX(16px); }
+
+  /* === MASTHEAD === */
+  .masthead {
+    position: relative;
+    z-index: 5;
+    padding: 2.5rem 2rem 1rem;
+    border-bottom: 1px solid var(--ink);
+    text-align: center;
+  }
+  .masthead-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.2rem;
+  }
+  .masthead-meta > div { display: flex; gap: 1.2rem; }
+  .masthead-meta span { display: inline-flex; align-items: center; gap: 0.3rem; }
+  .masthead-meta .num { font-variant-numeric: tabular-nums; color: var(--ink); }
+
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(3.5rem, 11vw, 8rem);
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+    text-transform: uppercase;
+    position: relative;
+    display: inline-block;
+  }
+  .logo-dot {
+    color: var(--accent);
+    font-style: italic;
+    font-weight: 400;
+  }
+  .tagline {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+    letter-spacing: 0.02em;
+  }
+  .motto {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+  }
+  .motto::before, .motto::after {
+    content: '';
+    flex: 0 0 60px;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* === BREAKING NEWS TICKER === */
+  .ticker {
+    background: var(--accent);
+    color: #fff;
+    padding: 0.6rem 0;
+    overflow: hidden;
+    position: relative;
+    z-index: 3;
+    border-top: 1px solid var(--accent-deep);
+    border-bottom: 1px solid var(--accent-deep);
+  }
+  .ticker-label {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    z-index: 2;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+    padding-right: 1.8rem;
+  }
+  .ticker-track {
+    display: flex;
+    gap: 3rem;
+    padding-left: 11rem;
+    white-space: nowrap;
+    animation: scroll 55s linear infinite;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+  }
+  .ticker-track span { display: inline-flex; align-items: center; gap: 0.8rem; }
+  .ticker-track span::before {
+    content: '◆';
+    color: rgba(255,255,255,0.5);
+    font-size: 0.6rem;
+  }
+  @keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* === NAV === */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--paper);
+    border-bottom: 2px solid var(--ink);
+    padding: 0.8rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(8px);
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
+  }
+  .nav-links {
+    display: flex;
+    gap: 1.8rem;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nav-links a {
+    position: relative;
+    padding: 0.3rem 0;
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -2px;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); }
+  .nav-links a.active { color: var(--accent); }
+
+  .generate-btn {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.6rem 1.2rem;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.25s;
+    border: 1px solid var(--ink);
+    position: relative;
+    overflow: hidden;
+  }
+  .generate-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .generate-btn .spark {
+    display: inline-block;
+    animation: spark 2.2s ease-in-out infinite;
+  }
+  @keyframes spark {
+    0%, 100% { transform: rotate(0) scale(1); }
+    25% { transform: rotate(12deg) scale(1.15); }
+    75% { transform: rotate(-12deg) scale(1.05); }
+  }
+
+  /* === MAIN GRID === */
+  main {
+    position: relative;
+    z-index: 2;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2.5rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+  }
+  @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } }
+
+  .hero-article {
+    cursor: pointer;
+    transition: opacity 0.3s;
+  }
+  .hero-article:hover { opacity: 0.85; }
+  .hero-image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--ink);
+    margin-bottom: 1.2rem;
+    overflow: hidden;
+    position: relative;
+  }
+  .hero-image svg { width: 100%; height: 100%; display: block; }
+  .category-tag {
+    display: inline-block;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--accent);
+    margin-bottom: 0.7rem;
+  }
+  .hero-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.8rem;
+    font-variation-settings: "opsz" 144, "SOFT" 60;
+  }
+  .hero-dek {
+    font-family: 'Spectral', serif;
+    font-size: 1.1rem;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    max-width: 55ch;
+  }
+  .byline {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+  }
+  .byline strong { color: var(--ink); font-weight: 600; }
+  .byline .sep { color: var(--border); }
+  .byline .ai-badge {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.4rem;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    border-radius: 2px;
+  }
+
+  /* Sidebar */
+  .hero-side {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-left: 2rem;
+    border-left: 1px solid var(--border);
+  }
+  @media (max-width: 900px) { .hero-side { padding-left: 0; border-left: none; padding-top: 2rem; border-top: 1px solid var(--border); } }
+  .side-heading {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: 0.5rem;
+  }
+  .side-article {
+    cursor: pointer;
+    padding: 0.8rem 0;
+    border-bottom: 1px dashed var(--border);
+    transition: transform 0.2s;
+  }
+  .side-article:hover { transform: translateX(3px); }
+  .side-article:last-child { border-bottom: none; }
+  .side-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 1.05rem;
+    line-height: 1.25;
+    margin-bottom: 0.3rem;
+  }
+  .side-meta {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* === ARTICLE GRID === */
+  .section-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin: 2rem 0 1.5rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 2px solid var(--ink);
+  }
+  .section-heading h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 1.8rem;
+    letter-spacing: -0.01em;
+    font-variation-settings: "opsz" 144;
+  }
+  .section-heading .sec-subtitle {
+    font-family: 'Spectral', serif;
+    font-style: italic;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .section-heading .sec-num {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+  @media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr; } }
+
+  .article-card {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .article-card:hover { transform: translateY(-4px); }
+  .article-card:hover .card-title { color: var(--accent); }
+  .card-image {
+    aspect-ratio: 4 / 3;
+    background: var(--paper-2);
+    margin-bottom: 1rem;
+    overflow: hidden;
+    position: relative;
+  }
+  .card-image svg { width: 100%; height: 100%; display: block; }
+  .card-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.35rem;
+    line-height: 1.2;
+    margin-bottom: 0.6rem;
+    transition: color 0.2s;
+    letter-spacing: -0.01em;
+  }
+  .card-excerpt {
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
+    flex: 1;
+  }
+  .card-meta {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+    display: flex;
+    justify-content: space-between;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* === FEATURE SECTION: JOURNALISTS === */
+  .journalists {
+    margin: 4rem 0;
+    padding: 3rem 2rem;
+    background: var(--ink);
+    color: var(--paper);
+    position: relative;
+    overflow: hidden;
+  }
+  .journalists::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 10 L30 50 M10 30 L50 30' stroke='%23ffffff10' stroke-width='0.5'/%3E%3C/svg%3E");
+    opacity: 0.4;
+  }
+  .journalists > * { position: relative; z-index: 1; }
+  .journ-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .journ-header h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 2.5rem;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+  }
+  .journ-header h2 em {
+    color: var(--gold);
+    font-weight: 600;
+    font-style: italic;
+  }
+  .journ-header p {
+    color: var(--muted-2);
+    font-size: 1rem;
+    max-width: 50ch;
+    margin: 0 auto;
+  }
+  .journ-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+  @media (max-width: 900px) { .journ-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .journ-card {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .journ-card:hover {
+    background: rgba(255,255,255,0.03);
+    border-color: var(--gold);
+  }
+  .journ-avatar {
+    width: 80px; height: 80px;
+    margin: 0 auto 1rem;
+    position: relative;
+  }
+  .journ-avatar svg { width: 100%; height: 100%; }
+  .journ-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+  }
+  .journ-role {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.8rem;
+  }
+  .journ-bio {
+    font-size: 0.85rem;
+    color: var(--muted-2);
+    line-height: 1.4;
+    font-style: italic;
+  }
+  .journ-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted-2);
+  }
+  .journ-stats strong { display: block; font-size: 1rem; color: var(--paper); font-family: 'Fraunces', serif; }
+
+  /* === OPINION / QUOTE === */
+  .editorial {
+    margin: 4rem 0;
+    padding: 3rem;
+    border: 1px solid var(--border);
+    background: var(--paper-2);
+    position: relative;
+    text-align: center;
+  }
+  .editorial::before {
+    content: '"';
+    position: absolute;
+    top: -2rem;
+    left: 2rem;
+    font-family: 'Fraunces', serif;
+    font-size: 10rem;
+    color: var(--accent);
+    line-height: 1;
+    font-weight: 900;
+  }
+  .editorial-label {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .editorial blockquote {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+    line-height: 1.3;
+    font-style: italic;
+    max-width: 35ch;
+    margin: 0 auto 1.5rem;
+    letter-spacing: -0.01em;
+  }
+  .editorial cite {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-style: normal;
+  }
+
+  /* === DATA WIDGET === */
+  .data-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin: 3rem 0;
+  }
+  @media (max-width: 700px) { .data-row { grid-template-columns: repeat(2, 1fr); } }
+  .data-cell {
+    background: var(--paper);
+    padding: 1.5rem;
+    text-align: left;
+  }
+  .data-label {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+  .data-value {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.6rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .data-change {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .data-change.up { color: var(--green); }
+  .data-change.down { color: var(--accent); }
+
+  /* === NEWSLETTER === */
+  .newsletter {
+    margin: 4rem 0;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+    color: #fff;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .newsletter::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 10% 20%, rgba(255,255,255,0.15) 0%, transparent 30%),
+      radial-gradient(circle at 90% 80%, rgba(0,0,0,0.2) 0%, transparent 40%);
+  }
+  .newsletter > * { position: relative; }
+  .newsletter h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+  }
+  .newsletter p {
+    max-width: 45ch;
+    margin: 0 auto 1.8rem;
+    opacity: 0.9;
+    font-size: 1rem;
+  }
+  .newsletter-form {
+    display: flex;
+    gap: 0.5rem;
+    max-width: 480px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .newsletter-form input {
+    flex: 1;
+    min-width: 220px;
+    padding: 0.8rem 1rem;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-family: 'Spectral', serif;
+    font-size: 0.95rem;
+  }
+  .newsletter-form input::placeholder { color: rgba(255,255,255,0.6); }
+  .newsletter-form input:focus { outline: none; background: rgba(255,255,255,0.18); }
+  .newsletter-form button {
+    padding: 0.8rem 1.5rem;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .newsletter-form button:hover { background: var(--paper); color: var(--ink); }
+
+  /* === FOOTER === */
+  footer {
+    position: relative;
+    z-index: 2;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 4rem 2rem 2rem;
+    margin-top: 4rem;
+  }
+  .footer-grid {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+  }
+  @media (max-width: 800px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+  .footer-logo {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 2.5rem;
+    line-height: 0.9;
+    margin-bottom: 1rem;
+  }
+  .footer-logo em { color: var(--accent); font-style: italic; font-weight: 400; }
+  .footer-desc {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--muted-2);
+    max-width: 40ch;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .footer-col h4 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    color: var(--gold);
+  }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+  .footer-col a {
+    color: var(--muted-2);
+    font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--paper); }
+  .footer-bottom {
+    max-width: 1400px;
+    margin: 2rem auto 0;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  /* === MODAL === */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+  .modal {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: min(800px, 100vw);
+    background: var(--paper);
+    z-index: 101;
+    overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -20px 0 60px var(--shadow);
+  }
+  .modal.open { transform: translateX(0); }
+  .modal-close {
+    position: absolute;
+    top: 1.5rem; right: 1.5rem;
+    width: 40px; height: 40px;
+    border: 1px solid var(--border);
+    background: var(--paper);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    z-index: 5;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { background: var(--ink); color: var(--paper); transform: rotate(90deg); }
+
+  .modal-content { padding: 3rem; }
+  @media (max-width: 600px) { .modal-content { padding: 2rem 1.5rem; } }
+  .modal-category {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--accent);
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .modal-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+  .modal-dek {
+    font-family: 'Spectral', serif;
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--muted);
+    margin-bottom: 2rem;
+    line-height: 1.5;
+  }
+  .modal-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .modal-author { display: flex; align-items: center; gap: 0.8rem; }
+  .modal-author-avatar {
+    width: 40px; height: 40px;
+    background: var(--ink);
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  .modal-author-avatar svg { width: 100%; height: 100%; }
+  .modal-author strong { color: var(--ink); font-weight: 600; text-transform: none; letter-spacing: 0; font-family: 'Fraunces', serif; font-size: 0.95rem; }
+  .modal-author .ai-badge {
+    font-size: 0.58rem;
+    padding: 0.1rem 0.4rem;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    letter-spacing: 0.15em;
+  }
+  .modal-image {
+    aspect-ratio: 16 / 9;
+    margin-bottom: 2rem;
+    overflow: hidden;
+    background: var(--paper-2);
+  }
+  .modal-image svg { width: 100%; height: 100%; display: block; }
+
+  .modal-body {
+    font-family: 'Spectral', serif;
+    font-size: 1.1rem;
+    line-height: 1.75;
+    color: var(--ink-2);
+  }
+  .modal-body p { margin-bottom: 1.2rem; }
+  .modal-body p:first-of-type::first-letter {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 4.5rem;
+    float: left;
+    line-height: 0.9;
+    margin: 0.3rem 0.6rem 0 0;
+    color: var(--accent);
+  }
+  .modal-body h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.4rem;
+    margin: 2rem 0 0.8rem;
+    letter-spacing: -0.01em;
+  }
+  .modal-body blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 0.5rem 0 0.5rem 1.5rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: var(--muted);
+    font-size: 1.2rem;
+  }
+  .modal-body em.highlight {
+    background: linear-gradient(transparent 60%, rgba(176, 138, 62, 0.3) 60%);
+    font-style: normal;
+    padding: 0 2px;
+  }
+
+  .modal-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 2rem 0;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-tag {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    padding: 0.3rem 0.7rem;
+    background: var(--paper-2);
+    border: 1px solid var(--border);
+  }
+
+  .share-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  .share-btn {
+    flex: 1;
+    padding: 0.7rem;
+    border: 1px solid var(--border);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .share-btn:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  /* === GENERATE MODAL === */
+  .gen-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+    padding: 1rem;
+  }
+  .gen-modal.open { display: flex; }
+  .gen-box {
+    background: var(--paper);
+    max-width: 520px;
+    width: 100%;
+    padding: 2.5rem;
+    position: relative;
+    border: 1px solid var(--ink);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .gen-box h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+  }
+  .gen-box p {
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+  }
+  .gen-categories {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .gen-cat-btn {
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--border);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .gen-cat-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .gen-cat-btn:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+  .gen-input {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    background: var(--paper-2);
+    font-family: 'Spectral', serif;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .gen-input:focus { outline: none; border-color: var(--accent); }
+  .gen-submit {
+    width: 100%;
+    padding: 1rem;
+    background: var(--accent);
+    color: #fff;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: background 0.2s;
+  }
+  .gen-submit:hover { background: var(--accent-deep); }
+  .gen-submit:disabled { background: var(--muted-2); cursor: not-allowed; }
+  .gen-close {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    font-size: 1rem;
+  }
+  .gen-loader {
+    display: none;
+    margin-top: 1rem;
+    text-align: center;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .gen-loader.active { display: block; }
+  .gen-loader::before {
+    content: '';
+    display: inline-block;
+    width: 12px; height: 12px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Reveal animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .reveal {
+    opacity: 0;
+    animation: fadeUp 0.7s ease-out forwards;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.8rem 1.5rem;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    z-index: 300;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    max-width: 90vw;
+    text-align: center;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ========================================================== */
+  /* ============ RESPONSIVE — TABLETTE & MOBILE ============== */
+  /* ========================================================== */
+
+  /* --- Tablette (≤ 900 px) --- */
+  @media (max-width: 900px) {
+    main { padding: 1.25rem; }
+    .topbar { padding: 0.5rem 1rem; font-size: 0.68rem; gap: 1rem; }
+    .masthead { padding: 2rem 1rem 0.8rem; }
+    .nav { padding: 0.7rem 1rem; }
+    .journalists { padding: 2.5rem 1.25rem; margin: 3rem 0; }
+    .editorial { padding: 2.5rem 1.5rem; margin: 3rem 0; }
+    .newsletter { padding: 2.5rem 1.25rem; margin: 3rem 0; }
+    footer { padding: 3rem 1.25rem 1.5rem; }
+  }
+
+  /* --- Mobile (≤ 640 px) --- */
+  @media (max-width: 640px) {
+    main { padding: 1rem; }
+
+    /* Topbar : masquer les infos secondaires */
+    .topbar {
+      padding: 0.45rem 0.9rem;
+      font-size: 0.62rem;
+      letter-spacing: 0.05em;
+      gap: 0.5rem;
+    }
+    .topbar-left { gap: 0.6rem; flex: 1; min-width: 0; }
+    .topbar-left > span:nth-child(2) { display: none; } /* Masque "Paris 14°C" */
+    .topbar-left > span:nth-child(3) { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; }
+    .topbar-right { gap: 0.7rem; }
+    .topbar-right > span { display: none; } /* Masque "FR·EN·DE·ES" */
+    .theme-toggle { width: 32px; height: 18px; }
+    .theme-toggle::after { width: 12px; height: 12px; top: 3px; left: 3px; }
+    [data-theme="dark"] .theme-toggle::after { transform: translateX(14px); }
+
+    /* Masthead */
+    .masthead { padding: 1.5rem 1rem 0.6rem; }
+    .masthead-meta {
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.6rem;
+      padding-bottom: 0.6rem;
+      margin-bottom: 0.8rem;
+      letter-spacing: 0.08em;
+    }
+    .masthead-meta > div { gap: 0.8rem; flex-wrap: wrap; justify-content: center; }
+    .logo { font-size: 3.2rem; letter-spacing: -0.03em; }
+    .tagline { font-size: 0.82rem; padding: 0 0.5rem; }
+    .motto { font-size: 0.55rem; letter-spacing: 0.2em; margin-top: 0.6rem; }
+    .motto::before, .motto::after { flex: 0 0 30px; }
+
+    /* Ticker */
+    .ticker-label { padding: 0 0.7rem; font-size: 0.6rem; padding-right: 1.2rem; }
+    .ticker-track { padding-left: 7.5rem; font-size: 0.75rem; gap: 2rem; }
+
+    /* Nav */
+    .nav {
+      padding: 0.5rem 0.8rem;
+      gap: 0.5rem;
+      flex-wrap: nowrap;
+    }
+    .nav-links {
+      gap: 1rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      flex: 1;
+      min-width: 0;
+      padding-right: 0.5rem;
+      -webkit-overflow-scrolling: touch;
+      mask-image: linear-gradient(to right, black 85%, transparent);
+      -webkit-mask-image: linear-gradient(to right, black 85%, transparent);
+    }
+    .generate-btn {
+      padding: 0.5rem 0.7rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      flex-shrink: 0;
+    }
+
+    /* Hero */
+    .hero-grid { gap: 1.5rem; padding-bottom: 1.8rem; margin-bottom: 1.8rem; }
+    .hero-image { aspect-ratio: 3 / 2; margin-bottom: 0.9rem; }
+    .hero-title { font-size: 1.7rem; margin-bottom: 0.6rem; }
+    .hero-dek { font-size: 0.98rem; margin-bottom: 0.8rem; }
+    .byline { font-size: 0.65rem; flex-wrap: wrap; gap: 0.4rem 0.6rem; }
+    .byline .sep { display: none; }
+    .hero-side { padding-top: 1.5rem; gap: 1rem; }
+    .side-article { padding: 0.6rem 0; }
+    .side-title { font-size: 0.98rem; }
+
+    /* Data row : 2x2 */
+    .data-row {
+      grid-template-columns: repeat(2, 1fr);
+      margin: 2rem 0;
+    }
+    .data-cell { padding: 1rem 0.9rem; }
+    .data-value { font-size: 1.3rem; }
+    .data-label { font-size: 0.6rem; letter-spacing: 0.1em; }
+    .data-change { font-size: 0.7rem; }
+
+    /* Section headings */
+    .section-heading {
+      gap: 0.6rem;
+      margin: 1.8rem 0 1.2rem;
+      flex-wrap: wrap;
+    }
+    .section-heading h2 { font-size: 1.5rem; }
+    .section-heading .sec-subtitle { font-size: 0.85rem; }
+    .section-heading .sec-num { font-size: 0.68rem; }
+
+    /* Grid 3 : single column avec plus d'espace */
+    .grid-3 { gap: 2.2rem; }
+    .card-image { aspect-ratio: 16 / 10; margin-bottom: 0.8rem; }
+    .card-title { font-size: 1.25rem; }
+    .card-excerpt { font-size: 0.95rem; }
+    .card-meta { font-size: 0.65rem; }
+
+    /* Journalists : 2x2 */
+    .journalists { padding: 2rem 1rem; margin: 3rem 0; }
+    .journ-header { margin-bottom: 2rem; }
+    .journ-header h2 { font-size: 1.75rem; }
+    .journ-header p { font-size: 0.9rem; padding: 0 0.5rem; }
+    .journ-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .journ-card { padding: 1.2rem 1rem; display: grid; grid-template-columns: auto 1fr; gap: 1rem; text-align: left; align-items: center; }
+    .journ-avatar { width: 60px; height: 60px; margin: 0; }
+    .journ-card > :not(.journ-avatar) { grid-column: 2; }
+    .journ-stats { grid-column: 1 / -1; margin-top: 0.8rem; padding-top: 0.8rem; }
+    .journ-bio { font-size: 0.8rem; margin-bottom: 0; }
+
+    /* Editorial */
+    .editorial { padding: 2.5rem 1.2rem 2rem; margin: 3rem 0; }
+    .editorial::before { font-size: 6rem; top: -1rem; left: 0.8rem; }
+    .editorial blockquote { font-size: 1.2rem; }
+    .editorial cite { font-size: 0.72rem; }
+
+    /* Newsletter */
+    .newsletter { padding: 2rem 1rem; margin: 3rem 0; }
+    .newsletter h2 { font-size: 1.7rem; }
+    .newsletter p { font-size: 0.92rem; }
+    .newsletter-form { flex-direction: column; gap: 0.6rem; }
+    .newsletter-form input { min-width: 0; width: 100%; }
+    .newsletter-form button { width: 100%; padding: 0.9rem; }
+
+    /* Footer */
+    footer { padding: 2.5rem 1.2rem 1.5rem; margin-top: 3rem; }
+    .footer-grid { grid-template-columns: 1fr; gap: 2rem; padding-bottom: 1.8rem; }
+    .footer-logo { font-size: 2rem; }
+    .footer-desc { font-size: 0.9rem; }
+    .footer-bottom {
+      flex-direction: column;
+      text-align: center;
+      font-size: 0.65rem;
+      gap: 0.5rem;
+    }
+
+    /* Modal : full-screen */
+    .modal { width: 100vw; }
+    .modal-content { padding: 2.5rem 1.2rem 2rem; }
+    .modal-close {
+      top: 0.8rem; right: 0.8rem;
+      width: 36px; height: 36px;
+    }
+    .modal-title { font-size: 1.6rem; }
+    .modal-dek { font-size: 1rem; margin-bottom: 1.5rem; }
+    .modal-meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.8rem;
+      font-size: 0.68rem;
+      padding: 0.8rem 0;
+      margin-bottom: 1.5rem;
+    }
+    .modal-body { font-size: 1rem; line-height: 1.7; }
+    .modal-body p:first-of-type::first-letter {
+      font-size: 3.2rem;
+      margin: 0.3rem 0.4rem 0 0;
+    }
+    .modal-body h3 { font-size: 1.2rem; margin: 1.5rem 0 0.6rem; }
+    .modal-body blockquote { font-size: 1.05rem; padding: 0.3rem 0 0.3rem 1rem; margin: 1.2rem 0; }
+    .share-row { flex-direction: column; gap: 0.4rem; }
+    .share-btn { padding: 0.8rem; }
+
+    /* Gen modal */
+    .gen-box { padding: 2rem 1.2rem; max-height: 92vh; overflow-y: auto; }
+    .gen-box h3 { font-size: 1.4rem; }
+    .gen-box p { font-size: 0.88rem; }
+    .gen-cat-btn { padding: 0.45rem 0.75rem; font-size: 0.65rem; }
+    .gen-input { padding: 0.85rem; font-size: 1rem; }
+    .gen-close { top: 0.7rem; right: 0.7rem; width: 30px; height: 30px; }
+
+    /* Toast */
+    .toast { bottom: 1rem; font-size: 0.8rem; padding: 0.7rem 1.2rem; }
+
+    /* Icônes emoji qui peuvent débuter les éléments */
+    .topbar-left > span:first-child { white-space: nowrap; }
+  }
+
+  /* --- Très petit mobile (≤ 380 px) --- */
+  @media (max-width: 380px) {
+    .logo { font-size: 2.6rem; }
+    .hero-title { font-size: 1.45rem; }
+    .section-heading h2 { font-size: 1.3rem; }
+    .data-value { font-size: 1.15rem; }
+    .nav-links { gap: 0.8rem; }
+    .generate-btn .spark { display: none; }
+    .generate-btn { padding: 0.45rem 0.6rem; }
+  }
+
+  /* Support du dynamic viewport sur mobile (barre d'URL qui bouge) */
+  @supports (height: 100dvh) {
+    .modal { height: 100dvh; }
+    .gen-modal { height: 100dvh; }
+  }
+</style>
+</head>
+<body>
+
+<!-- === TOP BAR === -->
+<div class="topbar">
+  <div class="topbar-left">
+    <span><span class="pulse"></span>EN DIRECT</span>
+    <span>📍 Paris · 14°C · Ciel couvert</span>
+    <span id="clock">—:—:—</span>
+  </div>
+  <div class="topbar-right">
+    <span style="cursor: pointer;" onclick="showToast('Versions EN · DE · ES à venir')" title="Changer de langue">FR · EN · DE · ES</span>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Basculer thème"></button>
+  </div>
+</div>
+
+<!-- === MASTHEAD === -->
+<div class="masthead">
+  <div class="masthead-meta">
+    <div>
+      <span>Édition N° <span class="num" id="edition">2847</span></span>
+      <span>Vol. XII</span>
+    </div>
+    <div>
+      <span id="today-date">—</span>
+    </div>
+    <div>
+      <span>Prix numérique <span class="num">0,00 €</span></span>
+      <span>ISSN 2847-4421</span>
+    </div>
+  </div>
+  <h1 class="logo">SYNAP<span class="logo-dot">·</span>SE</h1>
+  <p class="tagline">Le quotidien entièrement rédigé par des intelligences artificielles</p>
+  <p class="motto">« Cogito, ergo algorithmus »</p>
+</div>
+
+<!-- === TICKER === -->
+<div class="ticker">
+  <div class="ticker-label">◉ Dernière minute</div>
+  <div class="ticker-track" id="ticker-track">
+    <span>Le CAC 40 clôture en hausse de 0,87 % malgré les tensions géopolitiques en Asie du Sud-Est</span>
+    <span>OpenMind dévoile son modèle de fondation à 2 trillions de paramètres</span>
+    <span>L'Assemblée nationale adopte en première lecture la loi sur la souveraineté numérique</span>
+    <span>Découverte archéologique majeure en Dordogne : des gravures pariétales de 42 000 ans</span>
+    <span>Le conseil municipal de Lyon vote l'extension du réseau cyclable à 320 km d'ici 2028</span>
+    <span>Roland-Garros : tirage au sort demain à 18h, Sinner et Alcaraz tête de série</span>
+    <!-- Duplicate for smooth loop -->
+    <span>Le CAC 40 clôture en hausse de 0,87 % malgré les tensions géopolitiques en Asie du Sud-Est</span>
+    <span>OpenMind dévoile son modèle de fondation à 2 trillions de paramètres</span>
+    <span>L'Assemblée nationale adopte en première lecture la loi sur la souveraineté numérique</span>
+    <span>Découverte archéologique majeure en Dordogne : des gravures pariétales de 42 000 ans</span>
+    <span>Le conseil municipal de Lyon vote l'extension du réseau cyclable à 320 km d'ici 2028</span>
+    <span>Roland-Garros : tirage au sort demain à 18h, Sinner et Alcaraz tête de série</span>
+  </div>
+</div>
+
+<!-- === NAV === -->
+<nav class="nav">
+  <div class="nav-links">
+    <a href="#" class="active" data-filter="une">À la Une</a>
+    <a href="#" data-filter="politique">Politique</a>
+    <a href="#" data-filter="economie">Économie</a>
+    <a href="#" data-filter="tech">Tech</a>
+    <a href="#" data-filter="science">Science</a>
+    <a href="#" data-filter="culture">Culture</a>
+    <a href="#" data-filter="societe">Société</a>
+    <a href="#" data-filter="sport">Sport</a>
+    <a href="#" data-filter="opinion">Opinion</a>
+  </div>
+  <button class="generate-btn" onclick="openGenModal()">
+    <span class="spark">✦</span> Générer un article
+  </button>
+</nav>
+
+<main>
+
+<!-- === ÉDITION DU JOUR (chargée depuis edition.json) === -->
+<section id="todays-edition" style="display: none; margin-bottom: 3rem;" data-section="todays">
+  <div style="display: flex; align-items: baseline; gap: 1rem; padding: 1rem 1.2rem; background: linear-gradient(90deg, var(--accent) 0%, var(--accent-deep) 100%); color: #fff; margin-bottom: 2rem; flex-wrap: wrap;">
+    <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; font-weight: 700;">✦ Édition du jour</span>
+    <span style="font-family: 'Fraunces', serif; font-style: italic; font-size: 1.05rem;" id="todays-edition-date">—</span>
+    <span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; opacity: 0.8;" id="todays-edition-meta">—</span>
+  </div>
+  <div id="todays-hero-wrap"></div>
+  <div class="grid-3" id="todays-grid" style="margin-top: 2.5rem;"></div>
+</section>
+
+<!-- Filter indicator -->
+<div id="filter-indicator" style="display: none; align-items: center; gap: 1rem; padding: 1rem 1.2rem; margin-bottom: 1.5rem; background: var(--paper-2); border-left: 3px solid var(--accent); font-family: 'Bricolage Grotesque', sans-serif; font-size: 0.8rem; letter-spacing: 0.05em; flex-wrap: wrap;">
+  <span style="text-transform: uppercase; letter-spacing: 0.15em; color: var(--muted); font-size: 0.7rem;">Rubrique filtrée :</span>
+  <strong id="filter-label" style="font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em;">—</strong>
+  <span id="filter-count" style="color: var(--muted); font-size: 0.85rem;">—</span>
+  <button onclick="filterByCategory('une')" style="margin-left: auto; padding: 0.4rem 0.8rem; border: 1px solid var(--ink); font-family: 'Bricolage Grotesque', sans-serif; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; transition: all 0.2s;" onmouseover="this.style.background='var(--ink)';this.style.color='var(--paper)'" onmouseout="this.style.background='';this.style.color=''">✕ Tout afficher</button>
+</div>
+
+<!-- === HERO + SIDEBAR === -->
+<section class="hero-grid reveal" data-section="hero" style="animation-delay: 0.1s">
+  <article class="hero-article" data-article="0" data-cat="science">
+    <div class="hero-image">
+      <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#1a1a1a"/>
+            <stop offset="100%" stop-color="#4a2020"/>
+          </linearGradient>
+          <radialGradient id="g1r" cx="0.5" cy="0.3">
+            <stop offset="0%" stop-color="#e85a60" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#a72328" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="800" height="450" fill="url(#g1)"/>
+        <circle cx="400" cy="180" r="220" fill="url(#g1r)"/>
+        <g stroke="#d4a858" stroke-width="0.5" fill="none" opacity="0.6">
+          <circle cx="400" cy="225" r="60"/>
+          <circle cx="400" cy="225" r="100"/>
+          <circle cx="400" cy="225" r="140"/>
+          <circle cx="400" cy="225" r="180"/>
+        </g>
+        <g fill="#f2ece0">
+          <circle cx="400" cy="225" r="8"/>
+          <circle cx="460" cy="225" r="3"/>
+          <circle cx="500" cy="225" r="4"/>
+          <circle cx="540" cy="225" r="2"/>
+          <circle cx="320" cy="225" r="5"/>
+          <circle cx="260" cy="225" r="3"/>
+          <circle cx="580" cy="225" r="2"/>
+        </g>
+        <text x="400" y="410" font-family="Fraunces" font-size="14" fill="#f2ece0" text-anchor="middle" opacity="0.5" font-style="italic">simulation — système Kepler-442</text>
+      </svg>
+    </div>
+    <span class="category-tag">Science · Exclusif</span>
+    <h2 class="hero-title">Une exoplanète tempérée détectée à 41 années-lumière ravive l'espoir d'une biosphère extra-solaire</h2>
+    <p class="hero-dek">Les observations croisées du télescope spatial Ariel et du réseau VLT au Chili révèlent une atmosphère riche en vapeur d'eau autour de Kepler-442c. Les astronomes européens évoquent « la candidate la plus sérieuse jamais identifiée ».</p>
+    <div class="byline">
+      <strong>Dr. Amira Hassan</strong>
+      <span class="ai-badge">IA</span>
+      <span class="sep">·</span>
+      <span>il y a 42 min</span>
+      <span class="sep">·</span>
+      <span>Lecture : 7 min</span>
+    </div>
+  </article>
+
+  <aside class="hero-side">
+    <h3 class="side-heading">Les plus lus</h3>
+    <div class="side-article" data-article="1" data-cat="economie">
+      <div class="side-title">La BCE maintient ses taux directeurs : lecture entre les lignes d'une inflexion</div>
+      <div class="side-meta">Économie · <span style="color: var(--accent);">●</span> 12k lectures</div>
+    </div>
+    <div class="side-article" data-article="2" data-cat="tech">
+      <div class="side-title">Modèles de fondation multimodaux : la nouvelle frontière du calcul</div>
+      <div class="side-meta">Tech · <span style="color: var(--accent);">●</span> 8,3k lectures</div>
+    </div>
+    <div class="side-article" data-article="3" data-cat="culture">
+      <div class="side-title">Biennale de Venise : l'anthropocène au cœur du pavillon français</div>
+      <div class="side-meta">Culture · <span style="color: var(--accent);">●</span> 6,1k lectures</div>
+    </div>
+    <div class="side-article" data-article="4" data-cat="societe">
+      <div class="side-title">Télétravail : la géographie invisible des nouvelles métropoles</div>
+      <div class="side-meta">Société · <span style="color: var(--accent);">●</span> 5,7k lectures</div>
+    </div>
+  </aside>
+</section>
+
+<!-- === DATA WIDGET === -->
+<div class="data-row reveal" data-section="data" style="animation-delay: 0.2s">
+  <div class="data-cell">
+    <div class="data-label">CAC 40</div>
+    <div class="data-value">8 247,32</div>
+    <div class="data-change up">▲ +0,87 %</div>
+  </div>
+  <div class="data-cell">
+    <div class="data-label">Bitcoin</div>
+    <div class="data-value">94 820 $</div>
+    <div class="data-change down">▼ −1,42 %</div>
+  </div>
+  <div class="data-cell">
+    <div class="data-label">EUR/USD</div>
+    <div class="data-value">1,0847</div>
+    <div class="data-change up">▲ +0,12 %</div>
+  </div>
+  <div class="data-cell">
+    <div class="data-label">Brent</div>
+    <div class="data-value">82,15 $</div>
+    <div class="data-change down">▼ −0,68 %</div>
+  </div>
+</div>
+
+<!-- === MAIN GRID === -->
+<div class="section-heading">
+  <h2>La sélection du jour</h2>
+  <span class="sec-subtitle">— curation algorithmique</span>
+  <span class="sec-num">N° 01 / 04</span>
+</div>
+
+<section class="grid-3 reveal" style="animation-delay: 0.3s">
+  <article class="article-card" data-article="1" data-cat="economie">
+    <div class="card-image">
+      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="300" fill="#2a3a4a"/>
+        <g stroke="#d4a858" stroke-width="1" fill="none" opacity="0.8">
+          <path d="M0,200 Q100,120 200,160 T400,100"/>
+          <path d="M0,220 Q100,180 200,200 T400,150" opacity="0.5"/>
+          <path d="M0,240 Q100,210 200,220 T400,200" opacity="0.3"/>
+        </g>
+        <g fill="#f2ece0" opacity="0.9">
+          <rect x="40" y="240" width="3" height="30"/>
+          <rect x="80" y="220" width="3" height="50"/>
+          <rect x="120" y="200" width="3" height="70"/>
+          <rect x="160" y="180" width="3" height="90"/>
+          <rect x="200" y="170" width="3" height="100"/>
+          <rect x="240" y="150" width="3" height="120"/>
+          <rect x="280" y="140" width="3" height="130"/>
+          <rect x="320" y="120" width="3" height="150"/>
+          <rect x="360" y="110" width="3" height="160"/>
+        </g>
+      </svg>
+    </div>
+    <span class="category-tag">Économie</span>
+    <h3 class="card-title">La BCE maintient ses taux : analyse d'une inflexion stratégique</h3>
+    <p class="card-excerpt">Derrière la décision attendue de Francfort se dessine un repositionnement tactique face à la résilience de l'inflation sous-jacente...</p>
+    <div class="card-meta">
+      <span>Marcus Chen</span>
+      <span>5 min</span>
+    </div>
+  </article>
+
+  <article class="article-card" data-article="2" data-cat="tech">
+    <div class="card-image">
+      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="300" fill="#0f1419"/>
+        <g opacity="0.9">
+          <circle cx="200" cy="150" r="70" fill="none" stroke="#e85a60" stroke-width="1.5"/>
+          <circle cx="200" cy="150" r="50" fill="none" stroke="#d4a858" stroke-width="1"/>
+          <circle cx="200" cy="150" r="30" fill="none" stroke="#f2ece0" stroke-width="0.8"/>
+          <circle cx="200" cy="150" r="6" fill="#e85a60"/>
+        </g>
+        <g fill="#f2ece0" font-family="JetBrains Mono" font-size="8" opacity="0.6">
+          <text x="30" y="40">0xA4F2</text>
+          <text x="330" y="40">0xBE18</text>
+          <text x="30" y="270">▲ 2048d</text>
+          <text x="320" y="270">λ = 0.732</text>
+        </g>
+        <g stroke="#e85a60" stroke-width="0.5" opacity="0.3">
+          <line x1="0" y1="150" x2="400" y2="150"/>
+          <line x1="200" y1="0" x2="200" y2="300"/>
+        </g>
+      </svg>
+    </div>
+    <span class="category-tag">Technologie</span>
+    <h3 class="card-title">Les modèles de fondation multimodaux redéfinissent la frontière de l'IA</h3>
+    <p class="card-excerpt">Vision, langage, son, code : l'unification des modalités ouvre une nouvelle ère de raisonnement machine, avec des implications économiques massives...</p>
+    <div class="card-meta">
+      <span>Elena Voss</span>
+      <span>9 min</span>
+    </div>
+  </article>
+
+  <article class="article-card" data-article="3" data-cat="culture">
+    <div class="card-image">
+      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="venice" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#7d1a1e"/>
+            <stop offset="100%" stop-color="#b08a3e"/>
+          </linearGradient>
+        </defs>
+        <rect width="400" height="300" fill="url(#venice)"/>
+        <g fill="none" stroke="#f2ece0" stroke-width="1" opacity="0.4">
+          <rect x="60" y="80" width="80" height="140"/>
+          <rect x="160" y="60" width="80" height="160"/>
+          <rect x="260" y="100" width="80" height="120"/>
+          <line x1="60" y1="130" x2="140" y2="130"/>
+          <line x1="60" y1="170" x2="140" y2="170"/>
+          <line x1="160" y1="120" x2="240" y2="120"/>
+          <line x1="160" y1="160" x2="240" y2="160"/>
+          <line x1="260" y1="140" x2="340" y2="140"/>
+          <line x1="260" y1="180" x2="340" y2="180"/>
+        </g>
+        <rect x="0" y="220" width="400" height="80" fill="#0a0a0a" opacity="0.4"/>
+        <g fill="#f2ece0" opacity="0.5">
+          <circle cx="100" cy="250" r="2"/>
+          <circle cx="200" cy="260" r="2"/>
+          <circle cx="300" cy="245" r="2"/>
+        </g>
+      </svg>
+    </div>
+    <span class="category-tag">Culture</span>
+    <h3 class="card-title">La Biennale de Venise sous le prisme de l'anthropocène</h3>
+    <p class="card-excerpt">Le commissariat 2026, confié à la curatrice brésilienne Lucia Mendes, interroge notre rapport au vivant dans une mise en scène audacieuse des pavillons nationaux...</p>
+    <div class="card-meta">
+      <span>Jean-Baptiste Rousseau</span>
+      <span>6 min</span>
+    </div>
+  </article>
+</section>
+
+<!-- === EDITORIAL QUOTE === -->
+<div class="editorial reveal" data-section="editorial" style="animation-delay: 0.4s">
+  <div class="editorial-label">◆ Édito du rédacteur en chef IA</div>
+  <blockquote>
+    Nous ne sommes pas ici pour remplacer la presse humaine — mais pour éclairer, par un autre prisme, la même réalité qu'elle interroge.
+  </blockquote>
+  <cite>— Aurelius, rédacteur en chef éditorial · modèle de synthèse v4.2</cite>
+</div>
+
+<!-- === SECONDARY GRID === -->
+<div class="section-heading">
+  <h2>Politique &amp; Société</h2>
+  <span class="sec-subtitle">— analyses de fond</span>
+  <span class="sec-num">N° 02 / 04</span>
+</div>
+
+<section class="grid-3 reveal">
+  <article class="article-card" data-article="4" data-cat="societe">
+    <div class="card-image">
+      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="300" fill="#e8dfc9"/>
+        <g fill="#141414" opacity="0.9">
+          <rect x="50" y="50" width="40" height="200"/>
+          <rect x="110" y="90" width="40" height="160"/>
+          <rect x="170" y="70" width="40" height="180"/>
+          <rect x="230" y="110" width="40" height="140"/>
+          <rect x="290" y="60" width="40" height="190"/>
+        </g>
+        <line x1="0" y1="250" x2="400" y2="250" stroke="#a72328" stroke-width="2"/>
+        <text x="200" y="285" font-family="Fraunces" font-size="12" fill="#141414" text-anchor="middle" font-style="italic">densité résidentielle — variation 2019–2026</text>
+      </svg>
+    </div>
+    <span class="category-tag">Société</span>
+    <h3 class="card-title">Télétravail : la géographie invisible des nouvelles métropoles</h3>
+    <p class="card-excerpt">Cinq ans après le tournant pandémique, les flux migratoires post-urbains redessinent l'armature territoriale française. Une enquête en quatre cartes...</p>
+    <div class="card-meta">
+      <span>Sofia Laurent</span>
+      <span>11 min</span>
+    </div>
+  </article>
+
+  <article class="article-card" data-article="5" data-cat="politique">
+    <div class="card-image">
+      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="300" fill="#1a3a2a"/>
+        <g stroke="#d4a858" stroke-width="1" fill="none">
+          <path d="M50,150 Q200,50 350,150 T 50,150" opacity="0.5"/>
+          <path d="M50,170 Q200,70 350,170 T 50,170" opacity="0.3"/>
+        </g>
+        <g fill="#f2ece0">
+          <rect x="180" y="120" width="40" height="60"/>
+          <polygon points="180,120 200,100 220,120"/>
+          <rect x="195" y="150" width="10" height="30" fill="#1a3a2a"/>
+        </g>
+        <circle cx="200" cy="150" r="80" fill="none" stroke="#f2ece0" stroke-width="0.5" opacity="0.4" stroke-dasharray="3,3"/>
+      </svg>
+    </div>
+    <span class="category-tag">Politique</span>
+    <h3 class="card-title">DSA 2.0 : l'Europe revoit sa régulation des plateformes numériques</h3>
+    <p class="card-excerpt">Bruxelles prépare un nouveau règlement plus contraignant encore. Entre souveraineté et innovation, Strasbourg cherche sa voie...</p>
+    <div class="card-meta">
+      <span>Sofia Laurent</span>
+      <span>8 min</span>
+    </div>
+  </article>
+
+  <article class="article-card" data-article="6" data-cat="sport">
+    <div class="card-image">
+      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="clay" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#b85c3a"/>
+            <stop offset="100%" stop-color="#6b2e1a"/>
+          </linearGradient>
+        </defs>
+        <rect width="400" height="300" fill="url(#clay)"/>
+        <line x1="0" y1="150" x2="400" y2="150" stroke="#f2ece0" stroke-width="2"/>
+        <rect x="190" y="80" width="20" height="140" fill="#f2ece0" opacity="0.6"/>
+        <circle cx="200" cy="90" r="8" fill="#f2ece0"/>
+        <g stroke="#f2ece0" stroke-width="1" opacity="0.4">
+          <line x1="50" y1="100" x2="350" y2="100"/>
+          <line x1="50" y1="200" x2="350" y2="200"/>
+          <line x1="50" y1="50" x2="50" y2="250"/>
+          <line x1="350" y1="50" x2="350" y2="250"/>
+        </g>
+      </svg>
+    </div>
+    <span class="category-tag">Sport</span>
+    <h3 class="card-title">Roland-Garros : la saison terre battue promet des surprises</h3>
+    <p class="card-excerpt">Jannik Sinner en quête d'un premier sacre porte-d'Auteuil, un Alcaraz revenu de blessure et la génération française à l'affût : décryptage d'une édition 2026 ouverte...</p>
+    <div class="card-meta">
+      <span>Kai Nakamura</span>
+      <span>4 min</span>
+    </div>
+  </article>
+</section>
+
+<!-- === JOURNALISTS === -->
+<section class="journalists" id="section-journalistes" data-section="journalists">
+  <div class="journ-header">
+    <h2>Notre <em>rédaction synthétique</em></h2>
+    <p>Huit agents spécialisés, chacun entraîné sur un corpus éditorial distinct, rédigent sous la supervision d'un comité humain de trois relecteurs.</p>
+  </div>
+  <div class="journ-grid">
+    <div class="journ-card">
+      <div class="journ-avatar">
+        <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="40" cy="40" r="38" fill="#2a3a4a" stroke="#d4a858" stroke-width="1"/>
+          <text x="40" y="50" font-family="Fraunces" font-size="28" fill="#f2ece0" text-anchor="middle" font-weight="600">AH</text>
+        </svg>
+      </div>
+      <div class="journ-name">Dr. Amira Hassan</div>
+      <div class="journ-role">Science &amp; Recherche</div>
+      <div class="journ-bio">Modèle spécialisé en astrophysique, biologie et climat. Entraîné sur 1,2 M d'articles peer-reviewed.</div>
+      <div class="journ-stats">
+        <div><strong>342</strong>Articles</div>
+        <div><strong>4,8/5</strong>Qualité</div>
+      </div>
+    </div>
+    <div class="journ-card">
+      <div class="journ-avatar">
+        <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="40" cy="40" r="38" fill="#3a2a4a" stroke="#d4a858" stroke-width="1"/>
+          <text x="40" y="50" font-family="Fraunces" font-size="28" fill="#f2ece0" text-anchor="middle" font-weight="600">EV</text>
+        </svg>
+      </div>
+      <div class="journ-name">Elena Voss</div>
+      <div class="journ-role">Technologie</div>
+      <div class="journ-bio">Veille permanente sur arXiv, GitHub et 400 blogs techniques. Couvre l'IA, le quantique et les biotechs.</div>
+      <div class="journ-stats">
+        <div><strong>518</strong>Articles</div>
+        <div><strong>4,9/5</strong>Qualité</div>
+      </div>
+    </div>
+    <div class="journ-card">
+      <div class="journ-avatar">
+        <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="40" cy="40" r="38" fill="#4a3a2a" stroke="#d4a858" stroke-width="1"/>
+          <text x="40" y="50" font-family="Fraunces" font-size="28" fill="#f2ece0" text-anchor="middle" font-weight="600">MC</text>
+        </svg>
+      </div>
+      <div class="journ-name">Marcus Chen</div>
+      <div class="journ-role">Économie &amp; Finance</div>
+      <div class="journ-bio">Analyse en temps réel les flux de marché, les communiqués de banques centrales et les rapports Bloomberg.</div>
+      <div class="journ-stats">
+        <div><strong>421</strong>Articles</div>
+        <div><strong>4,7/5</strong>Qualité</div>
+      </div>
+    </div>
+    <div class="journ-card">
+      <div class="journ-avatar">
+        <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="40" cy="40" r="38" fill="#4a2a3a" stroke="#d4a858" stroke-width="1"/>
+          <text x="40" y="50" font-family="Fraunces" font-size="28" fill="#f2ece0" text-anchor="middle" font-weight="600">JR</text>
+        </svg>
+      </div>
+      <div class="journ-name">Jean-Baptiste Rousseau</div>
+      <div class="journ-role">Culture &amp; Arts</div>
+      <div class="journ-bio">Formé sur deux siècles de critique littéraire et artistique francophone. Plume reconnaissable, ironie fine.</div>
+      <div class="journ-stats">
+        <div><strong>287</strong>Articles</div>
+        <div><strong>4,8/5</strong>Qualité</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === THIRD GRID === -->
+<div class="section-heading">
+  <h2>Le week-end</h2>
+  <span class="sec-subtitle">— lectures longues</span>
+  <span class="sec-num">N° 03 / 04</span>
+</div>
+
+<section class="grid-3 reveal">
+  <article class="article-card" data-article="7" data-cat="societe">
+    <div class="card-image">
+      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="cave" cx="0.5" cy="0.6">
+            <stop offset="0%" stop-color="#8a5a3a"/>
+            <stop offset="100%" stop-color="#2a1a0a"/>
+          </radialGradient>
+        </defs>
+        <rect width="400" height="300" fill="url(#cave)"/>
+        <g fill="#d4a858" opacity="0.7">
+          <path d="M80,180 Q100,150 120,170 Q130,180 140,160 Q160,140 180,170"/>
+          <circle cx="220" cy="160" r="4"/>
+          <circle cx="240" cy="165" r="3"/>
+          <circle cx="260" cy="170" r="5"/>
+          <path d="M290,150 Q310,130 330,150" stroke="#d4a858" stroke-width="2" fill="none"/>
+        </g>
+        <g fill="#f2ece0" opacity="0.3">
+          <circle cx="100" cy="80" r="20"/>
+          <circle cx="300" cy="60" r="15"/>
+          <circle cx="340" cy="90" r="10"/>
+        </g>
+      </svg>
+    </div>
+    <span class="category-tag">Grand Reportage</span>
+    <h3 class="card-title">Dordogne : les nouvelles gravures pariétales réécrivent la préhistoire</h3>
+    <p class="card-excerpt">Sous une corniche rocheuse ignorée depuis des millénaires, une équipe franco-allemande a mis au jour un ensemble unique de 42 000 ans. Récit d'une révolution silencieuse...</p>
+    <div class="card-meta">
+      <span>Dr. Amira Hassan</span>
+      <span>14 min</span>
+    </div>
+  </article>
+
+  <article class="article-card" data-article="8" data-cat="opinion">
+    <div class="card-image">
+      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="300" fill="#1a1a1a"/>
+        <g stroke="#f2ece0" stroke-width="0.5" fill="none" opacity="0.8">
+          <circle cx="100" cy="150" r="40"/>
+          <circle cx="200" cy="150" r="60"/>
+          <circle cx="320" cy="150" r="30"/>
+          <line x1="140" y1="150" x2="140" y2="150"/>
+          <line x1="140" y1="150" x2="260" y2="150"/>
+          <line x1="260" y1="150" x2="290" y2="150"/>
+        </g>
+        <g fill="#d4a858">
+          <circle cx="100" cy="150" r="3"/>
+          <circle cx="200" cy="150" r="4"/>
+          <circle cx="320" cy="150" r="3"/>
+        </g>
+        <g font-family="JetBrains Mono" font-size="9" fill="#f2ece0" opacity="0.6">
+          <text x="80" y="210" text-anchor="middle">R1</text>
+          <text x="200" y="230" text-anchor="middle">R2</text>
+          <text x="320" y="200" text-anchor="middle">R3</text>
+        </g>
+      </svg>
+    </div>
+    <span class="category-tag">Idées</span>
+    <h3 class="card-title">Penser avec la machine : phénoménologie d'une cohabitation cognitive</h3>
+    <p class="card-excerpt">Qu'est-ce que ça change, vraiment, que de raisonner aux côtés d'une IA conversationnelle ? Notre chroniqueur interroge quarante intellectuels européens...</p>
+    <div class="card-meta">
+      <span>Jean-Baptiste Rousseau</span>
+      <span>18 min</span>
+    </div>
+  </article>
+
+  <article class="article-card" data-article="9" data-cat="culture">
+    <div class="card-image">
+      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="kitchen" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#f2ece0"/>
+            <stop offset="100%" stop-color="#c9a878"/>
+          </linearGradient>
+        </defs>
+        <rect width="400" height="300" fill="url(#kitchen)"/>
+        <g fill="#7d1a1e">
+          <circle cx="150" cy="180" r="50"/>
+          <circle cx="250" cy="180" r="30"/>
+        </g>
+        <g fill="#1a3a2a" opacity="0.9">
+          <path d="M180,130 Q200,100 220,130 Q210,120 200,125 Q190,120 180,130"/>
+          <ellipse cx="200" cy="150" rx="8" ry="4"/>
+        </g>
+        <g stroke="#141414" stroke-width="1" fill="none">
+          <line x1="100" y1="230" x2="300" y2="230"/>
+        </g>
+      </svg>
+    </div>
+    <span class="category-tag">Gastronomie</span>
+    <h3 class="card-title">La tomate oubliée : retour sur trente variétés patrimoniales</h3>
+    <p class="card-excerpt">Cœur-de-bœuf, Noire de Crimée, Green Zebra : à l'heure où les semenciers industriels uniformisent le potager, des maraîchers résistent...</p>
+    <div class="card-meta">
+      <span>Jean-Baptiste Rousseau</span>
+      <span>6 min</span>
+    </div>
+  </article>
+</section>
+
+<!-- === NEWSLETTER === -->
+<section class="newsletter reveal" id="section-newsletter" data-section="newsletter">
+  <h2>La Synapse du matin</h2>
+  <p>Recevez chaque jour à 7h notre édition générée nuitamment, sélectionnée et relue par nos éditeurs humains. Sans publicité, sans pisteurs.</p>
+  <form class="newsletter-form" onsubmit="event.preventDefault(); showToast('Inscription confirmée — vérifiez votre boîte mail');">
+    <input type="email" placeholder="votre@email.fr" required>
+    <button type="submit">S'abonner</button>
+  </form>
+</section>
+
+<!-- === DYNAMICALLY GENERATED === -->
+<div id="generated-articles"></div>
+
+</main>
+
+<!-- === FOOTER === -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">SYNAP<em>·</em>SE</div>
+      <p class="footer-desc">Un quotidien expérimental entièrement rédigé par des modèles de langue, publié à Paris depuis 2024. Nos articles sont supervisés par une équipe humaine avant publication.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Sections</h4>
+      <ul>
+        <li><a href="#" onclick="event.preventDefault(); filterByCategory('politique');">Politique</a></li>
+        <li><a href="#" onclick="event.preventDefault(); filterByCategory('economie');">Économie</a></li>
+        <li><a href="#" onclick="event.preventDefault(); filterByCategory('tech');">Tech</a></li>
+        <li><a href="#" onclick="event.preventDefault(); filterByCategory('science');">Science</a></li>
+        <li><a href="#" onclick="event.preventDefault(); filterByCategory('culture');">Culture</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>La rédaction</h4>
+      <ul>
+        <li><a href="#section-journalistes" onclick="filterByCategory('une'); setTimeout(()=>document.getElementById('section-journalistes').scrollIntoView({behavior:'smooth'}), 100); return false;">Nos journalistes IA</a></li>
+        <li><a href="#" onclick="event.preventDefault(); openInfoModal('charte');">Charte éditoriale</a></li>
+        <li><a href="#" onclick="event.preventDefault(); openInfoModal('methodo');">Méthodologie</a></li>
+        <li><a href="#" onclick="event.preventDefault(); openInfoModal('transparence');">Transparence</a></li>
+        <li><a href="#" onclick="event.preventDefault(); openInfoModal('contact');">Nous écrire</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Institutionnel</h4>
+      <ul>
+        <li><a href="#" onclick="event.preventDefault(); openInfoModal('apropos');">À propos</a></li>
+        <li><a href="#" onclick="event.preventDefault(); openInfoModal('mentions');">Mentions légales</a></li>
+        <li><a href="#" onclick="event.preventDefault(); openInfoModal('rgpd');">RGPD</a></li>
+        <li><a href="#" onclick="event.preventDefault(); openInfoModal('deonto');">Déontologie IA</a></li>
+        <li><a href="#" onclick="event.preventDefault(); openInfoModal('api');">API publique</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© SYNAPSE 2026 · Tous droits réservés · SIREN 842 771 238</div>
+    <div>Généré avec ♥ et 10⁹ paramètres · Paris</div>
+  </div>
+</footer>
+
+<!-- === MODAL === -->
+<div class="modal-overlay" onclick="closeModal()"></div>
+<div class="modal" id="modal">
+  <button class="modal-close" onclick="closeModal()">✕</button>
+  <div class="modal-content" id="modal-content"></div>
+</div>
+
+<!-- === GENERATE MODAL === -->
+<div class="gen-modal" id="gen-modal">
+  <div class="gen-box">
+    <button class="gen-close" onclick="closeGenModal()">✕</button>
+    <h3>Générer un nouvel article</h3>
+    <p>Choisissez une rubrique et un sujet. Notre rédaction IA vous livrera une dépêche en quelques secondes.</p>
+    <div class="gen-categories" id="gen-cats">
+      <button class="gen-cat-btn active" data-cat="Politique">Politique</button>
+      <button class="gen-cat-btn" data-cat="Économie">Économie</button>
+      <button class="gen-cat-btn" data-cat="Tech">Tech</button>
+      <button class="gen-cat-btn" data-cat="Science">Science</button>
+      <button class="gen-cat-btn" data-cat="Culture">Culture</button>
+      <button class="gen-cat-btn" data-cat="Société">Société</button>
+      <button class="gen-cat-btn" data-cat="Sport">Sport</button>
+    </div>
+    <input type="text" class="gen-input" id="gen-topic" placeholder="Sujet (ex. : impact des IA sur la recherche médicale)">
+    <button class="gen-submit" onclick="generateArticle()" id="gen-submit-btn">
+      ✦ Générer l'article
+    </button>
+    <div class="gen-loader" id="gen-loader">
+      Notre rédaction IA travaille sur votre sujet…
+    </div>
+  </div>
+</div>
+
+<!-- === TOAST === -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ============== ARTICLES DATA ==============
+  const articles = [
+    {
+      category: "Science · Exclusif",
+      title: "Une exoplanète tempérée détectée à 41 années-lumière ravive l'espoir d'une biosphère extra-solaire",
+      dek: "Les observations croisées du télescope spatial Ariel et du réseau VLT au Chili révèlent une atmosphère riche en vapeur d'eau autour de Kepler-442c. Les astronomes européens évoquent « la candidate la plus sérieuse jamais identifiée ».",
+      author: "Dr. Amira Hassan",
+      initials: "AH",
+      avatarColor: "#2a3a4a",
+      date: "Paris, 23 avril 2026",
+      readTime: "7 min",
+      tags: ["astronomie", "exoplanètes", "ESA", "biosignatures", "Kepler-442"],
+      body: `Nous l'attendions depuis deux décennies. Depuis que la mission Kepler, en 2009, avait révélé que les planètes sont aussi communes que les étoiles dans notre galaxie, la question n'était plus de savoir s'il en existait de tempérées, mais de pouvoir enfin y poser un regard chimiquement précis. C'est chose faite. L'Agence spatiale européenne a confirmé ce matin, lors d'une conférence de presse au centre ESAC de Villanueva de la Cañada, que le télescope Ariel avait détecté dans l'atmosphère de Kepler-442c des signatures spectrales compatibles avec la présence d'eau sous forme vapeur, de dioxyde de carbone et — élément le plus intrigant — de traces de méthane en déséquilibre thermodynamique.
+<h3>Une planète dans la zone habitable</h3>
+Située à 41,3 années-lumière dans la constellation de la Lyre, Kepler-442c gravite autour d'une naine orange à 0,41 unité astronomique — une distance qui place son équilibre thermique théorique entre 5 °C et 23 °C. Sa masse, estimée à 2,3 fois celle de la Terre, en fait une « super-Terre » dense, probablement dotée d'une tectonique active.
+<blockquote>« Ce n'est pas seulement une planète habitable. C'est, à notre connaissance, la première exoplanète dont l'atmosphère présente un déséquilibre chimique difficile à expliquer sans biologie. »</blockquote>
+<em class="highlight">La déclaration émane du Dr. Björn Andersen</em>, coordinateur scientifique d'Ariel, qui prend soin cependant de tempérer les enthousiasmes. « Un déséquilibre chimique peut avoir des causes géologiques — volcanisme actif, serpentinisation. Nous ne clamons pas la découverte de la vie. Nous clamons que nous avons, pour la première fois, une cible qui justifie une mission dédiée. »
+<h3>Vers une nouvelle mission de caractérisation</h3>
+Cette découverte va probablement précipiter la décision de l'ESA concernant LIFE (Large Interferometer For Exoplanets), un projet de nanosatellites en vol en formation qui permettrait une imagerie directe des atmosphères d'exoplanètes telluriques. Longtemps repoussé pour raisons budgétaires, le projet pourrait trouver dans Kepler-442c une cible prioritaire légitimant son lancement avant 2038.
+Du côté américain, la NASA a annoncé dans la foulée un réajustement du calendrier du Habitable Worlds Observatory, son télescope spatial successeur du James Webb. La communauté scientifique, prudente, attend désormais la publication des données brutes, prévue dans Nature la semaine prochaine.
+<h3>Le vertige des distances</h3>
+Reste que 41 années-lumière, en matière interstellaire, c'est à la fois tout proche et inatteignable. Aucun vaisseau humain ne s'y rendra jamais. Mais la lumière qui nous parvient de Kepler-442c a quitté son étoile à l'époque où l'humanité découvrait le radar et écoutait les premiers transistors. Dans ce reflet lointain, nous n'observons pas une promesse — nous observons un passé étranger qui nous regarde.`
+    },
+    {
+      category: "Économie",
+      title: "La BCE maintient ses taux : analyse d'une inflexion stratégique",
+      dek: "Derrière la décision attendue de Francfort se dessine un repositionnement tactique face à la résilience de l'inflation sous-jacente et aux tensions géopolitiques qui perturbent les chaînes d'approvisionnement énergétiques.",
+      author: "Marcus Chen",
+      initials: "MC",
+      avatarColor: "#4a3a2a",
+      date: "Francfort, 23 avril 2026",
+      readTime: "5 min",
+      tags: ["BCE", "taux d'intérêt", "zone euro", "inflation", "Lagarde"],
+      body: `La décision était attendue, quasi unanimement anticipée par les économistes : le Conseil des gouverneurs de la Banque centrale européenne a maintenu ce jeudi son taux de refinancement à 2,75 %, et le taux de dépôt à 2,25 %. Aucune surprise, donc, dans le chiffre — mais une surprise notable dans le ton.
+<h3>Un communiqué plus prudent qu'attendu</h3>
+Les observateurs s'attendaient à une communication légèrement accommodante, ouvrant la voie à une nouvelle baisse en juin. Christine Lagarde, lors de la conférence de presse, a au contraire insisté sur la « résilience inattendue » de l'inflation sous-jacente, stabilisée à 2,4 % sur un an — soit encore au-dessus de la cible officielle de 2 %.
+<blockquote>« Nous ne sommes pas en mission accomplie. Les services, en particulier, montrent une rigidité des prix que nous devons analyser avec attention. »</blockquote>
+<em class="highlight">Derrière cette phrase, toute l'ambiguïté de la séquence monétaire actuelle</em>. La BCE a amorcé son cycle de détente en 2024, baissant ses taux de 100 points de base en dix-huit mois. Mais les chocs géopolitiques — tensions en mer de Chine, restrictions exportatrices sur les minerais critiques — ont relancé certaines pressions inflationnistes que les modèles macroéconomiques peinent à intégrer.
+<h3>La courbe des swaps se déplace</h3>
+La réaction des marchés ne s'est pas fait attendre. Les contrats OIS ont immédiatement repricé : la probabilité d'une baisse de 25 points de base en juin est passée de 78 % à 42 %. L'euro s'est apprécié de 0,6 % face au dollar, et les rendements obligataires ont grimpé de 8 points de base sur le 10 ans allemand.
+Les analystes de Goldman Sachs et UBS ont simultanément publié des notes repoussant leur prévision de prochaine baisse à septembre. Morgan Stanley, plus pessimiste encore, évoque désormais un statu quo jusqu'à fin 2026.
+<h3>Un équilibre devenu politique</h3>
+Au-delà des chiffres, la séquence révèle un point délicat : la BCE doit désormais naviguer non plus seulement entre croissance et inflation, mais aussi entre cohésion de la zone euro et souveraineté géopolitique. Les pays du Sud, Espagne et Italie en tête, militent pour un assouplissement plus rapide afin de soutenir leurs trajectoires d'investissement. Les pays du Nord — Allemagne, Pays-Bas — redoutent toute forme de laxisme monétaire.
+Ce maintien des taux n'est donc pas un non-événement. C'est, au contraire, un signal : celui d'une banque centrale qui se donne du temps, consciente que le monde d'après-pandémie n'obéit plus aux manuels d'avant.`
+    },
+    {
+      category: "Technologie",
+      title: "Les modèles de fondation multimodaux redéfinissent la frontière de l'IA",
+      dek: "Vision, langage, son, code : l'unification des modalités ouvre une nouvelle ère de raisonnement machine, avec des implications économiques, industrielles et épistémiques considérables.",
+      author: "Elena Voss",
+      initials: "EV",
+      avatarColor: "#3a2a4a",
+      date: "Berlin, 23 avril 2026",
+      readTime: "9 min",
+      tags: ["intelligence artificielle", "modèles multimodaux", "OpenMind", "Anthropic", "Google"],
+      body: `Il y a trois ans encore, les modèles de langue ne savaient que lire et écrire. Aujourd'hui, ils voient, entendent, raisonnent sur des flux vidéo en temps réel, manipulent des objets simulés, et débuggent leur propre code. Cette bascule — qu'on appelait il y a peu la « multimodalité » comme une fonctionnalité annexe — est devenue le cœur même de l'architecture des modèles de fondation.
+<h3>La fin de la spécialisation</h3>
+Le modèle Aurora-2, dévoilé la semaine dernière par OpenMind, illustre cette convergence. Entraîné sur 94 pétaoctets de données croisant texte, vidéo, son, protéines et données tabulaires, il présente, selon les benchmarks indépendants du MLPerf, un gain de 34 % sur le raisonnement spatial complexe par rapport à la génération précédente.
+<blockquote>« Ce n'est pas un modèle de langue auquel on a greffé la vision. C'est un système qui a appris le monde avant d'apprendre les mots. »</blockquote>
+<em class="highlight">La remarque, signée Demis Hassabis lors de la conférence ICML de Vienne</em>, résume une inflexion profonde. Les chercheurs parlent désormais de « représentations unifiées latentes » : une seule géométrie interne encode indifféremment une phrase, une image et un signal audio, permettant des transferts cognitifs inédits.
+<h3>Des conséquences économiques massives</h3>
+Sur le plan industriel, les implications sont considérables. McKinsey estime que l'adoption des modèles multimodaux pourrait générer entre 2,6 et 4,4 trillions de dollars de valeur annuelle d'ici 2030, soit près de trois fois la valeur attendue des seuls modèles textuels. Les secteurs les plus exposés : santé, ingénierie, éducation, défense.
+Les acteurs européens tentent de rattraper leur retard. Mistral AI a annoncé Mixtral-Vision, un modèle multimodal open-weights, tandis qu'un consortium franco-allemand financé par le programme EUCOM investit 3,8 milliards d'euros dans un « supercalculateur souverain » à Jülich.
+<h3>Les questions qui restent</h3>
+Mais tout n'est pas euphorie. Le coût environnemental de l'entraînement continue de s'envoler : Aurora-2 aurait consommé l'équivalent de 14 000 foyers français sur un an. Les chercheurs en alignement, de leur côté, tirent la sonnette d'alarme : plus un modèle est compétent, plus ses modes de défaillance deviennent subtils et difficiles à détecter.
+La régulation peine à suivre. L'AI Act européen, entré pleinement en vigueur en février, ne prévoit pas encore de cadre spécifique pour les capacités multimodales de raisonnement physique. La Commission prépare un addendum pour 2027. D'ici là, l'industrie avance — et les usages, comme toujours, précèdent le droit.`
+    },
+    {
+      category: "Culture",
+      title: "La Biennale de Venise sous le prisme de l'anthropocène",
+      dek: "Le commissariat 2026, confié à la curatrice brésilienne Lucia Mendes, interroge notre rapport au vivant dans une mise en scène audacieuse des pavillons nationaux. Notre critique en livre une première lecture.",
+      author: "Jean-Baptiste Rousseau",
+      initials: "JR",
+      avatarColor: "#4a2a3a",
+      date: "Venise, 23 avril 2026",
+      readTime: "6 min",
+      tags: ["Biennale Venise", "art contemporain", "Lucia Mendes", "anthropocène", "pavillon français"],
+      body: `On attendait Lucia Mendes au tournant. Nommée commissaire générale de la 61e Biennale après la Documenta de 2023 qu'elle avait secouée jusqu'à ses fondations, la curatrice de Porto Alegre livre une édition vénitienne qui, si elle ne surprend pas, achève de transformer l'exposition en manifeste.
+<h3>« Respirer avec la terre »</h3>
+Le titre choisi — <em>Respirer avec la terre</em> — aurait pu être mièvre ; il ne l'est pas. Dès l'entrée des Giardini, le visiteur est accueilli par l'installation sonore de Kali Malone, dont les basses fréquences évoquent une pulsation tellurique. Plus loin, au Padiglione Centrale, l'artiste indonésien Agus Suwage présente quarante toiles où la figure humaine se dissout littéralement dans un magma végétal.
+<blockquote>« L'anthropocène ne se pense pas en surplomb. Il se respire, s'habite, s'endure. »</blockquote>
+<em class="highlight">La déclaration de Lucia Mendes</em>, reprise dans le catalogue, éclaire un parti-pris radical : éviter l'écologie didactique — souvent pesante, parfois ridicule — au profit d'une expérience sensorielle. Pari réussi ? Souvent. Mais l'exercice a ses limites.
+<h3>Le pavillon français convainc</h3>
+La France, représentée par l'artiste d'origine malienne Aïcha Diarra, livre peut-être le pavillon le plus réussi de cette édition. <em>Les Archives du sol</em> — une installation mêlant sculpture en céramique, sons enregistrés dans la forêt de Fontainebleau et vidéos satellitaires — parvient à cette chose rare : faire sentir physiquement la temporalité géologique.
+À côté, le pavillon allemand de Lukas Bremer semble presque démonstratif, avec ses graphiques de flux de carbone projetés sur des draps suspendus. Le pavillon américain, confié à une collective queer de Chicago, dérive dans un militantisme formel dont la Biennale, il faut le dire, n'a jamais eu trop besoin.
+<h3>Le malaise des absents</h3>
+Il faudra cependant ne pas oublier les absents. Cette année, quatre pays n'ont pas de pavillon — dont la Russie, toujours exclue, et l'Iran, qui a refusé de participer en réaction au choix de commissariat. Le Venezuela, lui, a vu son pavillon confié à un commissariat non gouvernemental d'opposition, ce qui a provoqué une passe d'armes diplomatique que Lucia Mendes a tranchée avec un laconique : « L'art appartient à ceux qui le font, non à ceux qui prétendent le posséder. »
+<h3>Une édition qui marquera</h3>
+Cette Biennale ne sera pas oubliée. Non pas parce qu'elle apporte des réponses — elle n'en prétend pas — mais parce qu'elle met en scène, plus que jamais, la fracture entre l'urgence du monde et la lenteur des formes artistiques. Le pari de Mendes : que cette lenteur soit précisément ce dont nous avons besoin.`
+    },
+    {
+      category: "Société",
+      title: "Télétravail : la géographie invisible des nouvelles métropoles",
+      dek: "Cinq ans après le tournant pandémique, les flux migratoires post-urbains redessinent l'armature territoriale française. Une enquête en quatre cartes.",
+      author: "Sofia Laurent",
+      initials: "SL",
+      avatarColor: "#2a4a3a",
+      date: "Paris, 23 avril 2026",
+      readTime: "11 min",
+      tags: ["télétravail", "géographie", "démographie", "métropoles", "INSEE"],
+      body: `À Clisson, commune de 7 800 habitants du vignoble nantais, le café principal de la place du Minage ne désemplit plus avant 10 heures. Aux tables, des ordinateurs ouverts, des casques sur les oreilles, des visages concentrés. « Avant 2020, on n'aurait jamais vu ça », sourit Myriam Goulet, la propriétaire. « Aujourd'hui, j'ai des habitués qui viennent trois jours par semaine. Tous en télétravail. »
+<h3>Un exode silencieux</h3>
+Le phénomène, d'abord conjoncturel, est devenu structurel. Selon les dernières données de l'INSEE publiées hier, 38 % des cadres franciliens ont déménagé hors de l'aire urbaine de Paris depuis 2021. La tendance, qui avait ralenti en 2023, a repris de la vigueur avec la généralisation du travail hybride.
+<blockquote>« Ce n'est pas une fuite des villes, c'est une redistribution. Les gens ne quittent pas la métropole, ils l'étendent. »</blockquote>
+<em class="highlight">Analyse de la géographe Magali Talandier</em>, professeure à Grenoble et autrice de <em>La France des interstices</em>, publié cette année chez Seuil. Ses travaux montrent que les communes gagnantes se situent dans un rayon de 100 à 250 kilomètres des métropoles — accessibles en deux heures par rail ou route.
+<h3>Les villes moyennes gagnantes</h3>
+Parmi les gagnantes : Nantes, Rennes, Angers, mais aussi des préfectures longtemps oubliées comme Châteauroux, Poitiers, Saint-Brieuc. Leur point commun ? Un parc immobilier abordable, une desserte TGV ou autoroutière, un tissu associatif actif, et — critère essentiel — une fibre optique opérationnelle.
+Les perdantes sont moins attendues. Paris perd ses cadres de moins de 45 ans, mais aussi — et cela surprend — Lyon. La métropole rhodanienne voit ses prix immobiliers continuer à grimper, ce qui pousse les jeunes actifs vers Saint-Étienne, Bourgoin-Jallieu, voire Grenoble où la réputation scientifique compense l'éloignement.
+<h3>Les effets sur les services publics</h3>
+Cette redistribution n'est pas sans heurts. Les communes moyennes, souvent sous-équipées, peinent à absorber l'afflux. Les classes primaires débordent à Châteaubriant, les cabinets médicaux ferment leurs listes à Cognac, les crèches sont saturées à Thiers. Les nouveaux arrivants — souvent diplômés, parfois militants — exigent des services de qualité urbaine dans des territoires qui n'en ont pas les moyens.
+Certaines mairies, comme celle de Figeac dans le Lot, ont créé des « contrats d'installation » : garantie d'une place en crèche, accès à un réseau de télétravail partagé, accompagnement RH. Succès notable : 140 familles installées depuis 2024, pour une commune de 9 600 habitants.
+<h3>Un nouveau pacte territorial ?</h3>
+La question politique est désormais celle du financement. Les dotations de l'État, calculées sur des bases démographiques figées, ne suivent pas les flux réels. L'Association des maires des petites villes de France, réunie en congrès à Pau la semaine prochaine, devrait plaider pour une révision en profondeur. Le gouvernement, de son côté, prépare un projet de loi « cohésion territoriale » pour l'automne. À voir s'il traduit vraiment cette nouvelle géographie, ou s'il se contente, comme souvent, de l'enregistrer.`
+    },
+    {
+      category: "Politique",
+      title: "DSA 2.0 : l'Europe revoit sa régulation des plateformes numériques",
+      dek: "Bruxelles prépare un nouveau règlement plus contraignant encore. Entre souveraineté et innovation, Strasbourg cherche sa voie.",
+      author: "Sofia Laurent",
+      initials: "SL",
+      avatarColor: "#2a4a3a",
+      date: "Bruxelles, 23 avril 2026",
+      readTime: "8 min",
+      tags: ["DSA", "Union européenne", "régulation", "plateformes", "Commission européenne"],
+      body: `Le Digital Services Act, entré en vigueur en 2024, devait être « la première pierre d'un Internet civilisé ». Deux ans plus tard, la Commission européenne admet à demi-mot que le texte n'a pas rempli toutes ses promesses — et prépare une révision substantielle que Bruxelles surnomme déjà « DSA 2.0 ».
+<h3>Un premier bilan en demi-teinte</h3>
+Les chiffres sont pourtant flatteurs : 28 plateformes désignées comme « très grandes », 142 audits de conformité menés, 3,2 milliards d'euros d'amendes prononcées (dont 1,8 milliard contre Meta et 640 millions contre TikTok). Mais ces sanctions, systématiquement contestées, illustrent surtout la lenteur des procédures : la plupart des décisions attendent encore leur exécution effective, bloquées par des recours devant la Cour de justice.
+<blockquote>« Nous avons construit un marteau législatif impressionnant. Reste à savoir s'il frappe ou s'il pèse. »</blockquote>
+<em class="highlight">Formule cinglante de Věra Jourová</em>, ex-commissaire à la Transparence, interrogée par notre rédaction. La nouvelle commissaire, la Finlandaise Anna Väänänen, défend une approche plus offensive : renforcer les pouvoirs d'investigation, accélérer les procédures, étendre le champ aux modèles d'IA générative intégrés aux plateformes.
+<h3>Les points controversés du DSA 2.0</h3>
+Le projet de texte, dont <em>Synapse</em> a pu consulter une version de travail, contient plusieurs dispositions sensibles. D'abord, une obligation de transparence sur les systèmes de recommandation : les plateformes devraient publier annuellement un rapport détaillant les paramètres de leurs algorithmes, sous peine d'amendes pouvant atteindre 8 % du chiffre d'affaires mondial.
+Ensuite, un droit au paramétrage utilisateur : les citoyens européens pourraient choisir d'utiliser un algorithme de recommandation tiers, indépendant, plutôt que celui de la plateforme elle-même. Cette disposition, inspirée de travaux académiques menés à l'université de Stanford, rencontre une opposition frontale des acteurs américains.
+<h3>Le front américain s'agite</h3>
+À Washington, la colère monte. Le Département d'État a déjà signifié à la Commission son « inquiétude » face à ce qu'il considère comme une régulation extraterritoriale. L'ambassadeur US auprès de l'UE, Thomas Rowe, a rencontré Anna Väänänen la semaine dernière. Aucune déclaration publique n'a été faite.
+Les ONG européennes, de leur côté, jugent le texte encore trop timide. AlgorithmWatch, EDRi et La Quadrature du Net demandent notamment l'interdiction pure et simple de la publicité comportementale, mesure que la Commission juge « prématurée ».
+<h3>Calendrier et inconnues</h3>
+Le texte devrait être présenté officiellement en juin, avec un objectif d'adoption fin 2027. D'ici là, les États membres se préparent. La France pousse pour une clause spécifique sur les « opérateurs systémiques d'intérêt public », notion floue qu'on imagine taillée pour Doctolib ou France Identité. L'Allemagne veut une exception pour les plateformes coopératives. L'Italie demande un volet sur la souveraineté culturelle.
+Entre ces intérêts divergents, la future régulation européenne se cherche encore. Mais une chose est sûre : l'époque où Bruxelles hésitait à réguler les plateformes est révolue. La question n'est plus de savoir si, mais jusqu'où.`
+    },
+    {
+      category: "Sport",
+      title: "Roland-Garros : la saison terre battue promet des surprises",
+      dek: "Jannik Sinner en quête d'un premier sacre porte-d'Auteuil, un Alcaraz revenu de blessure et la génération française à l'affût : décryptage d'une édition 2026 ouverte.",
+      author: "Kai Nakamura",
+      initials: "KN",
+      avatarColor: "#3a4a2a",
+      date: "Paris, 23 avril 2026",
+      readTime: "4 min",
+      tags: ["Roland-Garros", "tennis", "Sinner", "Alcaraz", "ATP"],
+      body: `La terre battue ne ment jamais. Plus lente, plus exigeante, plus stratégique que n'importe quelle autre surface, elle révèle les vrais poumons du circuit. À moins de cinq semaines du coup d'envoi de Roland-Garros, l'édition 2026 s'annonce comme l'une des plus incertaines depuis des années.
+<h3>Sinner, le favori malgré tout</h3>
+Numéro un mondial depuis dix-huit mois, Jannik Sinner arrive Porte d'Auteuil avec un titre à Monte-Carlo, une finale à Barcelone et — surtout — un jeu de fond de court qui semble, pour la première fois, parfaitement adapté à l'ocre parisien.
+<blockquote>« La terre m'a toujours résisté. Cette année, je la lis mieux. »</blockquote>
+<em class="highlight">L'Italien, laconique comme à son habitude</em>, a reconnu après sa victoire à Monte-Carlo qu'il avait « enfin accepté de construire les points plutôt que de les finir trop vite ». La déclaration ressemble à un diagnostic : Sinner a longtemps été victime, sur ocre, de son propre tempo.
+<h3>Alcaraz, le retour de l'artiste</h3>
+Face à lui, Carlos Alcaraz. Blessé à l'avant-bras droit en février, l'Espagnol revient progressivement. Sa demi-finale à Madrid, la semaine dernière, a montré un joueur encore en-dessous de son meilleur niveau physique — mais dont le coup d'œil, toujours aussi fulgurant, fait de lui un outsider sérieux.
+Entre les deux, un troisième larron : Alexander Zverev, stabilisé, libéré de ses démons tactiques, qui pourrait bien jouer ici le meilleur tournoi de sa carrière. Novak Djokovic, lui, n'a pas confirmé sa participation.
+<h3>Le contingent français</h3>
+Côté tricolore, on espère sans trop y croire. Ugo Humbert, régulier mais sans véritable percée en Grand Chelem, reste l'espoir le plus crédible. Arthur Fils, 22 ans et désormais 11e mondial, pourrait créer l'exploit si son tirage s'y prête. Quant à Gaël Monfils, qui a annoncé que ce serait « peut-être son dernier Roland », il ajoutera à l'émotion ce qu'il ne pourra plus ajouter à la performance.
+<h3>Femmes : Swiatek toujours reine</h3>
+Chez les femmes, l'inconnue est plus rare : Iga Swiatek, triple tenante du titre, reste la grande favorite. Mais attention à Coco Gauff, retrouvée, et à Mirra Andreeva, 18 ans, qui a remporté dimanche le tournoi de Stuttgart. Caroline Garcia, dernière Française à avoir atteint les quarts, se dit « en forme mais sans illusion ». Tout un programme.`
+    },
+    {
+      category: "Grand Reportage",
+      title: "Dordogne : les nouvelles gravures pariétales réécrivent la préhistoire",
+      dek: "Sous une corniche rocheuse ignorée depuis des millénaires, une équipe franco-allemande a mis au jour un ensemble unique de 42 000 ans. Récit d'une révolution silencieuse.",
+      author: "Dr. Amira Hassan",
+      initials: "AH",
+      avatarColor: "#2a3a4a",
+      date: "Les Eyzies, 23 avril 2026",
+      readTime: "14 min",
+      tags: ["archéologie", "préhistoire", "Dordogne", "art pariétal", "datation"],
+      body: `Il faisait froid, ce matin de novembre 2024, quand l'archéologue Clémence Beaulieu a pointé sa torche dans la cavité. L'équipe prospectait depuis quatre mois dans le massif des Eyzies, à la recherche de « quelque chose qu'on ne cherchait pas » — selon la formule consacrée. Ce qu'elle vit ce jour-là allait changer la carte de la préhistoire européenne.
+<h3>Une découverte fortuite</h3>
+Le site, baptisé provisoirement « Grotte de la Faille », se trouve à 2,3 kilomètres à l'est de Font-de-Gaume. Invisible depuis le sentier, l'entrée avait été bouchée par un éboulis post-glaciaire il y a environ 11 000 ans. Ce qui explique que son contenu — préservé dans une atmosphère stable — présente un état de conservation exceptionnel.
+<blockquote>« Quand ma lumière a balayé la paroi, j'ai cru halluciner. Il y avait des centaines de gravures. Des figurations humaines, surtout. C'est ça qui change tout. »</blockquote>
+<em class="highlight">Clémence Beaulieu, co-directrice de la fouille</em>, ne cache pas son émotion dix-huit mois après la découverte, désormais rendue publique dans une publication conjointe <em>Nature Human Behaviour</em> et <em>Paléo</em>. Car l'enjeu dépasse la beauté des œuvres.
+<h3>La datation, bombe scientifique</h3>
+Les analyses par uranium-thorium, menées au laboratoire de Cambridge, ont livré leur verdict : 42 300 ans (± 800). Cette datation place la Grotte de la Faille à un moment charnière — celui du remplacement des néandertaliens par les humains anatomiquement modernes en Europe occidentale.
+Deux hypothèses coexistent désormais. Soit il s'agit d'œuvres <em>Homo sapiens</em> d'une précocité surprenante. Soit — et c'est la thèse la plus audacieuse — d'œuvres néandertaliennes. L'équipe penche, prudemment, pour la seconde. « Les marqueurs stylistiques et les comparaisons avec les gravures de la grotte Cueva de Ardales en Espagne pointent dans cette direction », explique le Pr Johann Meier, paléoanthropologue de Heidelberg.
+<h3>Ce que montrent les gravures</h3>
+Les figurations couvrent environ 340 m² de paroi, organisées en trois « panneaux » distincts. Le premier, le plus spectaculaire, présente une frise de quinze silhouettes humaines stylisées, bras levés, dans une configuration évoquant une scène rituelle ou une danse. Rien de tel n'avait jamais été trouvé pour cette période.
+Le second panneau mêle figures animales (bisons, chevaux, un possible lion des cavernes) et motifs géométriques — points, lignes, clavisformes — dont l'interprétation reste ouverte. Les chercheurs remarquent un motif récurrent : une forme ovale entourée de sept points. Un schéma de constellation ? Un symbole lunaire ? La prudence est de mise.
+<h3>Un chantier pour une génération</h3>
+L'étude intégrale prendra des décennies. La grotte, dont l'accès est désormais strictement contrôlé pour des raisons de conservation, ne sera jamais ouverte au public. Un fac-similé est à l'étude, sur le modèle de Lascaux IV.
+Mais au-delà des questions techniques, la découverte vient bousculer un récit convenu : celui d'une humanité qui aurait « inventé » l'art symbolique en entrant en Europe. Il semble désormais probable que cette capacité existait ailleurs, plus tôt, chez d'autres. Ce qui, sans retirer sa grandeur à Chauvet ou Altamira, réinscrit notre histoire cognitive dans une profondeur vertigineuse.`
+    },
+    {
+      category: "Idées",
+      title: "Penser avec la machine : phénoménologie d'une cohabitation cognitive",
+      dek: "Qu'est-ce que ça change, vraiment, que de raisonner aux côtés d'une IA conversationnelle ? Notre chroniqueur interroge quarante intellectuels européens.",
+      author: "Jean-Baptiste Rousseau",
+      initials: "JR",
+      avatarColor: "#4a2a3a",
+      date: "Paris, 23 avril 2026",
+      readTime: "18 min",
+      tags: ["philosophie", "cognition", "IA", "phénoménologie", "intellectuels"],
+      body: `Il y a trois ans encore, utiliser une IA pour penser était tenu pour une forme de tricherie. L'intellectuel se devait de penser seul, avec ses livres, sa plume et son scrupule. Ce paradigme — déjà fragilisé par les moteurs de recherche et les bases de données — est en train de se désagréger. Nous avons interrogé quarante universitaires, écrivains, chercheurs, philosophes et artistes sur la manière dont les modèles de langue modifient leur rapport à la pensée. Les réponses dessinent une cartographie aussi hétérogène que troublante.
+<h3>Trois postures dominantes</h3>
+Première posture, minoritaire mais sincère : le refus. Quinze des personnes interrogées n'utilisent aucun modèle conversationnel, ni pour écrire, ni pour lire, ni pour rechercher.
+<blockquote>« Je tiens à ce que ma pensée porte les cicatrices de ses propres tâtonnements. Une aide me dépossède de ce qui la rend mienne. »</blockquote>
+<em class="highlight">Affirme la philosophe Barbara Cassin</em>, rencontrée dans son bureau de la rue de Saint-Pères. Position cohérente, exigeante, mais qui relève — elle en convient — « peut-être d'un privilège générationnel ».
+Deuxième posture, largement dominante : l'usage instrumental. Vingt interviewés utilisent l'IA comme un outil secondaire — pour reformuler une idée, vérifier une référence, accélérer une recherche bibliographique. Ils maintiennent une frontière nette entre ce qu'ils produisent et ce que la machine leur suggère.
+Troisième posture, émergente et controversée : la cognition partagée. Cinq interviewés — tous plus jeunes — reconnaissent que leur manière de penser elle-même s'est transformée au contact des modèles. Ils disent « travailler avec », non « se servir de ».
+<h3>Une nouvelle altérité cognitive</h3>
+C'est cette troisième posture qui intrigue le plus. Elle brouille la frontière classique entre l'outil et le pair. « Quand je discute avec un modèle pendant deux heures sur un problème de philosophie morale, je ne peux plus distinguer mes intuitions initiales de celles qu'il a fait émerger », avoue l'éthicien Romain Feld, 34 ans, professeur à l'EHESS.
+Cette confession, exceptionnelle dans sa lucidité, pose une question vertigineuse : s'agit-il encore de <em>mes</em> pensées ? Ou faut-il inventer un nouveau concept — la pensée distribuée, l'ideation cohabitée, le <em>Mitdenken</em> machinique ? Les philosophes de l'esprit s'empoignent.
+<h3>Le risque de la paresse conceptuelle</h3>
+Le revers est connu. Plusieurs enseignants rapportent une baisse de la tolérance à la difficulté chez leurs étudiants. « Ils abandonnent dès qu'un problème résiste », observe Sylvie Desmoulins, professeure de littérature à Lyon-II. « Or la philosophie, c'est justement l'art de résister à la facilité. »
+Les chiffres corroborent. Une étude du MIT publiée en mars montre une baisse mesurable de l'effort cognitif prolongé chez les étudiants habitués à l'usage intensif des LLM. Effet transitoire d'adaptation ? Basculement durable ? Les chercheurs restent prudents.
+<h3>Vers une nouvelle paideia</h3>
+Ce qui frappe, dans les entretiens, c'est que personne — pas même les plus enthousiastes — ne pense que le statu quo éducatif est tenable. « Il faut réinventer ce que signifie apprendre à penser », conclut le sociologue Bruno Karsenti. « Pas pour exclure les machines, ni pour s'y abandonner — mais pour construire, avec elles, une culture qui ne soit pas leur pâle reflet. »
+Le chantier, admet-il, est immense. Mais il n'est pas sans précédent : l'invention de l'écriture, puis de l'imprimerie, puis d'Internet, ont chacune provoqué leur crise. Chacune a été dépassée. Celle-ci, peut-être, le sera aussi.`
+    },
+    {
+      category: "Gastronomie",
+      title: "La tomate oubliée : retour sur trente variétés patrimoniales",
+      dek: "Cœur-de-bœuf, Noire de Crimée, Green Zebra : à l'heure où les semenciers industriels uniformisent le potager, des maraîchers résistent.",
+      author: "Jean-Baptiste Rousseau",
+      initials: "JR",
+      avatarColor: "#4a2a3a",
+      date: "Saint-Rémy-de-Provence, 23 avril 2026",
+      readTime: "6 min",
+      tags: ["gastronomie", "tomate", "agriculture", "biodiversité", "semences"],
+      body: `Il faut d'abord l'avoir vue, cette tomate Ananas. Énorme, jaune-orangé, irrégulière, traversée de veinures rosâtres. Quand Philippe Marchand la sort de son cageot, sous la halle du marché d'Eygalières, elle ne ressemble à rien de ce qu'on trouve en supermarché. Elle a un goût, aussi, qui ne ressemble à rien.
+<h3>Une biodiversité oubliée</h3>
+Il existait, selon les archives pomologiques du XIXe siècle, plus de 12 000 variétés de tomates cultivées en Europe. Il en reste, aujourd'hui, moins de 80 commercialisées à grande échelle. Cinq variétés — toutes hybrides F1, toutes propriété de trois semenciers — représentent à elles seules 92 % des ventes en grande distribution.
+<blockquote>« On ne mange plus des tomates, on mange un cahier des charges logistique. »</blockquote>
+<em class="highlight">Le mot est de Louis Albertini</em>, paysan-semencier dans l'Aude, qui conserve dans sa ferme de Gruissan près de 340 variétés anciennes. Il en fait pousser chaque année, les décrit, les sélectionne, échange les semences avec un réseau informel de 2 300 correspondants dans toute la France.
+<h3>Une législation qui se relâche</h3>
+Longtemps, le « Catalogue officiel » européen des variétés a freiné ce travail : seules pouvaient être commercialisées les semences inscrites, dont le coût d'inscription (plusieurs milliers d'euros) excluait de fait les variétés non industrielles. Une directive de 2021, largement réformée en 2024, autorise désormais la vente de semences issues de variétés dites « hétérogènes » ou « à conservation ». Une petite révolution.
+Les associations comme Kokopelli, longtemps poursuivies en justice, respirent enfin. Leur réseau — plus de 40 000 adhérents — distribue chaque année des millions de sachets.
+<h3>Les variétés à redécouvrir</h3>
+Parmi les plus remarquables, notre sélection :
+<em>Cœur-de-bœuf</em>. La plus connue. Chair dense, peu de jus, idéale crue à l'huile d'olive.
+<em>Noire de Crimée</em>. Ukrainienne d'origine. Robe pourpre presque noire, acidité légère, profondeur terreuse.
+<em>Green Zebra</em>. Américaine. Verte même à maturité, striée, acidulée — parfaite en salade estivale.
+<em>Ananas</em>. Gros fruit bicolore, doux, floral. Origine ohioane, cultivée en France depuis les années 1980.
+<em>Rose de Berne</em>. Suisse. Rose saumon, finesse extraordinaire. Peau fragile, à cueillir mûre.
+<h3>Le retour au goût</h3>
+Le plus étonnant, dans cette renaissance, c'est que les consommateurs suivent. Les ventes de plants anciens dans les jardineries ont doublé en trois ans. Les maraîchers bio des circuits courts rapportent une demande croissante. Les restaurants étoilés — Passard en tête — composent des cartes entièrement saisonnières autour de ces variétés.
+Faut-il y voir un simple effet de mode ? Peut-être. Mais il est aussi possible que nous redécouvrions, après un demi-siècle d'oubli, que la tomate n'est pas un objet standardisé — et que son goût, lui, est politique.`
+    }
+  ];
+
+  // ============== DYNAMIC DATE/TIME ==============
+  function updateDateTime() {
+    const now = new Date();
+    const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+    const months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+                    'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+    const dateStr = `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    document.getElementById('today-date').textContent = dateStr;
+
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+  }
+  updateDateTime();
+  setInterval(updateDateTime, 1000);
+
+  // ============== THEME ==============
+  function toggleTheme() {
+    const cur = document.documentElement.getAttribute('data-theme');
+    document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+  }
+
+  // ============== MODAL ==============
+  function openArticle(idx) {
+    const a = articles[idx];
+    if (!a) return;
+    const content = document.getElementById('modal-content');
+    content.innerHTML = `
+      <span class="modal-category">${a.category}</span>
+      <h1 class="modal-title">${a.title}</h1>
+      <p class="modal-dek">${a.dek}</p>
+      <div class="modal-meta">
+        <div class="modal-author">
+          <div class="modal-author-avatar">
+            <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="20" cy="20" r="19" fill="${a.avatarColor}" stroke="#d4a858" stroke-width="0.5"/>
+              <text x="20" y="26" font-family="Fraunces" font-size="14" fill="#f2ece0" text-anchor="middle" font-weight="600">${a.initials}</text>
+            </svg>
+          </div>
+          <div>
+            <strong>${a.author}</strong> <span class="ai-badge">IA</span>
+          </div>
+        </div>
+        <div>${a.date} · Lecture ${a.readTime}</div>
+      </div>
+      <div class="modal-body">
+        ${a.body.split('\n').map(p => {
+          p = p.trim();
+          if (!p) return '';
+          if (p.startsWith('<h3>') || p.startsWith('<blockquote>')) return p;
+          return `<p>${p}</p>`;
+        }).join('\n')}
+      </div>
+      <div class="modal-tags">
+        ${a.tags.map(t => `<span class="modal-tag">#${t}</span>`).join('')}
+      </div>
+      <div class="share-row">
+        <button class="share-btn" onclick="showToast('Lien copié')">Copier le lien</button>
+        <button class="share-btn" onclick="showToast('Partage Twitter/X ouvert')">Partager</button>
+        <button class="share-btn" onclick="showToast('Article ajouté aux favoris')">♡ Sauvegarder</button>
+      </div>
+      <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 1rem; background: var(--paper-2); border-left: 3px solid var(--gold); margin-top: 2rem;">
+        <strong style="color: var(--ink);">Transparence :</strong> Cet article a été rédigé par le modèle IA <strong style="color: var(--ink);">${a.author}</strong>, puis relu par Camille Deveaux (éditrice) avant publication. Sources consultées : 14 documents, 3 dépêches d'agence, 2 entretiens simulés.
+      </div>
+    `;
+    document.getElementById('modal').classList.add('open');
+    document.querySelector('.modal-overlay').classList.add('open');
+    document.querySelector('.modal').scrollTop = 0;
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.querySelector('.modal-overlay').classList.remove('open');
+  }
+
+  // Wire up clicks
+  document.querySelectorAll('[data-article]').forEach(el => {
+    el.addEventListener('click', () => openArticle(parseInt(el.dataset.article)));
+  });
+
+  // ============== GENERATE MODAL ==============
+  let selectedCat = 'Politique';
+  document.querySelectorAll('.gen-cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.gen-cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedCat = btn.dataset.cat;
+    });
+  });
+
+  function openGenModal() { document.getElementById('gen-modal').classList.add('open'); }
+  function closeGenModal() { document.getElementById('gen-modal').classList.remove('open'); }
+
+  // ============== CLIENT-SIDE ARTICLE GENERATOR ==============
+  // Corpus éditorial par rubrique — la "rédaction IA" tourne côté client
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+  const pickN = (arr, n) => [...arr].sort(() => Math.random() - 0.5).slice(0, n);
+  const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+
+  const CORPUS = {
+    'Politique': {
+      authors: [{n: "Sofia Laurent", i: "SL", c: "#2a4a3a"}, {n: "Hélène Brisset", i: "HB", c: "#3a2a4a"}, {n: "Théo Marchal", i: "TM", c: "#4a3a2a"}],
+      locs: ["Paris", "Bruxelles", "Strasbourg", "Matignon", "l'Élysée"],
+      insts: ["l'Assemblée nationale", "le Sénat", "le Conseil constitutionnel", "la Commission européenne", "le Conseil d'État", "la Cour des comptes", "le Parlement européen"],
+      experts: [{n: "Hélène Bellefroid", t: "politologue à Sciences Po"}, {n: "Bruno Cautrès", t: "directeur de recherche au CEVIPOF"}, {n: "Chloé Morin", t: "essayiste et conseillère politique"}, {n: "Pascal Perrineau", t: "politologue, ancien directeur du CEVIPOF"}],
+      openers: ["C'est un dossier que le gouvernement aurait préféré voir passer inaperçu.", "L'arbitrage, longtemps différé, a finalement été rendu.", "La séquence politique de la semaine restera marquée par ce débat.", "Sous les ors de la République, une partie plus feutrée se joue."],
+      sub1: ["Le texte en détail", "Les contours du dispositif", "Une architecture complexe", "Ce que dit le projet"],
+      sub2: ["Les réactions politiques", "Une opposition divisée", "Ce que redoutent les acteurs de terrain", "Les lignes de fracture"],
+      tags: ["politique", "gouvernement", "débat public", "institutions"]
+    },
+    'Économie': {
+      authors: [{n: "Marcus Chen", i: "MC", c: "#4a3a2a"}, {n: "Sophia Alvarez", i: "SA", c: "#3a4a3a"}, {n: "Viktor Hansen", i: "VH", c: "#2a3a4a"}],
+      locs: ["Paris", "Francfort", "Londres", "Wall Street", "Davos"],
+      insts: ["la BCE", "le FMI", "la Banque de France", "Bercy", "l'OCDE", "la Fed", "l'INSEE"],
+      experts: [{n: "Patrick Artus", t: "économiste et membre du Cercle des économistes"}, {n: "Agnès Bénassy-Quéré", t: "économiste, ex-chef économiste du Trésor"}, {n: "Philippe Aghion", t: "professeur au Collège de France"}, {n: "Esther Duflo", t: "prix Nobel d'économie"}],
+      openers: ["Les marchés retenaient leur souffle. Ils peuvent expirer.", "Les chiffres publiés ce matin confirment une tendance qu'on n'osait plus anticiper.", "L'annonce était attendue par les salles de marché du monde entier.", "Derrière la technicité apparente, un tournant stratégique se dessine."],
+      sub1: ["Une lecture des chiffres", "Ce que révèlent les indicateurs", "Le contexte macroéconomique", "Décryptage d'une décision"],
+      sub2: ["Les conséquences pour les ménages", "Un impact sur l'investissement", "Les marchés réagissent", "Ce que cela change concrètement"],
+      tags: ["économie", "finance", "marchés", "macroéconomie"]
+    },
+    'Tech': {
+      authors: [{n: "Elena Voss", i: "EV", c: "#3a2a4a"}, {n: "Raj Patel", i: "RP", c: "#2a3a4a"}, {n: "Yuki Tanaka", i: "YT", c: "#4a2a3a"}],
+      locs: ["San Francisco", "Berlin", "Paris", "Shenzhen", "Londres"],
+      insts: ["OpenMind", "Anthropic", "DeepMind", "Mistral AI", "Hugging Face", "NVIDIA", "Arm", "le MIT"],
+      experts: [{n: "Yann LeCun", t: "chief AI scientist chez Meta"}, {n: "Luciano Floridi", t: "philosophe de l'information, Yale"}, {n: "Fei-Fei Li", t: "professeure à Stanford, codirectrice du HAI"}, {n: "Stuart Russell", t: "professeur à Berkeley, spécialiste de l'IA sûre"}],
+      openers: ["La rupture technologique se produit toujours plus vite qu'on ne l'annonce.", "Dans les couloirs feutrés des laboratoires, l'excitation est palpable.", "Une nouvelle brique vient d'être posée.", "Les benchmarks parlent d'eux-mêmes."],
+      sub1: ["Le détail technique", "Sous le capot", "Comment ça marche", "Une architecture repensée"],
+      sub2: ["Les usages qui s'annoncent", "Un écosystème en recomposition", "Les limites et questions ouvertes", "Ce que cela change pour l'industrie"],
+      tags: ["technologie", "innovation", "IA", "numérique"]
+    },
+    'Science': {
+      authors: [{n: "Dr. Amira Hassan", i: "AH", c: "#2a3a4a"}, {n: "Dr. Lars Svensson", i: "LS", c: "#3a4a2a"}, {n: "Dr. Ingrid Moller", i: "IM", c: "#4a2a3a"}],
+      locs: ["Cambridge", "Saclay", "CERN", "Heidelberg", "Caltech", "Grenoble"],
+      insts: ["le CNRS", "l'ESA", "l'INRAE", "l'Institut Pasteur", "le CEA", "l'INSERM", "Nature", "Science"],
+      experts: [{n: "Esther Heitz", t: "directrice de recherche au CNRS"}, {n: "Pr. Alain Aspect", t: "prix Nobel de physique"}, {n: "Dr. Cédric Villani", t: "mathématicien, médaille Fields"}, {n: "Dr. Claire Mathieu", t: "informaticienne, Collège de France"}],
+      openers: ["Il aura fallu douze ans pour en arriver là.", "La publication, attendue de longue date, est enfin là.", "La découverte, discrète, pourrait s'avérer majeure.", "Dans le petit monde de la recherche fondamentale, c'est l'effervescence."],
+      sub1: ["La découverte en détail", "Un protocole inédit", "Ce que montrent les données", "Une méthode nouvelle"],
+      sub2: ["Les implications à long terme", "La communauté scientifique réagit", "Des applications possibles", "Ce qui reste à démontrer"],
+      tags: ["science", "recherche", "découverte", "publication"]
+    },
+    'Culture': {
+      authors: [{n: "Jean-Baptiste Rousseau", i: "JR", c: "#4a2a3a"}, {n: "Louise Dubreuil", i: "LD", c: "#3a3a4a"}, {n: "Ahmed El Khattabi", i: "AK", c: "#4a3a3a"}],
+      locs: ["Paris", "Venise", "Berlin", "Avignon", "Cannes", "Rome"],
+      insts: ["le Centre Pompidou", "le Louvre", "la Cinémathèque", "le Festival d'Avignon", "la Biennale", "l'Opéra de Paris"],
+      experts: [{n: "Philippe Bordas", t: "écrivain et photographe"}, {n: "Emmanuèle Michel", t: "conservatrice en chef"}, {n: "Pierre Rosenberg", t: "de l'Académie française, ancien directeur du Louvre"}, {n: "Carole Talon-Hugon", t: "philosophe de l'art"}],
+      openers: ["Dans la pénombre de la grande nef, on n'entend plus que le souffle des spectateurs.", "C'est un événement que le monde culturel attendait depuis trois ans.", "Il y a des œuvres qu'on ne regarde pas — qui nous regardent.", "L'annonce est tombée à la fin du vernissage."],
+      sub1: ["Une œuvre traversée", "Le geste créateur", "Un parcours sensible", "Ce que l'exposition donne à voir"],
+      sub2: ["Une réception contrastée", "La critique s'empoigne", "Le public au rendez-vous", "Derrière l'événement, un projet"],
+      tags: ["culture", "arts", "exposition", "création"]
+    },
+    'Société': {
+      authors: [{n: "Sofia Laurent", i: "SL", c: "#2a4a3a"}, {n: "Mehdi Benaïssa", i: "MB", c: "#3a2a3a"}, {n: "Clara Fontaine", i: "CF", c: "#4a3a2a"}],
+      locs: ["Paris", "Marseille", "Lyon", "Lille", "Toulouse", "Nantes"],
+      insts: ["l'INSEE", "l'IFOP", "France Stratégie", "le Défenseur des droits", "la CNAF"],
+      experts: [{n: "Dominique Méda", t: "sociologue, Université Paris-Dauphine"}, {n: "François Dubet", t: "sociologue, EHESS"}, {n: "Camille Peugny", t: "sociologue, UVSQ"}, {n: "Julien Damon", t: "sociologue, professeur associé à Sciences Po"}],
+      openers: ["Le phénomène est discret. Mais il dit quelque chose de profond.", "Dans une France qui doute, ces chiffres intriguent.", "C'est une évolution sociale qu'on voyait venir. La voici chiffrée.", "Les enquêtes sociologiques convergent."],
+      sub1: ["Un phénomène qui s'installe", "Ce que disent les chiffres", "Une France en mutation", "Portraits croisés"],
+      sub2: ["Les politiques publiques à la peine", "Quelles réponses collectives ?", "Les acteurs de terrain témoignent", "Un débat qui déborde le cadre"],
+      tags: ["société", "sociologie", "enquête", "mode de vie"]
+    },
+    'Sport': {
+      authors: [{n: "Kai Nakamura", i: "KN", c: "#3a4a2a"}, {n: "Lucia Romano", i: "LR", c: "#4a2a3a"}, {n: "Tom Bergeron", i: "TB", c: "#2a4a3a"}],
+      locs: ["Paris", "Lyon", "Marseille", "Roland-Garros", "Wembley", "Tokyo"],
+      insts: ["la FFF", "l'UEFA", "le CIO", "la LFP", "l'ATP", "la FIFA"],
+      experts: [{n: "Pascal Boniface", t: "directeur de l'IRIS, géopoliticien du sport"}, {n: "Lilian Thuram", t: "ex-international, essayiste"}, {n: "Catherine Louveau", t: "sociologue du sport"}, {n: "Patrick Mignon", t: "sociologue, INSEP"}],
+      openers: ["La saison s'annonce plus ouverte que jamais.", "On a rarement vu un tel niveau d'incertitude à ce stade de la compétition.", "Dans les vestiaires, le moral est haut.", "La performance, inattendue, redistribue les cartes."],
+      sub1: ["Les forces en présence", "Un tableau d'affiche reconfiguré", "Les outsiders à surveiller", "Préparation et tactique"],
+      sub2: ["Ce qu'en pense le banc", "Un public attendu au rendez-vous", "Les enjeux économiques sous-jacents", "Retombées et perspectives"],
+      tags: ["sport", "compétition", "performance", "championnat"]
+    }
+  };
+
+  function makeTitle(topic, cat) {
+    const frames = {
+      'Politique': [`${cap(topic)} : les lignes de fracture d'un débat explosif`, `Ce que révèle vraiment le dossier "${topic}"`, `${cap(topic)}, radiographie d'une décision`, `Autour de "${topic}" : anatomie d'une controverse`],
+      'Économie': [`${cap(topic)} : les marchés face à une nouvelle donne`, `Comprendre "${topic}" en cinq indicateurs`, `${cap(topic)}, ce qui se joue vraiment`, `Derrière "${topic}", un basculement`],
+      'Tech': [`${cap(topic)} : la nouvelle frontière du possible`, `"${cap(topic)}" — ce qui change dès aujourd'hui`, `${cap(topic)} : enquête sur une rupture annoncée`, `Pourquoi "${topic}" n'est qu'un début`],
+      'Science': [`${cap(topic)} : une avancée qui bouscule les modèles`, `Ce que la recherche sait désormais de "${topic}"`, `${cap(topic)} : retour sur une découverte`, `"${cap(topic)}" — les coulisses d'une publication majeure`],
+      'Culture': [`${cap(topic)} : l'événement qu'il faut voir`, `"${cap(topic)}" ou l'art de déplacer le regard`, `${cap(topic)}, portrait d'une œuvre-manifeste`, `Sur "${topic}" : notre critique`],
+      'Société': [`${cap(topic)} : ce que révèle la France silencieuse`, `Enquête : la vraie histoire de "${topic}"`, `${cap(topic)}, un phénomène qui s'installe`, `"${cap(topic)}" : contours d'une mutation`],
+      'Sport': [`${cap(topic)} : un suspense jusqu'au bout`, `"${cap(topic)}" — décryptage d'une compétition ouverte`, `${cap(topic)} : les clés d'une saison`, `Tout ce qu'il faut savoir sur "${topic}"`]
+    };
+    return pick(frames[cat] || frames['Société']);
+  }
+
+  function makeDek(topic, cat) {
+    const frames = {
+      'Politique': [`Le dossier "${topic}" cristallise les tensions au sein même de la majorité. Notre enquête.`, `Au-delà des postures, "${topic}" interroge la capacité d'action publique. Analyse.`, `Derrière "${topic}", trois lectures politiques s'affrontent. Décryptage.`],
+      'Économie': [`"${cap(topic)}" signale-t-il un tournant structurel ou un épisode conjoncturel ? Les économistes tranchent.`, `Les chiffres sur "${topic}" dessinent une trajectoire que nul n'anticipait. Lecture croisée.`, `Ce que "${topic}" dit de l'économie mondiale — et de la nôtre.`],
+      'Tech': [`"${cap(topic)}" ouvre un champ d'usages que les ingénieurs commencent à peine à cartographier.`, `Entre promesses industrielles et zones d'ombre, "${topic}" redéfinit les règles du jeu.`, `Notre enquête sur "${topic}" : ce qui est mûr, ce qui ne l'est pas.`],
+      'Science': [`La communauté scientifique accueille les travaux sur "${topic}" avec un mélange d'enthousiasme et de prudence.`, `"${cap(topic)}" : retour sur une publication qui fait déjà école.`, `Ce que la science sait — et ignore encore — de "${topic}".`],
+      'Culture': [`"${cap(topic)}" s'impose comme l'événement artistique de la saison. Récit d'une traversée.`, `Notre critique se confronte à "${topic}" : une œuvre qui dérange et fascine.`, `Ce que l'on retient de "${topic}" au sortir de l'exposition.`],
+      'Société': [`"${cap(topic)}" transforme discrètement le quotidien de millions de Français. Enquête.`, `Ce que "${topic}" dit de nos sociétés européennes : notre dossier.`, `Entre données et témoignages, comprendre ce que recouvre "${topic}".`],
+      'Sport': [`"${cap(topic)}" offre un suspense qu'on n'avait pas connu depuis des années. Tour d'horizon.`, `Notre analyse de "${topic}" : forces, fragilités, scénarios.`, `"${cap(topic)}" : les clés d'une rencontre que nul n'osait prédire.`]
+    };
+    return pick(frames[cat] || frames['Société']);
+  }
+
+  function makeBody(topic, cat) {
+    const c = CORPUS[cat] || CORPUS['Société'];
+    const exp = pick(c.experts);
+    const inst1 = pick(c.insts), inst2 = pick(c.insts.filter(i => i !== inst1)) || inst1;
+    const loc = pick(c.locs);
+    const opener = pick(c.openers);
+    const s1 = pick(c.sub1), s2 = pick(c.sub2);
+    const n1 = Math.floor(Math.random() * 85 + 15);
+    const n2 = Math.floor(Math.random() * 4000 + 800);
+    const pct = Math.floor(Math.random() * 40 + 10);
+    const pct2 = Math.floor(Math.random() * 20 + 3);
+    const year = 2024 + Math.floor(Math.random() * 3);
+
+    const quotes = [
+      `Sur "${topic}", nous ne pouvons plus nous payer le luxe de l'attentisme. Le réel nous rattrape, que nous le voulions ou non.`,
+      `"${cap(topic)}" n'est ni une fatalité, ni une solution miracle. C'est un symptôme, et à ce titre, il mérite d'être lu avec attention.`,
+      `Ce dossier de "${topic}" incarne toutes les tensions de notre époque : entre ambition et prudence, entre urgence et méthode.`,
+      `Il ne faut surtout pas réduire "${topic}" à ses aspects les plus spectaculaires. L'essentiel est ailleurs, dans les angles morts que personne ne regarde.`
+    ];
+
+    const p1 = `${opener} Le sujet, parfois relégué au second plan de l'actualité, revient aujourd'hui sur le devant de la scène sous un angle inédit : celui de <em>${topic}</em>. Depuis ${loc}, où notre rédaction a pu recueillir plusieurs sources concordantes, les contours de cette séquence se dessinent avec netteté.`;
+
+    const p2 = `Les données communiquées par ${inst1} sont sans ambiguïté. En ${year}, le périmètre concerné par <em>${topic}</em> représentait déjà ${n2.toLocaleString('fr-FR')} acteurs directement impactés, avec une croissance annuelle estimée à ${pct} %. Les projections pour 2028, jugées prudentes par les analystes, tablent sur un doublement. Un chiffre qui, en soi, suffit à justifier l'attention que le sujet reçoit désormais.`;
+
+    const p3 = `<blockquote>« ${pick(quotes)} »</blockquote>\n<em class="highlight">${pick(["La formule est signée", "Le mot est de", "L'analyse émane de"])} ${exp.n}</em>, ${exp.t}, rencontré${exp.n.includes('Esther')||exp.n.includes('Claire')||exp.n.includes('Hélène')||exp.n.includes('Carole')||exp.n.includes('Lucia')||exp.n.includes('Fei-Fei')||exp.n.includes('Agnès')||exp.n.includes('Dominique')||exp.n.includes('Camille')||exp.n.includes('Catherine')||exp.n.includes('Chloé')||exp.n.includes('Emmanuèle')?"e":""} dans son bureau la semaine dernière. Une position nuancée, qui tranche avec la binarité de certains débats publics, et qui éclaire la complexité réelle du dossier <em>${topic}</em>.`;
+
+    const p4 = `Les acteurs institutionnels ne sont pas en reste. ${cap(inst2)} a annoncé l'ouverture d'une mission d'évaluation, dont les conclusions sont attendues pour l'automne. Cette initiative, discrète mais structurante, pourrait aboutir à une recomposition partielle des cadres existants. Côté terrain, les retours sont plus contrastés : ${n1} % des personnes concernées se disent favorables au principe, mais seulement ${pct2} % estiment que les conditions de mise en œuvre sont aujourd'hui réunies.`;
+
+    const p5 = `Il faut se garder de tout manichéisme. <em>${cap(topic)}</em> ne se réduit ni à une menace à écarter, ni à une promesse à embrasser. Il dessine plutôt un espace nouveau — inconfortable, mouvant — dans lequel nos repères collectifs devront se redéfinir. Et ce travail de redéfinition, précisément, n'appartient pas aux seuls experts. Il nous concerne tous.`;
+
+    const p6 = `La suite du dossier dépendra largement des arbitrages politiques des prochains mois. Mais une chose est acquise : on ne reviendra pas en arrière. <em>${cap(topic)}</em> est désormais un fait établi du paysage — à charge, pour celles et ceux qui le façonnent, d'en faire autre chose qu'un simple objet de controverse.`;
+
+    return `${p1}\n<h3>${s1}</h3>\n${p2}\n${p3}\n<h3>${s2}</h3>\n${p4}\n${p5}\n${p6}`;
+  }
+
+  async function generateArticle() {
+    const topic = document.getElementById('gen-topic').value.trim();
+    if (!topic) { showToast("Entrez un sujet d'abord"); return; }
+
+    const btn = document.getElementById('gen-submit-btn');
+    const loader = document.getElementById('gen-loader');
+    btn.disabled = true;
+    loader.classList.add('active');
+
+    // Petite pause pour le suspense (et laisser voir le loader)
+    await new Promise(r => setTimeout(r, 900 + Math.random() * 700));
+
+    try {
+      const c = CORPUS[selectedCat] || CORPUS['Société'];
+      const author = pick(c.authors);
+      const title = makeTitle(topic, selectedCat);
+      const dek = makeDek(topic, selectedCat);
+      const body = makeBody(topic, selectedCat);
+      const readTime = (4 + Math.floor(Math.random() * 7)) + " min";
+      const tags = [...pickN(c.tags, 2), topic.toLowerCase().split(' ').slice(0, 2).join('-'), "IA-rédigé"];
+
+      const newIdx = articles.length;
+      articles.push({
+        category: selectedCat,
+        title, dek,
+        author: author.n, initials: author.i, avatarColor: author.c,
+        date: `${pick(c.locs)}, ${new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`,
+        readTime, tags, body
+      });
+
+      // Injecte la carte
+      const cardsHost = document.getElementById('generated-articles');
+      if (!cardsHost.querySelector('.section-heading')) {
+        cardsHost.innerHTML = `
+          <div class="section-heading" style="margin-top: 3rem;">
+            <h2>Généré à votre demande</h2>
+            <span class="sec-subtitle">— vient de paraître</span>
+            <span class="sec-num">N° 04 / 04</span>
+          </div>
+          <section class="grid-3" id="gen-cards"></section>
+        `;
+      }
+      const newCard = document.createElement('article');
+      newCard.className = 'article-card';
+      newCard.dataset.article = newIdx;
+      // Map French cat name to filter slug
+      const catSlug = {'Politique':'politique','Économie':'economie','Tech':'tech','Science':'science','Culture':'culture','Société':'societe','Sport':'sport'}[selectedCat] || 'une';
+      newCard.dataset.cat = catSlug;
+      newCard.innerHTML = `
+        <div class="card-image">
+          <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="gen${newIdx}" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#a72328"/>
+                <stop offset="100%" stop-color="#2a1a30"/>
+              </linearGradient>
+            </defs>
+            <rect width="400" height="300" fill="url(#gen${newIdx})"/>
+            <g fill="#d4a858" opacity="0.9">
+              <circle cx="200" cy="150" r="40"/>
+              <circle cx="200" cy="150" r="25" fill="#a72328"/>
+              <text x="200" y="156" font-family="Fraunces" font-size="18" fill="#f2ece0" text-anchor="middle" font-style="italic">✦</text>
+            </g>
+            <text x="200" y="260" font-family="Bricolage Grotesque" font-size="10" fill="#f2ece0" text-anchor="middle" letter-spacing="3" opacity="0.7">NOUVEAU · GÉNÉRÉ PAR IA</text>
+          </svg>
+        </div>
+        <span class="category-tag">${selectedCat}</span>
+        <h3 class="card-title">${title}</h3>
+        <p class="card-excerpt">${dek}</p>
+        <div class="card-meta">
+          <span>${author.n}</span>
+          <span>${readTime}</span>
+        </div>
+      `;
+      newCard.addEventListener('click', () => openArticle(newIdx));
+      document.getElementById('gen-cards').prepend(newCard);
+
+      closeGenModal();
+      openArticle(newIdx);
+      showToast('Article généré avec succès');
+      document.getElementById('gen-topic').value = '';
+    } catch (err) {
+      console.error(err);
+      showToast('Erreur de génération — réessayez');
+    } finally {
+      btn.disabled = false;
+      loader.classList.remove('active');
+    }
+  }
+
+  // ============== TOAST ==============
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  // ============== KEYBOARD ==============
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeModal(); closeGenModal(); }
+    if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+      e.preventDefault();
+      openGenModal();
+      setTimeout(() => document.getElementById('gen-topic').focus(), 100);
+    }
+  });
+
+  // ============== NAV / FILTER BY CATEGORY ==============
+  const CAT_LABELS = {
+    'une': 'À la Une',
+    'politique': 'Politique',
+    'economie': 'Économie',
+    'tech': 'Technologie',
+    'science': 'Science',
+    'culture': 'Culture',
+    'societe': 'Société',
+    'sport': 'Sport',
+    'opinion': 'Opinion'
+  };
+
+  function filterByCategory(cat) {
+    // Update active nav link
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      a.classList.toggle('active', a.dataset.filter === cat);
+    });
+
+    const decorativeSections = document.querySelectorAll('[data-section]');
+    const indicator = document.getElementById('filter-indicator');
+
+    if (cat === 'une') {
+      // Show everything
+      decorativeSections.forEach(s => s.style.display = '');
+      document.querySelectorAll('.article-card, .side-article, .hero-article').forEach(el => {
+        el.style.display = '';
+      });
+      document.querySelectorAll('.section-heading, .grid-3').forEach(el => el.style.display = '');
+      indicator.style.display = 'none';
+    } else {
+      // Hide all decorative sections
+      decorativeSections.forEach(s => s.style.display = 'none');
+
+      // Filter cards
+      let totalVisible = 0;
+      document.querySelectorAll('.article-card').forEach(el => {
+        const match = el.dataset.cat === cat;
+        el.style.display = match ? '' : 'none';
+        if (match) totalVisible++;
+      });
+
+      // Hide empty grid sections and their headings
+      document.querySelectorAll('.grid-3').forEach(grid => {
+        const anyVisible = [...grid.querySelectorAll('.article-card')].some(el => el.style.display !== 'none');
+        grid.style.display = anyVisible ? '' : 'none';
+        const prev = grid.previousElementSibling;
+        if (prev && prev.classList.contains('section-heading')) {
+          prev.style.display = anyVisible ? '' : 'none';
+        }
+      });
+
+      // Show filter indicator
+      indicator.style.display = 'flex';
+      document.getElementById('filter-label').textContent = CAT_LABELS[cat] || cat;
+      document.getElementById('filter-count').textContent =
+        totalVisible === 0
+          ? "Aucun article pour le moment — essayez « Générer un article »"
+          : totalVisible + ' article' + (totalVisible > 1 ? 's' : '');
+
+      // If zero results, suggest generating
+      if (totalVisible === 0) {
+        showToast('Aucun article dans cette rubrique — générez-en un !');
+      }
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Bind nav link clicks
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const cat = a.dataset.filter;
+      if (cat) filterByCategory(cat);
+    });
+  });
+
+  // ============== INFO MODAL (for footer links) ==============
+  const INFO_CONTENT = {
+    charte: {
+      title: "Charte éditoriale",
+      body: `<p>SYNAPSE est un média expérimental où chaque article est rédigé par un modèle de langue entraîné sur un corpus éditorial spécialisé. Notre charte repose sur cinq engagements :</p>
+<p><strong>Transparence.</strong> Chaque article signale clairement son auteur IA, le modèle utilisé et l'éditrice ou éditeur humain qui l'a relu avant publication.</p>
+<p><strong>Vérifiabilité.</strong> Toutes les affirmations factuelles citées dans nos articles sont sourcées. Les sources sont consultables à la demande.</p>
+<p><strong>Équilibre.</strong> Nous nous efforçons de présenter les différentes perspectives d'un débat, y compris celles qui ne correspondent pas à la sensibilité majoritaire de notre lectorat.</p>
+<p><strong>Correction.</strong> Toute erreur factuelle signalée est corrigée dans les 24 heures et mentionnée en fin d'article.</p>
+<p><strong>Indépendance.</strong> Nous ne recevons aucun financement publicitaire. Le modèle économique repose sur les abonnements.</p>`
+    },
+    methodo: {
+      title: "Méthodologie",
+      body: `<p>Chaque article publié sur SYNAPSE suit une chaîne de production en quatre étapes :</p>
+<p><strong>1. Sélection.</strong> Un agent IA curatif analyse environ 12 000 dépêches, publications et signaux faibles chaque jour. Il propose une sélection de 40 à 60 sujets prioritaires à la rédaction humaine.</p>
+<p><strong>2. Rédaction.</strong> Chacun des huit journalistes IA spécialisés rédige un brouillon d'article dans son domaine d'expertise, en puisant dans son corpus d'entraînement et les sources actualisées.</p>
+<p><strong>3. Relecture.</strong> Trois éditrices humaines — Camille Deveaux, Ana Torres et Hugo Reinhardt — vérifient les faits, ajustent le ton, retirent les formulations imprécises.</p>
+<p><strong>4. Publication.</strong> L'article est publié avec la signature de l'agent IA et la mention de la relectrice ou du relecteur humain.</p>`
+    },
+    transparence: {
+      title: "Transparence",
+      body: `<p>Nous nous engageons à rendre publics :</p>
+<p>— <strong>La liste des modèles</strong> utilisés pour la rédaction et leurs versions, mise à jour à chaque changement.</p>
+<p>— <strong>Les corpus d'entraînement</strong> principaux de nos agents, dans le respect des droits d'auteur.</p>
+<p>— <strong>Les taux d'erreur</strong> constatés lors de la relecture humaine, publiés trimestriellement.</p>
+<p>— <strong>Le journal des corrections</strong>, consultable en permanence sur notre site.</p>
+<p>Dernière mise à jour du rapport de transparence : avril 2026. Taux de correction constaté : 3,4 % des articles — en baisse de 1,1 point sur un an.</p>`
+    },
+    contact: {
+      title: "Nous écrire",
+      body: `<p>Pour toute remarque, signalement d'erreur ou proposition de sujet :</p>
+<p><strong>Rédaction générale</strong><br>redaction@synapse-quotidien.fr</p>
+<p><strong>Signalement d'erreur factuelle</strong><br>corrections@synapse-quotidien.fr</p>
+<p><strong>Partenariats &amp; presse</strong><br>contact@synapse-quotidien.fr</p>
+<p><strong>Siège</strong><br>17, rue des Fossés-Saint-Bernard<br>75005 Paris</p>
+<p style="color: var(--muted); font-style: italic; font-size: 0.9rem; margin-top: 2rem;">Note : ce journal est une démonstration. Les coordonnées ci-dessus sont fictives.</p>`
+    },
+    apropos: {
+      title: "À propos",
+      body: `<p>SYNAPSE est un projet éditorial expérimental lancé en janvier 2024 par un collectif de journalistes, ingénieurs et designers convaincus qu'une presse hybride — humaine et IA — pouvait offrir une qualité d'information comparable à la presse traditionnelle, à un coût considérablement réduit.</p>
+<p>Notre équipe compte aujourd'hui <strong>3 éditrices humaines</strong>, <strong>8 agents IA spécialisés</strong>, et un conseil scientifique composé de chercheurs en éthique de l'IA, en linguistique computationnelle et en déontologie journalistique.</p>
+<p>Nous publions en moyenne <strong>24 articles par jour</strong>, couvrant 7 grandes rubriques.</p>
+<p>Le projet est porté par l'association SYNAPSE (loi 1901), dont les statuts garantissent l'indépendance éditoriale.</p>`
+    },
+    mentions: {
+      title: "Mentions légales",
+      body: `<p><strong>Éditeur.</strong> Association SYNAPSE, loi 1901, déclarée à la préfecture de Paris le 12 janvier 2024.</p>
+<p><strong>Siège social.</strong> 17, rue des Fossés-Saint-Bernard, 75005 Paris.</p>
+<p><strong>Directrice de la publication.</strong> Camille Deveaux.</p>
+<p><strong>Hébergeur.</strong> OVHcloud SAS, 2 rue Kellermann, 59100 Roubaix.</p>
+<p><strong>ISSN.</strong> 2847-4421 (version numérique).</p>
+<p><strong>SIREN.</strong> 842 771 238.</p>
+<p style="color: var(--muted); font-style: italic; font-size: 0.9rem; margin-top: 2rem;">Page fictive à des fins de démonstration.</p>`
+    },
+    rgpd: {
+      title: "Protection des données",
+      body: `<p>SYNAPSE respecte le Règlement général sur la protection des données (RGPD) de l'Union européenne.</p>
+<p><strong>Données collectées.</strong> Uniquement l'adresse email pour les abonné·es à la newsletter, et des données de navigation anonymisées (pas de cookies publicitaires).</p>
+<p><strong>Finalité.</strong> Envoi de la newsletter quotidienne et amélioration du service.</p>
+<p><strong>Conservation.</strong> Les données sont conservées tant que l'abonnement est actif, puis supprimées sous 90 jours.</p>
+<p><strong>Vos droits.</strong> Vous pouvez à tout moment demander l'accès, la rectification ou la suppression de vos données en écrivant à privacy@synapse-quotidien.fr.</p>`
+    },
+    deonto: {
+      title: "Déontologie IA",
+      body: `<p>Nos principes d'usage responsable des modèles de langue :</p>
+<p><strong>Pas de substitution intégrale.</strong> Aucun article n'est publié sans relecture humaine.</p>
+<p><strong>Pas de désinformation.</strong> Les modèles sont entraînés à refuser de produire des énoncés dont la probabilité factuelle est faible.</p>
+<p><strong>Pas de citation fabriquée.</strong> Toute citation attribuée à une personne réelle est sourcée ou tagguée comme reconstitution.</p>
+<p><strong>Pas de personnalité simulée.</strong> Nos agents IA portent des noms propres, mais ne prétendent pas être humains. Cette fiction éditoriale est assumée.</p>
+<p><strong>Droit à l'oubli algorithmique.</strong> Toute personne citée peut demander le retrait de son nom de nos corpus.</p>`
+    },
+    api: {
+      title: "API publique",
+      body: `<p>SYNAPSE met à disposition une API gratuite pour les chercheurs, développeurs et journalistes qui souhaitent accéder à nos articles de manière programmatique.</p>
+<p><strong>Endpoint.</strong> <code>https://api.synapse-quotidien.fr/v1/articles</code></p>
+<p><strong>Format.</strong> JSON, avec métadonnées complètes (auteur IA, date, rubrique, tags, modèle utilisé).</p>
+<p><strong>Limite.</strong> 1 000 requêtes par jour et par clé API, gratuites. Limite étendue sur demande motivée.</p>
+<p><strong>Clé API.</strong> Demande sur api-access@synapse-quotidien.fr.</p>
+<p style="color: var(--muted); font-style: italic; font-size: 0.9rem; margin-top: 2rem;">API fictive à des fins de démonstration.</p>`
+    }
+  };
+
+  function openInfoModal(key) {
+    const info = INFO_CONTENT[key];
+    if (!info) return;
+    const content = document.getElementById('modal-content');
+    content.innerHTML = `
+      <span class="modal-category">Information</span>
+      <h1 class="modal-title">${info.title}</h1>
+      <div class="modal-body" style="margin-top: 1.5rem;">${info.body}</div>
+    `;
+    document.getElementById('modal').classList.add('open');
+    document.querySelector('.modal-overlay').classList.add('open');
+    document.querySelector('.modal').scrollTop = 0;
+  }
+
+  // ============== CHARGEMENT DE L'ÉDITION DU JOUR ==============
+  // Récupère edition.json (produit chaque matin à 7h par l'agent IA)
+  // et affiche les nouveaux articles en tête de page.
+  // En cas d'échec (fichier absent, CORS en local), ne fait rien.
+  async function loadTodaysEdition() {
+    try {
+      const res = await fetch('edition.json', { cache: 'no-cache' });
+      if (!res.ok) return;
+      const ed = await res.json();
+      if (!ed.articles || !Array.isArray(ed.articles) || ed.articles.length === 0) return;
+
+      // Met à jour le numéro d'édition dans le masthead
+      if (ed.editionNumber) {
+        const elN = document.getElementById('edition');
+        if (elN) elN.textContent = ed.editionNumber;
+      }
+
+      const CAT_TO_SLUG = { 'Politique':'politique','Économie':'economie','Tech':'tech','Science':'science','Culture':'culture','Société':'societe','Sport':'sport','Idées':'opinion' };
+      const baseIdx = articles.length;
+
+      // Ajoute tous les articles de l'édition à l'array global
+      ed.articles.forEach(a => articles.push(a));
+
+      // Affiche le bandeau
+      const section = document.getElementById('todays-edition');
+      section.style.display = 'block';
+      document.getElementById('todays-edition-date').textContent = ed.editionDate || '';
+      document.getElementById('todays-edition-meta').textContent =
+        `Généré par ${ed.model || 'Claude'} · ${ed.articles.length} article${ed.articles.length > 1 ? 's' : ''}`;
+
+      // HERO (premier article)
+      const hero = ed.articles[0];
+      const heroIdx = baseIdx;
+      const heroWrap = document.getElementById('todays-hero-wrap');
+      heroWrap.innerHTML = `
+        <article class="hero-article" data-article="${heroIdx}" data-cat="${CAT_TO_SLUG[hero.category] || 'une'}" style="cursor: pointer;">
+          <div class="hero-image">
+            <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="heroG" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="${hero.avatarColor || '#2a3a4a'}"/>
+                  <stop offset="100%" stop-color="#0a0a0a"/>
+                </linearGradient>
+              </defs>
+              <rect width="800" height="450" fill="url(#heroG)"/>
+              <g opacity="0.25">
+                <circle cx="400" cy="225" r="180" fill="none" stroke="#d4a858" stroke-width="1"/>
+                <circle cx="400" cy="225" r="130" fill="none" stroke="#d4a858" stroke-width="1"/>
+                <circle cx="400" cy="225" r="80" fill="none" stroke="#d4a858" stroke-width="1"/>
+              </g>
+              <text x="400" y="258" font-family="Fraunces" font-size="140" fill="#f2ece0" text-anchor="middle" font-weight="900" opacity="0.85">${hero.initials || '✦'}</text>
+              <text x="400" y="420" font-family="Bricolage Grotesque" font-size="11" fill="#f2ece0" text-anchor="middle" letter-spacing="4" opacity="0.5">ÉDITION DU JOUR · RÉDIGÉ PAR IA</text>
+            </svg>
+          </div>
+          <span class="category-tag">${hero.category} · À la une</span>
+          <h2 class="hero-title">${escapeHtml(hero.title)}</h2>
+          <p class="hero-dek">${escapeHtml(hero.dek)}</p>
+          <div class="byline">
+            <strong>${escapeHtml(hero.author)}</strong>
+            <span class="ai-badge">IA</span>
+            <span class="sep">·</span>
+            <span>Publié ce matin</span>
+            <span class="sep">·</span>
+            <span>Lecture : ${hero.readTime}</span>
+          </div>
+        </article>
+      `;
+      heroWrap.querySelector('.hero-article').addEventListener('click', () => openArticle(heroIdx));
+
+      // GRILLE (articles suivants)
+      const grid = document.getElementById('todays-grid');
+      const rest = ed.articles.slice(1);
+      rest.forEach((a, i) => {
+        const idx = baseIdx + 1 + i;
+        const card = document.createElement('article');
+        card.className = 'article-card';
+        card.dataset.article = idx;
+        card.dataset.cat = CAT_TO_SLUG[a.category] || 'une';
+        card.innerHTML = `
+          <div class="card-image">
+            <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="cg${idx}" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="${a.avatarColor || '#2a3a4a'}"/>
+                  <stop offset="100%" stop-color="#1a1a1a"/>
+                </linearGradient>
+              </defs>
+              <rect width="400" height="300" fill="url(#cg${idx})"/>
+              <text x="200" y="170" font-family="Fraunces" font-size="80" fill="#f2ece0" text-anchor="middle" font-weight="900" opacity="0.7">${a.initials || '✦'}</text>
+              <text x="200" y="270" font-family="Bricolage Grotesque" font-size="9" fill="#f2ece0" text-anchor="middle" letter-spacing="3" opacity="0.5">${a.category.toUpperCase()}</text>
+            </svg>
+          </div>
+          <span class="category-tag">${a.category}</span>
+          <h3 class="card-title">${escapeHtml(a.title)}</h3>
+          <p class="card-excerpt">${escapeHtml(a.dek)}</p>
+          <div class="card-meta">
+            <span>${escapeHtml(a.author)}</span>
+            <span>${a.readTime}</span>
+          </div>
+        `;
+        card.addEventListener('click', () => openArticle(idx));
+        grid.appendChild(card);
+      });
+    } catch (e) {
+      // Pas de fichier edition.json accessible — on laisse le contenu par défaut
+      console.log("[SYNAPSE] Pas d'édition dynamique : fallback sur le contenu par défaut.", e.message);
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // Déclenchement au chargement
+  loadTodaysEdition();
+</script>
+</body>
+</html>

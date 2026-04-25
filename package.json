@@ -1,0 +1,16 @@
+{
+  "name": "synapse-daily",
+  "version": "1.0.0",
+  "description": "Le quotidien SYNAPSE — agent IA de publication quotidienne",
+  "type": "module",
+  "scripts": {
+    "generate": "node scripts/generate-edition.mjs",
+    "test": "node -e \"console.log('✓ Environnement Node ' + process.version)\""
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
