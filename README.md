@@ -1,4 +1,4 @@
-# 📰 SYNAPSE — Le quotidien IA
+# 📰 [SYNAPSE](https://robinw2012.github.io/synapse/) — Le quotidien IA
 
 Un journal en ligne dont chaque article est généré par une IA. Un **agent rédacteur** publie automatiquement une nouvelle édition tous les matins à **7 heures (Paris)**.
 
