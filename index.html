@@ -3,7 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SYNAPSE — Le quotidien généré par intelligence artificielle</title>
+<title>SYNAPSE DAILY — Le quotidien généré par intelligence artificielle</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23141414'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23a72328' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23d4a858'/%3E%3Cline x1='16' y1='4' x2='16' y2='8' stroke='%23d4a858' stroke-width='1.5'/%3E%3Cline x1='16' y1='24' x2='16' y2='28' stroke='%23d4a858' stroke-width='1.5'/%3E%3Cline x1='4' y1='16' x2='8' y2='16' stroke='%23d4a858' stroke-width='1.5'/%3E%3Cline x1='24' y1='16' x2='28' y2='16' stroke='%23d4a858' stroke-width='1.5'/%3E%3C/svg%3E">
+<meta name="description" content="SYNAPSE DAILY — Le premier quotidien français entièrement rédigé par intelligence artificielle. 8 articles frais chaque matin à 7h.">
+<meta name="keywords" content="journal IA, intelligence artificielle, quotidien, actualité, SYNAPSE, articles IA, synapse-daily">
+<meta name="author" content="SYNAPSE DAILY">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="SYNAPSE DAILY — Le quotidien IA">
+<meta property="og:description" content="Le premier quotidien français entièrement rédigé par intelligence artificielle. 8 articles générés chaque matin à 7h.">
+<meta property="og:url" content="https://synapse-daily.com">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SYNAPSE DAILY — Le quotidien IA">
+<meta name="twitter:description" content="8 articles générés par IA chaque matin à 7h. Science, Tech, Politique, Économie, Culture, Sport.">
+<meta name="theme-color" content="#141414">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,500&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -284,34 +298,6 @@
   }
   .nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); }
   .nav-links a.active { color: var(--accent); }
-
-  .generate-btn {
-    background: var(--ink);
-    color: var(--paper);
-    padding: 0.6rem 1.2rem;
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.25s;
-    border: 1px solid var(--ink);
-    position: relative;
-    overflow: hidden;
-  }
-  .generate-btn:hover {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-    transform: translateY(-1px);
-  }
-  .generate-btn .spark {
-    display: inline-block;
-    animation: spark 2.2s ease-in-out infinite;
-  }
   @keyframes spark {
     0%, 100% { transform: rotate(0) scale(1); }
     25% { transform: rotate(12deg) scale(1.15); }
@@ -1017,112 +1003,6 @@
     transition: all 0.2s;
   }
   .share-btn:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-
-  /* === GENERATE MODAL === */
-  .gen-modal {
-    position: fixed;
-    inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 200;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(6px);
-    padding: 1rem;
-  }
-  .gen-modal.open { display: flex; }
-  .gen-box {
-    background: var(--paper);
-    max-width: 520px;
-    width: 100%;
-    padding: 2.5rem;
-    position: relative;
-    border: 1px solid var(--ink);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  }
-  .gen-box h3 {
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.01em;
-  }
-  .gen-box p {
-    color: var(--muted);
-    margin-bottom: 1.5rem;
-    font-size: 0.95rem;
-  }
-  .gen-categories {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-bottom: 1.5rem;
-  }
-  .gen-cat-btn {
-    padding: 0.5rem 0.9rem;
-    border: 1px solid var(--border);
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    transition: all 0.2s;
-  }
-  .gen-cat-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .gen-cat-btn:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
-  .gen-input {
-    width: 100%;
-    padding: 1rem;
-    border: 1px solid var(--border);
-    background: var(--paper-2);
-    font-family: 'Spectral', serif;
-    font-size: 1rem;
-    margin-bottom: 1.5rem;
-  }
-  .gen-input:focus { outline: none; border-color: var(--accent); }
-  .gen-submit {
-    width: 100%;
-    padding: 1rem;
-    background: var(--accent);
-    color: #fff;
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    transition: background 0.2s;
-  }
-  .gen-submit:hover { background: var(--accent-deep); }
-  .gen-submit:disabled { background: var(--muted-2); cursor: not-allowed; }
-  .gen-close {
-    position: absolute;
-    top: 1rem; right: 1rem;
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    font-size: 1rem;
-  }
-  .gen-loader {
-    display: none;
-    margin-top: 1rem;
-    text-align: center;
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 0.8rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .gen-loader.active { display: block; }
-  .gen-loader::before {
-    content: '';
-    display: inline-block;
-    width: 12px; height: 12px;
-    border: 2px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin-right: 0.5rem;
-    vertical-align: middle;
-  }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* Reveal animations */
@@ -1229,12 +1109,6 @@
       mask-image: linear-gradient(to right, black 85%, transparent);
       -webkit-mask-image: linear-gradient(to right, black 85%, transparent);
     }
-    .generate-btn {
-      padding: 0.5rem 0.7rem;
-      font-size: 0.65rem;
-      letter-spacing: 0.06em;
-      flex-shrink: 0;
-    }
 
     /* Hero */
     .hero-grid { gap: 1.5rem; padding-bottom: 1.8rem; margin-bottom: 1.8rem; }
@@ -1340,12 +1214,6 @@
     .share-btn { padding: 0.8rem; }
 
     /* Gen modal */
-    .gen-box { padding: 2rem 1.2rem; max-height: 92vh; overflow-y: auto; }
-    .gen-box h3 { font-size: 1.4rem; }
-    .gen-box p { font-size: 0.88rem; }
-    .gen-cat-btn { padding: 0.45rem 0.75rem; font-size: 0.65rem; }
-    .gen-input { padding: 0.85rem; font-size: 1rem; }
-    .gen-close { top: 0.7rem; right: 0.7rem; width: 30px; height: 30px; }
 
     /* Toast */
     .toast { bottom: 1rem; font-size: 0.8rem; padding: 0.7rem 1.2rem; }
@@ -1361,14 +1229,11 @@
     .section-heading h2 { font-size: 1.3rem; }
     .data-value { font-size: 1.15rem; }
     .nav-links { gap: 0.8rem; }
-    .generate-btn .spark { display: none; }
-    .generate-btn { padding: 0.45rem 0.6rem; }
   }
 
   /* Support du dynamic viewport sur mobile (barre d'URL qui bouge) */
   @supports (height: 100dvh) {
     .modal { height: 100dvh; }
-    .gen-modal { height: 100dvh; }
   }
 </style>
 </head>
@@ -1398,11 +1263,59 @@
       <span id="today-date">—</span>
     </div>
     <div>
-      <span>Prix numérique <span class="num">0,00 €</span></span>
+      <span>synapse-daily.com</span>
       <span>ISSN 2847-4421</span>
     </div>
   </div>
-  <h1 class="logo">SYNAP<span class="logo-dot">·</span>SE</h1>
+  <!-- Logo SVG -->
+  <div style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
+    <svg viewBox="0 0 140 140" width="90" height="90" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 12px rgba(167,35,40,0.2));">
+      <!-- Fond hexagonal -->
+      <polygon points="70,5 127,35 127,105 70,135 13,105 13,35" fill="var(--ink)" stroke="var(--border)" stroke-width="0.5"/>
+      <!-- Connexions neurales -->
+      <g stroke="var(--accent)" stroke-width="0.6" opacity="0.3">
+        <line x1="70" y1="70" x2="115" y2="42"/>
+        <line x1="70" y1="70" x2="25" y2="42"/>
+        <line x1="70" y1="70" x2="115" y2="98"/>
+        <line x1="70" y1="70" x2="25" y2="98"/>
+        <line x1="70" y1="70" x2="70" y2="18"/>
+        <line x1="70" y1="70" x2="70" y2="122"/>
+      </g>
+      <!-- Orbites synaptiques -->
+      <circle cx="70" cy="70" r="42" fill="none" stroke="var(--accent)" stroke-width="0.8" opacity="0.25" stroke-dasharray="4,6">
+        <animateTransform attributeName="transform" type="rotate" from="0 70 70" to="360 70 70" dur="60s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="70" cy="70" r="30" fill="none" stroke="var(--gold)" stroke-width="0.6" opacity="0.3" stroke-dasharray="3,5">
+        <animateTransform attributeName="transform" type="rotate" from="0 70 70" to="-360 70 70" dur="45s" repeatCount="indefinite"/>
+      </circle>
+      <!-- Nœuds synaptiques aux extrémités -->
+      <circle cx="115" cy="42" r="4" fill="var(--accent)" opacity="0.6"><animate attributeName="opacity" values="0.6;0.9;0.6" dur="4s" repeatCount="indefinite"/></circle>
+      <circle cx="25" cy="42" r="3" fill="var(--gold)" opacity="0.5"><animate attributeName="opacity" values="0.5;0.8;0.5" dur="5s" repeatCount="indefinite"/></circle>
+      <circle cx="115" cy="98" r="3.5" fill="var(--accent)" opacity="0.5"><animate attributeName="opacity" values="0.5;0.8;0.5" dur="3.5s" repeatCount="indefinite"/></circle>
+      <circle cx="25" cy="98" r="3" fill="var(--gold)" opacity="0.4"><animate attributeName="opacity" values="0.4;0.7;0.4" dur="6s" repeatCount="indefinite"/></circle>
+      <circle cx="70" cy="18" r="3" fill="var(--accent)" opacity="0.5"><animate attributeName="opacity" values="0.5;0.9;0.5" dur="4.5s" repeatCount="indefinite"/></circle>
+      <circle cx="70" cy="122" r="2.5" fill="var(--gold)" opacity="0.4"><animate attributeName="opacity" values="0.4;0.7;0.4" dur="5.5s" repeatCount="indefinite"/></circle>
+      <!-- Noyau central -->
+      <circle cx="70" cy="70" r="16" fill="var(--accent)"/>
+      <circle cx="70" cy="70" r="11" fill="var(--ink)"/>
+      <circle cx="70" cy="70" r="4" fill="var(--gold)">
+        <animate attributeName="r" values="4;4.8;4" dur="3s" repeatCount="indefinite"/>
+      </circle>
+      <!-- Impulsions animées sur les connexions -->
+      <circle r="1.5" fill="var(--gold)" opacity="0.8">
+        <animateMotion path="M70,70 L115,42" dur="3s" repeatCount="indefinite"/>
+      </circle>
+      <circle r="1.5" fill="var(--accent)" opacity="0.7">
+        <animateMotion path="M70,70 L25,98" dur="4s" repeatCount="indefinite"/>
+      </circle>
+      <circle r="1" fill="var(--gold)" opacity="0.6">
+        <animateMotion path="M70,70 L70,18" dur="3.5s" repeatCount="indefinite"/>
+      </circle>
+      <!-- Lettre S central -->
+      <text x="70" y="77" font-family="Fraunces" font-size="22" fill="var(--paper)" font-weight="900" text-anchor="middle" letter-spacing="-1">S</text>
+    </svg>
+  </div>
+  <h1 class="logo">SYNAPSE<span class="logo-dot"> D</span>AILY</h1>
   <p class="tagline">Le quotidien entièrement rédigé par des intelligences artificielles</p>
   <p class="motto">« Cogito, ergo algorithmus »</p>
 </div>
@@ -1440,9 +1353,6 @@
     <a href="#" data-filter="sport">Sport</a>
     <a href="#" data-filter="opinion">Opinion</a>
   </div>
-  <button class="generate-btn" onclick="openGenModal()">
-    <span class="spark">✦</span> Générer un article
-  </button>
 </nav>
 
 <main>
@@ -1955,8 +1865,6 @@
   </form>
 </section>
 
-<!-- === DYNAMICALLY GENERATED === -->
-<div id="generated-articles"></div>
 
 </main>
 
@@ -1964,8 +1872,19 @@
 <footer>
   <div class="footer-grid">
     <div>
-      <div class="footer-logo">SYNAP<em>·</em>SE</div>
-      <p class="footer-desc">Un quotidien expérimental entièrement rédigé par des modèles de langue, publié à Paris depuis 2024. Nos articles sont supervisés par une équipe humaine avant publication.</p>
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+        <svg viewBox="0 0 120 120" width="48" height="48" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="60" cy="60" r="58" fill="var(--paper)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <circle cx="60" cy="60" r="38" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0.4"/>
+          <ellipse cx="60" cy="60" rx="38" ry="18" fill="none" stroke="var(--gold)" stroke-width="0.8" opacity="0.5"/>
+          <circle cx="60" cy="60" r="10" fill="var(--accent)"/>
+          <circle cx="60" cy="60" r="6" fill="var(--paper)"/>
+          <circle cx="60" cy="60" r="3" fill="var(--gold)"/>
+          <text x="53" y="66" font-family="Fraunces" font-size="16" fill="var(--ink)" font-weight="900" letter-spacing="-1">SD</text>
+        </svg>
+        <div class="footer-logo">SYNAPSE<em> D</em>AILY</div>
+      </div>
+      <p class="footer-desc">Un quotidien expérimental entièrement rédigé par des modèles de langue. Nos articles sont supervisés par une équipe humaine avant publication. Nouvelle édition chaque matin à 7 heures.</p>
     </div>
     <div class="footer-col">
       <h4>Sections</h4>
@@ -1999,8 +1918,8 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <div>© SYNAPSE 2026 · Tous droits réservés · SIREN 842 771 238</div>
-    <div>Généré avec ♥ et 10⁹ paramètres · Paris</div>
+    <div>© SYNAPSE DAILY 2026 · synapse-daily.com · Tous droits réservés</div>
+    <div>Généré avec ♥ et 10⁹ paramètres</div>
   </div>
 </footer>
 
@@ -2009,35 +1928,6 @@
 <div class="modal" id="modal">
   <button class="modal-close" onclick="closeModal()">✕</button>
   <div class="modal-content" id="modal-content"></div>
-</div>
-
-<!-- === GENERATE MODAL === -->
-<div class="gen-modal" id="gen-modal">
-  <div class="gen-box">
-    <button class="gen-close" onclick="closeGenModal()">✕</button>
-    <h3>Écrire une chronique</h3>
-    <p>Choisissez une rubrique et un sujet. Notre démonstrateur produira une <strong>chronique courte</strong> à la manière du quotidien — pas une enquête, pas une dépêche.</p>
-    <div style="background: var(--paper-2); border-left: 3px solid var(--gold); padding: 0.7rem 0.9rem; font-size: 0.78rem; line-height: 1.45; color: var(--ink-2); margin-bottom: 1.2rem;">
-      <strong style="display: block; margin-bottom: 0.25rem; font-family: 'Bricolage Grotesque', sans-serif; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold);">⚠ Démonstration locale</strong>
-      Cette version produit du texte par <em>composition de templates</em>. Elle reste donc <em>générique</em> et ne peut pas inventer de chiffres ou faits précis sur votre sujet. Pour des articles réellement adaptés au sujet, utilisez le déploiement complet avec API Claude (voir README).
-    </div>
-    <div class="gen-categories" id="gen-cats">
-      <button class="gen-cat-btn active" data-cat="Politique">Politique</button>
-      <button class="gen-cat-btn" data-cat="Économie">Économie</button>
-      <button class="gen-cat-btn" data-cat="Tech">Tech</button>
-      <button class="gen-cat-btn" data-cat="Science">Science</button>
-      <button class="gen-cat-btn" data-cat="Culture">Culture</button>
-      <button class="gen-cat-btn" data-cat="Société">Société</button>
-      <button class="gen-cat-btn" data-cat="Sport">Sport</button>
-    </div>
-    <input type="text" class="gen-input" id="gen-topic" placeholder="Sujet (ex. : Coupe du monde, GPT-5, réforme des retraites)">
-    <button class="gen-submit" onclick="generateArticle()" id="gen-submit-btn">
-      ✦ Écrire la chronique
-    </button>
-    <div class="gen-loader" id="gen-loader">
-      Composition de la chronique…
-    </div>
-  </div>
 </div>
 
 <!-- === TOAST === -->
@@ -2370,18 +2260,18 @@ Faut-il y voir un simple effet de mode ? Peut-être. Mais il est aussi possible 
     el.addEventListener('click', () => openArticle(parseInt(el.dataset.article)));
   });
 
-  // ============== GENERATE MODAL ==============
-  let selectedCat = 'Politique';
-  document.querySelectorAll('.gen-cat-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.gen-cat-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      selectedCat = btn.dataset.cat;
-    });
-  });
+  // ============== TOAST ==============
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
 
-  function openGenModal() { document.getElementById('gen-modal').classList.add('open'); }
-  function closeGenModal() { document.getElementById('gen-modal').classList.remove('open'); }
+  // ============== KEYBOARD ==============
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeModal(); }
+  });
 
   // ============== CLIENT-SIDE ARTICLE GENERATOR ==============
   // Corpus éditorial par rubrique — la "rédaction IA" tourne côté client
@@ -2507,344 +2397,6 @@ Faut-il y voir un simple effet de mode ? Peut-être. Mais il est aussi possible 
     }
   };
 
-  // ============================================================
-  //  GÉNÉRATEUR DE CHRONIQUE — version honnête
-  //  Ne prétend PAS écrire une vraie enquête. Produit une chronique
-  //  / billet d'opinion qui s'adapte au type de sujet et n'invente
-  //  AUCUNE statistique précise. Pour des articles factuels, utiliser
-  //  le déploiement complet via API Claude (voir README).
-  // ============================================================
-
-  // Détection grossière du type de sujet à partir de mots-clés.
-  // Cela permet de choisir un moule narratif adapté.
-  function detectKind(topic, cat) {
-    const t = topic.toLowerCase();
-    // Événements / instances qui existent déjà dans le monde
-    const eventKeywords = /coupe du monde|championnat|mondial|tournoi|olympia|jeux olympiques|ligue des champions|euro 20|biennale|festival|salon |triennale|exposition|rétrospective|sommet|forum|congrès|grand prix|tour de france|roland-garros|wimbledon|super bowl/i;
-    // Concepts / idées / réformes en débat
-    const ideaKeywords = /réforme|loi |projet de loi|décret|plan |stratégie|doctrine|tendance|phénomène|polémique|controverse|crise |transition|mutation/i;
-    // Produits / objets identifiés
-    const productKeywords = /gpt-?\d|claude|llama|gemini|copilot|iphone|android|ios |windows|macos|chrome|tesla|cybertruck|vision pro/i;
-    // Personnes (heuristique : majuscule + au moins un prénom + nom)
-    const isLikelyPerson = /^[A-ZÀ-Ý][a-zà-ÿ]+ [A-ZÀ-Ý][a-zà-ÿ]+/.test(topic.trim());
-
-    if (productKeywords.test(t)) return 'product';
-    if (eventKeywords.test(t)) return 'instance';
-    if (ideaKeywords.test(t)) return 'idea';
-    if (isLikelyPerson) return 'person';
-    return 'topic';
-  }
-
-  // === Titres : 5 variantes par (catégorie, kind) ===
-  function makeTitle(topic, cat) {
-    const t = topic.trim();
-    const T = cap(t);
-    const kind = detectKind(topic, cat);
-
-    // Templates communs adaptés au "kind"
-    const COMMON = {
-      'instance': [
-        `${T} : retour sur ce que cela nous dit`,
-        `Chronique : à propos de ${t}`,
-        `${T}, ou la mécanique des grands rendez-vous`,
-        `${T} : ce qui se joue, vraiment`,
-        `Sur ${t} : impressions et lectures`
-      ],
-      'idea': [
-        `${T} : éléments pour un débat qui s'embrouille`,
-        `Comprendre ${t} sans céder aux raccourcis`,
-        `Notes sur ${t}`,
-        `${T} : pourquoi le sujet déborde son cadre`,
-        `Réflexions à propos de ${t}`
-      ],
-      'product': [
-        `${T} : premières impressions à froid`,
-        `Notes après quelques semaines avec ${t}`,
-        `${T}, ou la difficulté de juger sans recul`,
-        `${T} : ce qui mérite l'attention, ce qui mérite la prudence`,
-        `Chronique d'un usage : ${t}`
-      ],
-      'person': [
-        `${T} : portrait nuancé`,
-        `Lire ${t} aujourd'hui`,
-        `Pourquoi ${t} continue d'intriguer`,
-        `${T} : trajectoire et angles morts`,
-        `À propos de ${t}`
-      ],
-      'topic': [
-        `Chronique : ${t}`,
-        `Notes sur ${t}`,
-        `${T}, ou ce que le mot recouvre vraiment`,
-        `Réflexions autour de ${t}`,
-        `${T} : ce qu'il faut en penser, prudemment`
-      ]
-    };
-
-    return pick(COMMON[kind] || COMMON['topic']);
-  }
-
-  // === Chapeau / dek ===
-  function makeDek(topic, cat) {
-    const t = topic.trim();
-    const T = cap(t);
-    const kind = detectKind(topic, cat);
-
-    const COMMON = {
-      'instance': [
-        `Quelques observations à chaud, et quelques pas de côté, à propos de ${t}.`,
-        `Ce qu'on retient — ou ce qu'on commence à comprendre — de ${t}.`,
-        `Chronique d'une rédaction qui tente de prendre la juste distance avec ${t}.`
-      ],
-      'idea': [
-        `Pour sortir des oppositions trop tranchées sur ${t}, quelques angles à explorer.`,
-        `${T} mérite mieux qu'un débat polarisé. Tentons une lecture nuancée.`,
-        `Notes prudentes sur un sujet — ${t} — où la précipitation mène souvent à l'erreur.`
-      ],
-      'product': [
-        `${T} fait beaucoup parler. Mais que dire, vraiment, sans céder aux effets d'annonce ?`,
-        `Premières impressions à froid sur ${t}, sans hype et sans mépris.`,
-        `${T} : entre promesses et limites, le tableau est moins binaire qu'il n'y paraît.`
-      ],
-      'person': [
-        `Lire ${t} aujourd'hui, sans hagiographie ni procès facile.`,
-        `Quelques notes pour reprendre la mesure d'un parcours — celui de ${t}.`,
-        `${T} suscite des jugements tranchés. Tentons d'y mettre un peu de relief.`
-      ],
-      'topic': [
-        `Quelques notes — ni dépêche, ni manifeste — autour de ${t}.`,
-        `Une chronique qui tente de tenir le sujet à bonne distance : ${t}.`,
-        `Réflexions, doutes, mises en perspective sur ${t}.`
-      ]
-    };
-    return pick(COMMON[kind] || COMMON['topic']);
-  }
-
-  // === CORPS DE L'ARTICLE — version honnête ===
-  // Pas de chiffres précis inventés. Plus court (~300 mots).
-  // Position assumée de chronique / billet, pas d'enquête.
-  function makeBody(topic, cat) {
-    const c = CORPUS[cat] || CORPUS['Société'];
-    const exp = pick(c.experts);
-    const t = topic.trim();
-    const T = cap(t);
-    const eAccord = exp.f === "F" ? "ée" : "é";
-    const kind = detectKind(topic, cat);
-
-    // Citations adaptées par catégorie ET par kind
-    const QUOTES = {
-      'Politique': {
-        'instance': `Sur ce type de séquence, l'erreur consiste presque toujours à confondre la mise en scène et le fond. Les deux dialoguent, mais ils ne disent pas la même chose.`,
-        'idea': `Ce qui se joue ici dépasse les clivages partisans habituels. La question est, plus profondément, celle de notre capacité collective à tenir un cap dans la complexité.`,
-        'topic': `On gagnerait à ne pas réduire ce sujet à un duel d'opinions. Il y a là, en réalité, plusieurs débats imbriqués qu'il faut prendre la peine de démêler.`
-      },
-      'Économie': {
-        'instance': `Les marchés ont leurs propres logiques, qui ne recoupent pas exactement celles du débat public. Les deux peuvent diverger longtemps — c'est même souvent le cas.`,
-        'idea': `Aucune politique économique ne donne de résultats avant trois à cinq ans. Or notre cycle médiatique en exige sous trois à cinq mois. Cette dissonance n'est pas neutre.`,
-        'topic': `Ce qui frappe, c'est la difficulté à raisonner à partir de tendances de fond plutôt qu'à partir de signaux ponctuels. Les deux n'ont pas le même statut épistémologique.`
-      },
-      'Tech': {
-        'instance': `On finit toujours par évaluer une innovation à l'aune de ce qu'elle remplace. C'est la pire grille — et la plus tenace.`,
-        'product': `La vraie question n'est jamais de savoir si l'outil fonctionne. C'est de savoir ce qu'on en fait, qui le contrôle, et à qui ça profite.`,
-        'idea': `Une chose à laquelle nos institutions ne sont pas préparées, c'est à des transformations qui s'installent plus vite que les cadres juridiques qui devraient les accompagner.`,
-        'topic': `Le vrai sujet, c'est rarement la technique elle-même. C'est l'écosystème social et économique qu'elle recompose.`
-      },
-      'Science': {
-        'instance': `Une découverte ne vaut que par les questions qu'elle ouvre. Si elle ferme le débat, c'est presque toujours mauvais signe.`,
-        'idea': `Les controverses scientifiques durables ne sont pas un défaut de la méthode. Elles sont la méthode elle-même, en train de fonctionner.`,
-        'topic': `Le rôle du chercheur n'est pas de rassurer. C'est de dire ce qu'il sait, ce qu'il ignore, et avec quelle confiance.`
-      },
-      'Culture': {
-        'instance': `Les œuvres importantes sont celles qui résistent à leur première lecture. Et qui, parfois, résistent encore à la dixième.`,
-        'idea': `On confond souvent la nouveauté et l'inédit. La nouveauté est rare ; l'inédit, lui, est partout — et largement secondaire.`,
-        'person': `Lire un auteur aujourd'hui, c'est aussi lire ce que notre époque, malgré elle, lui prête. Ce dédoublement fait partie de l'expérience.`,
-        'topic': `Une création n'a jamais entièrement rendez-vous avec son temps. Elle dialogue avec ce qui l'a précédée, et avec ce qui la suivra.`
-      },
-      'Société': {
-        'instance': `Les phénomènes sociaux importants sont rarement spectaculaires. Ils s'installent par dépôts successifs, presque imperceptibles.`,
-        'idea': `Avant de prescrire, il faut décrire. Or notre époque a tendance à inverser cet ordre — au prix de bien des incompréhensions.`,
-        'topic': `Ce qu'on appelle un problème est souvent moins un problème qu'une transformation que nos catégories n'ont pas encore digérée.`
-      },
-      'Sport': {
-        'instance': `Une grande compétition, c'est d'abord une mécanique de l'attention. On regarde plus longuement, plus collectivement — et c'est précieux.`,
-        'topic': `Le sport de haut niveau récompense la patience autant que le talent. Cela paraît banal ; ça ne l'est pas.`,
-        'idea': `Ce qui se joue dans le sport déborde largement le terrain. Identité, économie, géopolitique : tout y est, à son échelle.`
-      }
-    };
-
-    // Construction du corps selon la catégorie + le kind
-    const quoteBank = QUOTES[cat] || QUOTES['Société'];
-    const quote = quoteBank[kind] || quoteBank['topic'] || quoteBank[Object.keys(quoteBank)[0]];
-
-    // === Sport — instance (ex. Coupe du monde) ===
-    if (cat === 'Sport' && kind === 'instance') {
-      return `Il y a des compétitions qui se prêtent à l'analyse savante. ${T} n'en fait peut-être pas vraiment partie — non par manque de richesse, mais parce que tout y va trop vite : un cadrage, un appui, une fraction de seconde, et la trajectoire bascule.
-<h3>Ce qui ne se laisse pas réduire</h3>
-On essaie pourtant. On essaie d'expliquer, de pronostiquer, de modéliser. Les tableaux statistiques se sont multipliés, les algorithmes s'invitent jusque dans les discours d'avant-match. Pourtant, à chaque édition, ${t} rappelle que le sport conserve sa marge d'imprévisibilité. C'est, accessoirement, ce qui le rend regardable.
-<blockquote>« ${quote} »</blockquote>
-<em class="highlight">L'observation est de</em> ${exp.n}, ${exp.t}, qui suit ces mécaniques depuis longtemps. Une posture qu'on ne suspectera pas de mépris pour la donnée — mais qui rappelle utilement que la donnée n'épuise pas le réel.
-<h3>Une attention déplacée</h3>
-Ce qui distingue ${t} des autres rendez-vous, c'est aussi le type d'attention qu'il mobilise. Une attention plus longue, plus diffuse, où chaque détail prend une importance disproportionnée. À une époque qui en manque, cette attention n'est pas un détail.
-Et puis il y aura le moment — toujours imprévu, toujours saisi en direct — où quelque chose basculera. Ce moment-là, on ne peut ni le prédire ni le forcer. On peut juste être là pour le voir.`;
-    }
-
-    // === Politique — idea (réforme, plan...) ===
-    if (cat === 'Politique' && kind === 'idea') {
-      return `Sur ce dossier comme sur d'autres, le débat semble se polariser plus vite qu'il ne se construit. ${T}, dans cette mécanique-là, occupe une place ambivalente : sujet de société, instrument politique, marqueur d'identité. Trois fonctions qu'il faut prendre la peine de distinguer.
-<h3>Trois lectures qui ne s'opposent pas</h3>
-La première lecture est strictement technique : ${t} pose une série de questions concrètes, qu'on peut documenter, comparer, évaluer. La seconde est politique : qui porte le projet, contre qui, avec quelles alliances ? La troisième est culturelle : que dit ce dossier de notre rapport à la décision collective ?
-<blockquote>« ${quote} »</blockquote>
-<em class="highlight">L'analyse vient de</em> ${exp.n}, ${exp.t}, dont les travaux récents éclairent précisément cette imbrication. Une posture nuancée, qui ne plaide ni pour la précipitation ni pour l'immobilisme.
-<h3>Ce que la prudence ne veut pas dire</h3>
-La prudence, ici, n'est pas un synonyme du statu quo. Elle consiste à ne pas confondre les niveaux, à reconnaître les incertitudes plutôt qu'à les masquer, à accepter que le bon arbitrage demande du temps — et à dire pourquoi.
-Le risque, à terme, n'est pas qu'on ne tranche pas. C'est qu'on tranche mal, sous pression, et qu'on impute à la décision elle-même les défauts d'une délibération escamotée.`;
-    }
-
-    // === Tech — product (GPT, iPhone...) ===
-    if (cat === 'Tech' && kind === 'product') {
-      return `Quelques semaines avec ${t} suffisent à se faire une idée — pas une certitude. La technologie, à ce stade de maturité, se laisse approcher de plusieurs côtés à la fois : usage quotidien, capacités annoncées, écosystème en formation.
-<h3>Ce que ça change concrètement</h3>
-Les premiers retours convergent sur un point : ${t} n'opère pas dans la rupture totale qu'on annonce parfois, ni dans la continuité parfaite que d'autres tentent de plaider. La vérité, comme souvent, se loge dans les détails. Certains usages basculent ; d'autres, plus nombreux, se contentent d'être un peu meilleurs.
-<blockquote>« ${quote} »</blockquote>
-<em class="highlight">Cette mise en garde est de</em> ${exp.n}, ${exp.t}, qui suit ce type de séquences depuis longtemps. Une lecture lucide, ni technophobe ni naïvement enthousiaste — ce qui devient rare.
-<h3>Les questions qui restent</h3>
-Restent les vraies questions : la fiabilité réelle dans les contextes critiques, le coût d'usage à long terme, et — surtout — la dépendance qu'on est en train d'installer sans toujours s'en rendre compte. Ces points-là, le marketing ne les traite pas. La presse, elle, devrait s'en charger.
-On y reviendra. Pour l'instant, ${t} est un objet à observer, à pratiquer, à critiquer — pas à idolâtrer.`;
-    }
-
-    // === Culture — instance (exposition, festival...) ===
-    if (cat === 'Culture' && kind === 'instance') {
-      return `On entre dans ${t} comme on entre dans n'importe quelle proposition culturelle un peu ambitieuse : avec à la fois l'envie d'être saisi et la méfiance contre la facilité. Les deux, parfois, dialoguent au sein d'une même salle.
-<h3>Ce qui retient le regard</h3>
-La proposition trouve son rythme par couches successives. On y revient, on y achoppe, on y change d'avis. C'est probablement le meilleur signe — celui d'une œuvre, ou d'un événement, qui ne livre pas tout d'un coup.
-<blockquote>« ${quote} »</blockquote>
-<em class="highlight">La remarque est de</em> ${exp.n}, ${exp.t}, et elle s'applique ici plus qu'ailleurs. ${T} n'a pas la timidité de chercher l'unanimité. Cela vaut mieux, à long terme, que la séduction immédiate.
-<h3>Un mot de réserve</h3>
-Tout n'y est pas réussi. Certains partis pris paraissent appuyés, d'autres datés. Mais c'est aussi cela, une création vivante : un ensemble inégal, qui prend des risques, et qui parfois en paie le prix.
-À voir, donc — sans hâte, et sans la pression d'un avis tranché. Les vrais avis, dans ces cas-là, viennent souvent quelques jours après la sortie.`;
-    }
-
-    // === Économie — idea / topic ===
-    if (cat === 'Économie') {
-      return `Sur ${t}, le commentaire facile est tentant. Le commentaire juste, lui, demande de ralentir un peu. Trois ordres de grandeur s'imbriquent ici : le cycle court — celui des marchés —, le cycle moyen — celui des décisions de banques centrales — et le cycle long — celui des transformations structurelles. Les confondre revient à ne rien comprendre.
-<h3>Lecture en couches</h3>
-À court terme, les indicateurs envoient des signaux contradictoires, ce qui est habituel à ce stade. À moyen terme, plusieurs scénarios restent ouverts, et il serait imprudent de privilégier l'un d'entre eux sans réserves explicites. À long terme, en revanche, certaines tendances se confirment.
-<blockquote>« ${quote} »</blockquote>
-<em class="highlight">Cette observation est de</em> ${exp.n}, ${exp.t}, et elle gagne en pertinence à mesure que la séquence se prolonge. Le piège, c'est de demander à un cycle économique des certitudes que sa nature même lui interdit de produire.
-<h3>Ce qu'il reste à observer</h3>
-Plutôt que de pronostiquer, il vaut mieux nommer les variables qu'on regardera dans les prochains mois. Sur ${t}, ces variables sont identifiables — elles ne sont juste pas encore stables. C'est précisément pour cela qu'il faut les suivre.
-La pédagogie économique, ici, vaut mieux que la prophétie.`;
-    }
-
-    // === Science ===
-    if (cat === 'Science') {
-      return `La science avance lentement — et c'est précisément sa force. ${T} s'inscrit dans cette temporalité longue, où chaque résultat ouvre plus de questions qu'il n'en ferme. C'est un trait à connaître avant de chercher des conclusions définitives.
-<h3>Ce que les travaux récents permettent de dire</h3>
-Les travaux disponibles convergent sur certains points, divergent sur d'autres. Cette hétérogénéité n'est pas un signe de désordre : elle est le mode de fonctionnement normal d'une discipline qui interroge ses propres présupposés. La consolidation, quand elle viendra, prendra des années.
-<blockquote>« ${quote} »</blockquote>
-<em class="highlight">Le rappel est de</em> ${exp.n}, ${exp.t}, qui en a fait une ligne de conduite. Sur ${t}, l'honnêteté intellectuelle consiste précisément à dire ce que la science peut affirmer aujourd'hui — et ce qu'elle laisse en suspens.
-<h3>Les prochaines années</h3>
-Les prochaines années diront si les hypothèses dominantes résistent ou s'effondrent. Dans les deux cas, le savoir progressera. C'est ce qui distingue la science d'autres formes d'intelligibilité : elle accepte d'avoir tort, et elle s'organise pour le découvrir.
-${T}, vu sous cet angle, n'est pas une réponse. C'est un chantier — et c'est très bien comme ça.`;
-    }
-
-    // === Société (par défaut + idea/instance) ===
-    if (cat === 'Société') {
-      return `Pour bien comprendre ${t}, il faut résister à deux tentations symétriques : la dramatisation, qui cherche le scoop, et la banalisation, qui rassure sans éclairer. La réalité, comme souvent, se loge entre les deux.
-<h3>Un phénomène à plusieurs visages</h3>
-${T} ne se présente pas de la même manière selon les régions, les générations, les milieux sociaux. Ce qu'on tient parfois pour une tendance générale est, en réalité, une mosaïque de situations qui ne se ressemblent qu'en surface. Reconnaître cette diversité est déjà un premier pas vers la clarté.
-<blockquote>« ${quote} »</blockquote>
-<em class="highlight">L'observation est de</em> ${exp.n}, ${exp.t}, dont les travaux portent sur ces transformations diffuses. Une posture qui invite à la patience plutôt qu'à la conclusion hâtive.
-<h3>Quelles réponses ?</h3>
-Les réponses publiques, à ce stade, paraissent tâtonnantes — et c'est peut-être normal. Avant de prescrire, il faut décrire. Or notre temps, pris dans une exigence de réaction immédiate, peine à s'offrir ce détour descriptif.
-${T} mérite mieux que des slogans. Reste à savoir si l'espace public lui en laissera l'occasion.`;
-    }
-
-    // === Fallback générique (toutes catégories non couvertes ci-dessus) ===
-    return `Quelques observations à propos de ${t}, sans prétention à l'exhaustivité. Le sujet, abordé avec la prudence qu'il mérite, mérite mieux que la rapidité du commentaire ordinaire.
-<h3>Ce qu'on peut dire avec précaution</h3>
-${T} appartient à ces sujets où l'on parle souvent vite, et où l'on parlerait mieux en ralentissant. Plusieurs lectures coexistent ; plusieurs grilles s'offrent ; aucune ne capture entièrement le réel. C'est moins frustrant qu'instructif, à condition d'accepter cette pluralité.
-<blockquote>« ${quote} »</blockquote>
-<em class="highlight">Le mot vient de</em> ${exp.n}, ${exp.t}, dont la lecture éclaire utilement ce type de débats. Une position nuancée, qui ne se laisse réduire ni à la critique systématique ni à l'enthousiasme de circonstance.
-<h3>Ce qui reste ouvert</h3>
-Il faut résister à la tentation de conclure. Sur ${t}, les bonnes décisions naîtront moins d'un choix tranché que d'une réflexion qui accepte ses zones d'incertitude. C'est, disons-le, un exercice exigeant.
-À suivre — et à reprendre, en temps voulu, avec plus de matière.`;
-  }
-
-  async function generateArticle() {
-    const topic = document.getElementById('gen-topic').value.trim();
-    if (!topic) { showToast("Entrez un sujet d'abord"); return; }
-
-    const btn = document.getElementById('gen-submit-btn');
-    const loader = document.getElementById('gen-loader');
-    btn.disabled = true;
-    loader.classList.add('active');
-
-    // Petite pause pour le suspense (et laisser voir le loader)
-    await new Promise(r => setTimeout(r, 900 + Math.random() * 700));
-
-    try {
-      const c = CORPUS[selectedCat] || CORPUS['Société'];
-      const author = STAFF[selectedCat] || STAFF['Société'];
-      const title = makeTitle(topic, selectedCat);
-      const dek = makeDek(topic, selectedCat);
-      const body = makeBody(topic, selectedCat);
-      const readTime = (4 + Math.floor(Math.random() * 7)) + " min";
-      const tags = [...pickN(c.tags, 2), topic.toLowerCase().split(' ').slice(0, 2).join('-'), "ia-redige"];
-
-      const newIdx = articles.length;
-      articles.push({
-        category: selectedCat,
-        title, dek,
-        author: author.n, initials: author.i, avatarColor: author.c,
-        date: `${pick(c.locs)}, ${new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`,
-        readTime, tags, body
-      });
-
-      // Injecte la carte
-      const cardsHost = document.getElementById('generated-articles');
-      if (!cardsHost.querySelector('.section-heading')) {
-        cardsHost.innerHTML = `
-          <div class="section-heading" style="margin-top: 3rem;">
-            <h2>Généré à votre demande</h2>
-            <span class="sec-subtitle">— vient de paraître</span>
-            <span class="sec-num">N° 04 / 04</span>
-          </div>
-          <section class="grid-3" id="gen-cards"></section>
-        `;
-      }
-      const newCard = document.createElement('article');
-      newCard.className = 'article-card';
-      newCard.dataset.article = newIdx;
-      // Map French cat name to filter slug
-      const catSlug = {'Politique':'politique','Économie':'economie','Tech':'tech','Science':'science','Culture':'culture','Société':'societe','Sport':'sport'}[selectedCat] || 'une';
-      newCard.dataset.cat = catSlug;
-      newCard.innerHTML = `
-        <div class="card-image">
-          <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">${makeSvgForCategory(selectedCat, newIdx)}<text x="400" y="430" font-family="Bricolage Grotesque" font-size="11" fill="#f2ece0" text-anchor="middle" letter-spacing="3" opacity="0.5">NOUVEAU · ${selectedCat.toUpperCase()}</text></svg>
-        </div>
-        <span class="category-tag">${selectedCat}</span>
-        <h3 class="card-title">${title}</h3>
-        <p class="card-excerpt">${dek}</p>
-        <div class="card-meta">
-          <span>${author.n}</span>
-          <span>${readTime}</span>
-        </div>
-      `;
-      newCard.addEventListener('click', () => openArticle(newIdx));
-      document.getElementById('gen-cards').prepend(newCard);
-
-      closeGenModal();
-      openArticle(newIdx);
-      showToast('Article généré avec succès');
-      document.getElementById('gen-topic').value = '';
-    } catch (err) {
-      console.error(err);
-      showToast('Erreur de génération — réessayez');
-    } finally {
-      btn.disabled = false;
-      loader.classList.remove('active');
-    }
-  }
 
   // ============== TOAST ==============
   function showToast(msg) {
@@ -2856,12 +2408,8 @@ Il faut résister à la tentation de conclure. Sur ${t}, les bonnes décisions n
 
   // ============== KEYBOARD ==============
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { closeModal(); closeGenModal(); }
-    if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
-      e.preventDefault();
-      openGenModal();
-      setTimeout(() => document.getElementById('gen-topic').focus(), 100);
-    }
+    if (e.key === 'Escape') { closeModal(); }
+
   });
 
   // ============== NAV / FILTER BY CATEGORY ==============
@@ -2921,12 +2469,12 @@ Il faut résister à la tentation de conclure. Sur ${t}, les bonnes décisions n
       document.getElementById('filter-label').textContent = CAT_LABELS[cat] || cat;
       document.getElementById('filter-count').textContent =
         totalVisible === 0
-          ? "Aucun article pour le moment — essayez « Générer un article »"
+          ? "Aucun article dans cette rubrique"
           : totalVisible + ' article' + (totalVisible > 1 ? 's' : '');
 
       // If zero results, suggest generating
       if (totalVisible === 0) {
-        showToast('Aucun article dans cette rubrique — générez-en un !');
+        showToast('Aucun article dans cette rubrique');
       }
     }
 
@@ -3254,5 +2802,7 @@ Il faut résister à la tentation de conclure. Sur ${t}, les bonnes décisions n
   fetchMarketData();
   setInterval(fetchMarketData, 60000);
 </script>
+<!-- GoatCounter — analytics sans cookies, conforme RGPD -->
+<script data-goatcounter="https://synapse-daily.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
