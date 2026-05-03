@@ -1360,7 +1360,7 @@
 <!-- === ÉDITION DU JOUR (chargée depuis edition.json) === -->
 <section id="todays-edition" style="display: none; margin-bottom: 3rem;" data-section="todays">
   <div style="display: flex; align-items: baseline; gap: 1rem; padding: 1rem 1.2rem; background: linear-gradient(90deg, var(--accent) 0%, var(--accent-deep) 100%); color: #fff; margin-bottom: 2rem; flex-wrap: wrap;">
-    <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; font-weight: 700;">✦ Édition du jour</span>
+    <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; font-weight: 700;">✦ À la Une — Édition du jour</span>
     <span style="font-family: 'Fraunces', serif; font-style: italic; font-size: 1.05rem;" id="todays-edition-date">—</span>
     <span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; opacity: 0.8;" id="todays-edition-meta">—</span>
   </div>
@@ -1376,74 +1376,6 @@
   <button onclick="filterByCategory('une')" style="margin-left: auto; padding: 0.4rem 0.8rem; border: 1px solid var(--ink); font-family: 'Bricolage Grotesque', sans-serif; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; transition: all 0.2s;" onmouseover="this.style.background='var(--ink)';this.style.color='var(--paper)'" onmouseout="this.style.background='';this.style.color=''">✕ Tout afficher</button>
 </div>
 
-<!-- === HERO + SIDEBAR === -->
-<section class="hero-grid reveal" data-section="hero" style="animation-delay: 0.1s">
-  <article class="hero-article" data-article="0" data-cat="science">
-    <div class="hero-image">
-      <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#1a1a1a"/>
-            <stop offset="100%" stop-color="#4a2020"/>
-          </linearGradient>
-          <radialGradient id="g1r" cx="0.5" cy="0.3">
-            <stop offset="0%" stop-color="#e85a60" stop-opacity="0.6"/>
-            <stop offset="100%" stop-color="#a72328" stop-opacity="0"/>
-          </radialGradient>
-        </defs>
-        <rect width="800" height="450" fill="url(#g1)"/>
-        <circle cx="400" cy="180" r="220" fill="url(#g1r)"/>
-        <g stroke="#d4a858" stroke-width="0.5" fill="none" opacity="0.6">
-          <circle cx="400" cy="225" r="60"/>
-          <circle cx="400" cy="225" r="100"/>
-          <circle cx="400" cy="225" r="140"/>
-          <circle cx="400" cy="225" r="180"/>
-        </g>
-        <g fill="#f2ece0">
-          <circle cx="400" cy="225" r="8"/>
-          <circle cx="460" cy="225" r="3"/>
-          <circle cx="500" cy="225" r="4"/>
-          <circle cx="540" cy="225" r="2"/>
-          <circle cx="320" cy="225" r="5"/>
-          <circle cx="260" cy="225" r="3"/>
-          <circle cx="580" cy="225" r="2"/>
-        </g>
-        <text x="400" y="410" font-family="Fraunces" font-size="14" fill="#f2ece0" text-anchor="middle" opacity="0.5" font-style="italic">simulation — système Kepler-442</text>
-      </svg>
-    </div>
-    <span class="category-tag">Science · Exclusif</span>
-    <h2 class="hero-title">Une exoplanète tempérée détectée à 41 années-lumière ravive l'espoir d'une biosphère extra-solaire</h2>
-    <p class="hero-dek">Les observations croisées du télescope spatial Ariel et du réseau VLT au Chili révèlent une atmosphère riche en vapeur d'eau autour de Kepler-442c. Les astronomes européens évoquent « la candidate la plus sérieuse jamais identifiée ».</p>
-    <div class="byline">
-      <strong>Maximilian Remberger</strong>
-      <span class="ai-badge">IA</span>
-      <span class="sep">·</span>
-      <span>il y a 42 min</span>
-      <span class="sep">·</span>
-      <span>Lecture : 7 min</span>
-    </div>
-  </article>
-
-  <aside class="hero-side">
-    <h3 class="side-heading">Les plus lus</h3>
-    <div class="side-article" data-article="1" data-cat="economie">
-      <div class="side-title">La BCE maintient ses taux directeurs : lecture entre les lignes d'une inflexion</div>
-      <div class="side-meta">Économie · <span style="color: var(--accent);">●</span> 12k lectures</div>
-    </div>
-    <div class="side-article" data-article="2" data-cat="tech">
-      <div class="side-title">Modèles de fondation multimodaux : la nouvelle frontière du calcul</div>
-      <div class="side-meta">Tech · <span style="color: var(--accent);">●</span> 8,3k lectures</div>
-    </div>
-    <div class="side-article" data-article="3" data-cat="culture">
-      <div class="side-title">Biennale de Venise : l'anthropocène au cœur du pavillon français</div>
-      <div class="side-meta">Culture · <span style="color: var(--accent);">●</span> 6,1k lectures</div>
-    </div>
-    <div class="side-article" data-article="4" data-cat="societe">
-      <div class="side-title">Télétravail : la géographie invisible des nouvelles métropoles</div>
-      <div class="side-meta">Société · <span style="color: var(--accent);">●</span> 5,7k lectures</div>
-    </div>
-  </aside>
-</section>
 
 <!-- === DATA WIDGET === -->
 <div class="data-row reveal" data-section="data" style="animation-delay: 0.2s">
@@ -1472,211 +1404,9 @@
   <span id="px-updated">—</span>
 </div>
 
-<!-- === MAIN GRID === -->
-<div class="section-heading">
-  <h2>La sélection du jour</h2>
-  <span class="sec-subtitle">— curation algorithmique</span>
-  <span class="sec-num">N° 01 / 04</span>
-</div>
 
-<section class="grid-3 reveal" style="animation-delay: 0.3s">
-  <article class="article-card" data-article="1" data-cat="economie">
-    <div class="card-image">
-      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-        <rect width="400" height="300" fill="#2a3a4a"/>
-        <g stroke="#d4a858" stroke-width="1" fill="none" opacity="0.8">
-          <path d="M0,200 Q100,120 200,160 T400,100"/>
-          <path d="M0,220 Q100,180 200,200 T400,150" opacity="0.5"/>
-          <path d="M0,240 Q100,210 200,220 T400,200" opacity="0.3"/>
-        </g>
-        <g fill="#f2ece0" opacity="0.9">
-          <rect x="40" y="240" width="3" height="30"/>
-          <rect x="80" y="220" width="3" height="50"/>
-          <rect x="120" y="200" width="3" height="70"/>
-          <rect x="160" y="180" width="3" height="90"/>
-          <rect x="200" y="170" width="3" height="100"/>
-          <rect x="240" y="150" width="3" height="120"/>
-          <rect x="280" y="140" width="3" height="130"/>
-          <rect x="320" y="120" width="3" height="150"/>
-          <rect x="360" y="110" width="3" height="160"/>
-        </g>
-      </svg>
-    </div>
-    <span class="category-tag">Économie</span>
-    <h3 class="card-title">La BCE maintient ses taux : analyse d'une inflexion stratégique</h3>
-    <p class="card-excerpt">Derrière la décision attendue de Francfort se dessine un repositionnement tactique face à la résilience de l'inflation sous-jacente...</p>
-    <div class="card-meta">
-      <span>Adi-Afan Clary</span>
-      <span>5 min</span>
-    </div>
-  </article>
-
-  <article class="article-card" data-article="2" data-cat="tech">
-    <div class="card-image">
-      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-        <rect width="400" height="300" fill="#0f1419"/>
-        <g opacity="0.9">
-          <circle cx="200" cy="150" r="70" fill="none" stroke="#e85a60" stroke-width="1.5"/>
-          <circle cx="200" cy="150" r="50" fill="none" stroke="#d4a858" stroke-width="1"/>
-          <circle cx="200" cy="150" r="30" fill="none" stroke="#f2ece0" stroke-width="0.8"/>
-          <circle cx="200" cy="150" r="6" fill="#e85a60"/>
-        </g>
-        <g fill="#f2ece0" font-family="JetBrains Mono" font-size="8" opacity="0.6">
-          <text x="30" y="40">0xA4F2</text>
-          <text x="330" y="40">0xBE18</text>
-          <text x="30" y="270">▲ 2048d</text>
-          <text x="320" y="270">λ = 0.732</text>
-        </g>
-        <g stroke="#e85a60" stroke-width="0.5" opacity="0.3">
-          <line x1="0" y1="150" x2="400" y2="150"/>
-          <line x1="200" y1="0" x2="200" y2="300"/>
-        </g>
-      </svg>
-    </div>
-    <span class="category-tag">Technologie</span>
-    <h3 class="card-title">Les modèles de fondation multimodaux redéfinissent la frontière de l'IA</h3>
-    <p class="card-excerpt">Vision, langage, son, code : l'unification des modalités ouvre une nouvelle ère de raisonnement machine, avec des implications économiques massives...</p>
-    <div class="card-meta">
-      <span>Maximilian Remberger</span>
-      <span>9 min</span>
-    </div>
-  </article>
-
-  <article class="article-card" data-article="3" data-cat="culture">
-    <div class="card-image">
-      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="venice" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#7d1a1e"/>
-            <stop offset="100%" stop-color="#b08a3e"/>
-          </linearGradient>
-        </defs>
-        <rect width="400" height="300" fill="url(#venice)"/>
-        <g fill="none" stroke="#f2ece0" stroke-width="1" opacity="0.4">
-          <rect x="60" y="80" width="80" height="140"/>
-          <rect x="160" y="60" width="80" height="160"/>
-          <rect x="260" y="100" width="80" height="120"/>
-          <line x1="60" y1="130" x2="140" y2="130"/>
-          <line x1="60" y1="170" x2="140" y2="170"/>
-          <line x1="160" y1="120" x2="240" y2="120"/>
-          <line x1="160" y1="160" x2="240" y2="160"/>
-          <line x1="260" y1="140" x2="340" y2="140"/>
-          <line x1="260" y1="180" x2="340" y2="180"/>
-        </g>
-        <rect x="0" y="220" width="400" height="80" fill="#0a0a0a" opacity="0.4"/>
-        <g fill="#f2ece0" opacity="0.5">
-          <circle cx="100" cy="250" r="2"/>
-          <circle cx="200" cy="260" r="2"/>
-          <circle cx="300" cy="245" r="2"/>
-        </g>
-      </svg>
-    </div>
-    <span class="category-tag">Culture</span>
-    <h3 class="card-title">La Biennale de Venise sous le prisme de l'anthropocène</h3>
-    <p class="card-excerpt">Le commissariat 2026, confié à la curatrice brésilienne Lucia Mendes, interroge notre rapport au vivant dans une mise en scène audacieuse des pavillons nationaux...</p>
-    <div class="card-meta">
-      <span>Sam Abitbol</span>
-      <span>6 min</span>
-    </div>
-  </article>
-</section>
-
-<!-- === EDITORIAL QUOTE === -->
-<div class="editorial reveal" data-section="editorial" style="animation-delay: 0.4s">
-  <div class="editorial-label">◆ Édito du rédacteur en chef IA</div>
-  <blockquote>
-    Nous ne sommes pas ici pour remplacer la presse humaine — mais pour éclairer, par un autre prisme, la même réalité qu'elle interroge.
-  </blockquote>
-  <cite>— Aurelius, rédacteur en chef éditorial · modèle de synthèse v4.2</cite>
-</div>
-
-<!-- === SECONDARY GRID === -->
-<div class="section-heading">
-  <h2>Politique &amp; Société</h2>
-  <span class="sec-subtitle">— analyses de fond</span>
-  <span class="sec-num">N° 02 / 04</span>
-</div>
-
-<section class="grid-3 reveal">
-  <article class="article-card" data-article="4" data-cat="societe">
-    <div class="card-image">
-      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-        <rect width="400" height="300" fill="#e8dfc9"/>
-        <g fill="#141414" opacity="0.9">
-          <rect x="50" y="50" width="40" height="200"/>
-          <rect x="110" y="90" width="40" height="160"/>
-          <rect x="170" y="70" width="40" height="180"/>
-          <rect x="230" y="110" width="40" height="140"/>
-          <rect x="290" y="60" width="40" height="190"/>
-        </g>
-        <line x1="0" y1="250" x2="400" y2="250" stroke="#a72328" stroke-width="2"/>
-        <text x="200" y="285" font-family="Fraunces" font-size="12" fill="#141414" text-anchor="middle" font-style="italic">densité résidentielle — variation 2019–2026</text>
-      </svg>
-    </div>
-    <span class="category-tag">Société</span>
-    <h3 class="card-title">Télétravail : la géographie invisible des nouvelles métropoles</h3>
-    <p class="card-excerpt">Cinq ans après le tournant pandémique, les flux migratoires post-urbains redessinent l'armature territoriale française. Une enquête en quatre cartes...</p>
-    <div class="card-meta">
-      <span>Antoine Amodruz</span>
-      <span>11 min</span>
-    </div>
-  </article>
-
-  <article class="article-card" data-article="5" data-cat="politique">
-    <div class="card-image">
-      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-        <rect width="400" height="300" fill="#1a3a2a"/>
-        <g stroke="#d4a858" stroke-width="1" fill="none">
-          <path d="M50,150 Q200,50 350,150 T 50,150" opacity="0.5"/>
-          <path d="M50,170 Q200,70 350,170 T 50,170" opacity="0.3"/>
-        </g>
-        <g fill="#f2ece0">
-          <rect x="180" y="120" width="40" height="60"/>
-          <polygon points="180,120 200,100 220,120"/>
-          <rect x="195" y="150" width="10" height="30" fill="#1a3a2a"/>
-        </g>
-        <circle cx="200" cy="150" r="80" fill="none" stroke="#f2ece0" stroke-width="0.5" opacity="0.4" stroke-dasharray="3,3"/>
-      </svg>
-    </div>
-    <span class="category-tag">Politique</span>
-    <h3 class="card-title">DSA 2.0 : l'Europe revoit sa régulation des plateformes numériques</h3>
-    <p class="card-excerpt">Bruxelles prépare un nouveau règlement plus contraignant encore. Entre souveraineté et innovation, Strasbourg cherche sa voie...</p>
-    <div class="card-meta">
-      <span>Antoine Amodruz</span>
-      <span>8 min</span>
-    </div>
-  </article>
-
-  <article class="article-card" data-article="6" data-cat="sport">
-    <div class="card-image">
-      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="clay" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#b85c3a"/>
-            <stop offset="100%" stop-color="#6b2e1a"/>
-          </linearGradient>
-        </defs>
-        <rect width="400" height="300" fill="url(#clay)"/>
-        <line x1="0" y1="150" x2="400" y2="150" stroke="#f2ece0" stroke-width="2"/>
-        <rect x="190" y="80" width="20" height="140" fill="#f2ece0" opacity="0.6"/>
-        <circle cx="200" cy="90" r="8" fill="#f2ece0"/>
-        <g stroke="#f2ece0" stroke-width="1" opacity="0.4">
-          <line x1="50" y1="100" x2="350" y2="100"/>
-          <line x1="50" y1="200" x2="350" y2="200"/>
-          <line x1="50" y1="50" x2="50" y2="250"/>
-          <line x1="350" y1="50" x2="350" y2="250"/>
-        </g>
-      </svg>
-    </div>
-    <span class="category-tag">Sport</span>
-    <h3 class="card-title">Roland-Garros : la saison terre battue promet des surprises</h3>
-    <p class="card-excerpt">Jannik Sinner en quête d'un premier sacre porte-d'Auteuil, un Alcaraz revenu de blessure et la génération française à l'affût : décryptage d'une édition 2026 ouverte...</p>
-    <div class="card-meta">
-      <span>Sam Abitbol</span>
-      <span>4 min</span>
-    </div>
-  </article>
-</section>
+<!-- === RUBRIQUES (articles classés par catégorie, générés par JS) === -->
+<div id="rubrique-articles"></div>
 
 <!-- === JOURNALISTS === -->
 <section class="journalists" id="section-journalistes" data-section="journalists">
@@ -1748,112 +1478,6 @@
   </div>
 </section>
 
-<!-- === THIRD GRID === -->
-<div class="section-heading">
-  <h2>Le week-end</h2>
-  <span class="sec-subtitle">— lectures longues</span>
-  <span class="sec-num">N° 03 / 04</span>
-</div>
-
-<section class="grid-3 reveal">
-  <article class="article-card" data-article="7" data-cat="societe">
-    <div class="card-image">
-      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="cave" cx="0.5" cy="0.6">
-            <stop offset="0%" stop-color="#8a5a3a"/>
-            <stop offset="100%" stop-color="#2a1a0a"/>
-          </radialGradient>
-        </defs>
-        <rect width="400" height="300" fill="url(#cave)"/>
-        <g fill="#d4a858" opacity="0.7">
-          <path d="M80,180 Q100,150 120,170 Q130,180 140,160 Q160,140 180,170"/>
-          <circle cx="220" cy="160" r="4"/>
-          <circle cx="240" cy="165" r="3"/>
-          <circle cx="260" cy="170" r="5"/>
-          <path d="M290,150 Q310,130 330,150" stroke="#d4a858" stroke-width="2" fill="none"/>
-        </g>
-        <g fill="#f2ece0" opacity="0.3">
-          <circle cx="100" cy="80" r="20"/>
-          <circle cx="300" cy="60" r="15"/>
-          <circle cx="340" cy="90" r="10"/>
-        </g>
-      </svg>
-    </div>
-    <span class="category-tag">Grand Reportage</span>
-    <h3 class="card-title">Dordogne : les nouvelles gravures pariétales réécrivent la préhistoire</h3>
-    <p class="card-excerpt">Sous une corniche rocheuse ignorée depuis des millénaires, une équipe franco-allemande a mis au jour un ensemble unique de 42 000 ans. Récit d'une révolution silencieuse...</p>
-    <div class="card-meta">
-      <span>Maximilian Remberger</span>
-      <span>14 min</span>
-    </div>
-  </article>
-
-  <article class="article-card" data-article="8" data-cat="opinion">
-    <div class="card-image">
-      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-        <rect width="400" height="300" fill="#1a1a1a"/>
-        <g stroke="#f2ece0" stroke-width="0.5" fill="none" opacity="0.8">
-          <circle cx="100" cy="150" r="40"/>
-          <circle cx="200" cy="150" r="60"/>
-          <circle cx="320" cy="150" r="30"/>
-          <line x1="140" y1="150" x2="140" y2="150"/>
-          <line x1="140" y1="150" x2="260" y2="150"/>
-          <line x1="260" y1="150" x2="290" y2="150"/>
-        </g>
-        <g fill="#d4a858">
-          <circle cx="100" cy="150" r="3"/>
-          <circle cx="200" cy="150" r="4"/>
-          <circle cx="320" cy="150" r="3"/>
-        </g>
-        <g font-family="JetBrains Mono" font-size="9" fill="#f2ece0" opacity="0.6">
-          <text x="80" y="210" text-anchor="middle">R1</text>
-          <text x="200" y="230" text-anchor="middle">R2</text>
-          <text x="320" y="200" text-anchor="middle">R3</text>
-        </g>
-      </svg>
-    </div>
-    <span class="category-tag">Idées</span>
-    <h3 class="card-title">Penser avec la machine : phénoménologie d'une cohabitation cognitive</h3>
-    <p class="card-excerpt">Qu'est-ce que ça change, vraiment, que de raisonner aux côtés d'une IA conversationnelle ? Notre chroniqueur interroge quarante intellectuels européens...</p>
-    <div class="card-meta">
-      <span>Sam Abitbol</span>
-      <span>18 min</span>
-    </div>
-  </article>
-
-  <article class="article-card" data-article="9" data-cat="culture">
-    <div class="card-image">
-      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="kitchen" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#f2ece0"/>
-            <stop offset="100%" stop-color="#c9a878"/>
-          </linearGradient>
-        </defs>
-        <rect width="400" height="300" fill="url(#kitchen)"/>
-        <g fill="#7d1a1e">
-          <circle cx="150" cy="180" r="50"/>
-          <circle cx="250" cy="180" r="30"/>
-        </g>
-        <g fill="#1a3a2a" opacity="0.9">
-          <path d="M180,130 Q200,100 220,130 Q210,120 200,125 Q190,120 180,130"/>
-          <ellipse cx="200" cy="150" rx="8" ry="4"/>
-        </g>
-        <g stroke="#141414" stroke-width="1" fill="none">
-          <line x1="100" y1="230" x2="300" y2="230"/>
-        </g>
-      </svg>
-    </div>
-    <span class="category-tag">Gastronomie</span>
-    <h3 class="card-title">La tomate oubliée : retour sur trente variétés patrimoniales</h3>
-    <p class="card-excerpt">Cœur-de-bœuf, Noire de Crimée, Green Zebra : à l'heure où les semenciers industriels uniformisent le potager, des maraîchers résistent...</p>
-    <div class="card-meta">
-      <span>Sam Abitbol</span>
-      <span>6 min</span>
-    </div>
-  </article>
-</section>
 
 <!-- === NEWSLETTER === -->
 <section class="newsletter reveal" id="section-newsletter" data-section="newsletter">
@@ -2431,51 +2055,41 @@ Faut-il y voir un simple effet de mode ? Peut-être. Mais il est aussi possible 
       a.classList.toggle('active', a.dataset.filter === cat);
     });
 
-    const decorativeSections = document.querySelectorAll('[data-section]');
+    const todaysSection = document.getElementById('todays-edition');
+    const rubriquesDiv = document.getElementById('rubrique-articles');
     const indicator = document.getElementById('filter-indicator');
+    const decoratives = document.querySelectorAll('[data-section="data"], [data-section="journalists"], [data-section="newsletter"]');
 
     if (cat === 'une') {
-      // Show everything
-      decorativeSections.forEach(s => s.style.display = '');
-      document.querySelectorAll('.article-card, .side-article, .hero-article').forEach(el => {
-        el.style.display = '';
-      });
-      document.querySelectorAll('.section-heading, .grid-3').forEach(el => el.style.display = '');
+      // À la Une = seulement l'édition du jour
+      if (todaysSection) todaysSection.style.display = todaysSection.dataset.hasEdition === 'true' ? 'block' : 'none';
+      if (rubriquesDiv) rubriquesDiv.style.display = 'block';
+      // Afficher toutes les rubriques
+      document.querySelectorAll('[data-rubrique]').forEach(el => el.style.display = '');
+      decoratives.forEach(s => s.style.display = '');
       indicator.style.display = 'none';
     } else {
-      // Hide all decorative sections
-      decorativeSections.forEach(s => s.style.display = 'none');
+      // Rubrique spécifique
+      if (todaysSection) todaysSection.style.display = 'none';
+      decoratives.forEach(s => s.style.display = 'none');
+      if (rubriquesDiv) rubriquesDiv.style.display = 'block';
 
-      // Filter cards
+      // Filtrer les sections de rubrique
       let totalVisible = 0;
-      document.querySelectorAll('.article-card').forEach(el => {
-        const match = el.dataset.cat === cat;
+      document.querySelectorAll('[data-rubrique]').forEach(el => {
+        const match = el.dataset.rubrique === cat;
         el.style.display = match ? '' : 'none';
-        if (match) totalVisible++;
+      });
+      // Compter les articles visibles
+      document.querySelectorAll('#rubrique-articles .article-card').forEach(el => {
+        if (el.dataset.cat === cat) totalVisible++;
       });
 
-      // Hide empty grid sections and their headings
-      document.querySelectorAll('.grid-3').forEach(grid => {
-        const anyVisible = [...grid.querySelectorAll('.article-card')].some(el => el.style.display !== 'none');
-        grid.style.display = anyVisible ? '' : 'none';
-        const prev = grid.previousElementSibling;
-        if (prev && prev.classList.contains('section-heading')) {
-          prev.style.display = anyVisible ? '' : 'none';
-        }
-      });
-
-      // Show filter indicator
+      // Afficher l'indicateur de filtre
       indicator.style.display = 'flex';
-      document.getElementById('filter-label').textContent = CAT_LABELS[cat] || cat;
+      document.getElementById('filter-label').textContent = (CAT_LABELS[cat] || cat);
       document.getElementById('filter-count').textContent =
-        totalVisible === 0
-          ? "Aucun article dans cette rubrique"
-          : totalVisible + ' article' + (totalVisible > 1 ? 's' : '');
-
-      // If zero results, suggest generating
-      if (totalVisible === 0) {
-        showToast('Aucun article dans cette rubrique');
-      }
+        totalVisible === 0 ? 'Aucun article dans cette rubrique' : totalVisible + ' article' + (totalVisible > 1 ? 's' : '');
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2631,6 +2245,7 @@ Faut-il y voir un simple effet de mode ? Peut-être. Mais il est aussi possible 
       // Affiche le bandeau
       const section = document.getElementById('todays-edition');
       section.style.display = 'block';
+      section.dataset.hasEdition = 'true';
       document.getElementById('todays-edition-date').textContent = ed.editionDate || '';
       document.getElementById('todays-edition-meta').textContent =
         `Généré par ${ed.model || 'Claude'} · ${ed.articles.length} article${ed.articles.length > 1 ? 's' : ''}`;
@@ -2690,8 +2305,94 @@ Faut-il y voir un simple effet de mode ? Peut-être. Mais il est aussi possible 
     }
   }
 
-  // Déclenchement au chargement
-  loadTodaysEdition();
+
+
+  // ============== CLASSEMENT DES ARTICLES PAR RUBRIQUE ==============
+  // Regroupe les articles statiques (index 0-9) dans des sections par catégorie.
+  // Les articles de l'édition du jour (chargés depuis edition.json) sont aussi
+  // ajoutés dans leur rubrique respective.
+
+  const CAT_LABELS_FULL = {
+    'science': { name: 'Science', subtitle: 'découvertes et recherche' },
+    'economie': { name: 'Économie', subtitle: 'marchés et analyses' },
+    'tech': { name: 'Technologie', subtitle: 'innovation et numérique' },
+    'culture': { name: 'Culture', subtitle: 'arts et critiques' },
+    'societe': { name: 'Société', subtitle: 'enquêtes et tendances' },
+    'politique': { name: 'Politique', subtitle: 'institutions et débats' },
+    'sport': { name: 'Sport', subtitle: 'compétitions et décryptages' },
+    'opinion': { name: 'Idées', subtitle: 'chroniques et essais' }
+  };
+
+  function buildRubriqueSections() {
+    const container = document.getElementById('rubrique-articles');
+    if (!container) return;
+
+    // Collecter tous les articles avec leur index et catégorie
+    const byCategory = {};
+    articles.forEach((a, idx) => {
+      const cat = a.category || '';
+      const slug = {'Science':'science','Technologie':'tech','Tech':'tech',
+                     'Économie':'economie','Culture':'culture','Société':'societe',
+                     'Politique':'politique','Sport':'sport','Idées':'opinion',
+                     'Grand Reportage':'societe','Gastronomie':'culture',
+                     'Science · Exclusif':'science'}[cat] || cat.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      if (!byCategory[slug]) byCategory[slug] = [];
+      byCategory[slug].push({ article: a, index: idx });
+    });
+
+    // Ordre d'affichage
+    const order = ['politique', 'economie', 'tech', 'science', 'culture', 'societe', 'sport', 'opinion'];
+    let html = '';
+    let sectionNum = 1;
+
+    for (const slug of order) {
+      const items = byCategory[slug];
+      if (!items || items.length === 0) continue;
+      const info = CAT_LABELS_FULL[slug] || { name: slug, subtitle: '' };
+
+      html += '<div class="section-heading" data-rubrique="' + slug + '">';
+      html += '<h2>' + info.name + '</h2>';
+      html += '<span class="sec-subtitle">— ' + info.subtitle + '</span>';
+      html += '<span class="sec-num">' + items.length + ' article' + (items.length > 1 ? 's' : '') + '</span>';
+      html += '</div>';
+      html += '<section class="grid-3" data-rubrique="' + slug + '">';
+
+      for (const item of items) {
+        const a = item.article;
+        const idx = item.index;
+        const svgContent = typeof makeSvgForCategory === 'function' 
+          ? makeSvgForCategory(a.category || info.name, idx)
+          : '<rect width="800" height="450" fill="#2a3a4a"/>';
+
+        html += '<article class="article-card" data-article="' + idx + '" data-cat="' + slug + '">';
+        html += '<div class="card-image"><svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">' + svgContent + '</svg></div>';
+        html += '<span class="category-tag">' + (a.category || info.name) + '</span>';
+        html += '<h3 class="card-title">' + (a.title || '') + '</h3>';
+        html += '<p class="card-excerpt">' + (a.dek || '') + '</p>';
+        html += '<div class="card-meta"><span>' + (a.author || '') + '</span><span>' + (a.readTime || '') + '</span></div>';
+        html += '</article>';
+      }
+
+      html += '</section>';
+      sectionNum++;
+    }
+
+    container.innerHTML = html;
+
+    // Bind click events on new cards
+    container.querySelectorAll('[data-article]').forEach(el => {
+      el.addEventListener('click', () => openArticle(parseInt(el.dataset.article)));
+    });
+  }
+
+  // Appeler après le chargement de l'édition du jour (pour inclure les articles du jour)
+  // On attend un tick pour laisser loadTodaysEdition() s'exécuter d'abord
+  // Construire les rubriques : d'abord charger l'édition, puis organiser
+  async function initPage() {
+    await loadTodaysEdition();
+    buildRubriqueSections();
+  }
+  initPage();
 
   // ============== DONNÉES FINANCIÈRES LIVE ==============
   // BTC (CoinGecko) et EUR/USD (Frankfurter) : APIs gratuites, CORS ouvert.
