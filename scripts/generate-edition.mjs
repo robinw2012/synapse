@@ -19,7 +19,18 @@ const frFormatter = new Intl.DateTimeFormat("fr-FR", {
   timeZone: "Europe/Paris",
 });
 const today = frFormatter.format(now);
+const isoToday = now.toISOString().slice(0, 10);
 const editionNumber = 2847 + Math.floor((now - new Date("2026-04-23")) / 86400000);
+
+// ---------- Vérifier si l'édition du jour existe déjà ----------
+// Le cron tourne 2 fois (été/hiver). On skip si déjà généré aujourd'hui.
+try {
+  const existing = JSON.parse(fs.readFileSync("edition.json", "utf-8"));
+  if (existing.generatedAt && existing.generatedAt.startsWith(isoToday)) {
+    console.log(`⏭️  Édition du ${today} déjà générée à ${existing.generatedAt}. Rien à faire.`);
+    process.exit(0);
+  }
+} catch (_) { /* pas d'édition existante, on continue */ }
 
 // ---------- Charger les titres des éditions passées ----------
 function loadPastTitles() {

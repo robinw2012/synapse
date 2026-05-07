@@ -2,13 +2,12 @@ name: 📰 Édition quotidienne SYNAPSE
 
 on:
   schedule:
-    # Cron en UTC. 5h UTC = 7h Paris en été, 6h Paris en hiver.
-    # Pour être strictement à 7h Paris toute l'année, ajoutez aussi 6h UTC
-    # (décommenter la seconde ligne). L'édition sera alors régénérée deux
-    # fois en hiver mais le résultat final sera le même.
-    - cron: "0 5 * * *"
-    # - cron: "0 6 * * *"
-  workflow_dispatch: {} # permet de déclencher manuellement depuis l'onglet Actions
+    # GitHub Actions retarde souvent les crons de 15-45 min.
+    # On lance à 4h30 UTC pour que l'édition soit prête vers 7h Paris.
+    # Deux horaires pour couvrir été (UTC+2) et hiver (UTC+1).
+    - cron: "30 4 * * *"   # → ~6h30-7h15 Paris en été
+    - cron: "30 5 * * *"   # → ~7h30-8h Paris en été, ~6h30-7h15 en hiver
+  workflow_dispatch: {}
 
 jobs:
   publish:
