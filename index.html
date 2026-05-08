@@ -290,17 +290,50 @@ const WEATHER_BY_LANG = {fr:WEATHER_CODES,en:WEATHER_EN,de:WEATHER_DE,es:WEATHER
 
 let currentWeatherData = null;
 let currentLang = 'fr';
+let weatherCity = 'Paris';
+let weatherLat = 48.8566;
+let weatherLon = 2.3522;
 
-async function fetchWeather() {
+async function fetchWeatherForCoords(lat, lon) {
   try {
-    const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=48.8566&longitude=2.3522&current_weather=true&timezone=Europe/Paris', {cache:'no-store'});
+    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`, {cache:'no-store'});
     if (!r.ok) return;
     const d = await r.json();
     currentWeatherData = d.current_weather;
     updateWeatherDisplay();
   } catch(e) {
     const el = document.getElementById('weather-info');
-    if (el) el.textContent = '📍 Paris';
+    if (el) el.textContent = '📍 ' + weatherCity;
+  }
+}
+
+async function reverseGeocode(lat, lon) {
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=${currentLang}`, {cache:'force-cache'});
+    if (r.ok) {
+      const d = await r.json();
+      weatherCity = d.address?.city || d.address?.town || d.address?.village || d.address?.municipality || 'Ma position';
+    }
+  } catch(_) {}
+}
+
+function initWeather() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        weatherLat = pos.coords.latitude;
+        weatherLon = pos.coords.longitude;
+        await reverseGeocode(weatherLat, weatherLon);
+        fetchWeatherForCoords(weatherLat, weatherLon);
+      },
+      () => {
+        // Géoloc refusée → fallback Paris
+        fetchWeatherForCoords(weatherLat, weatherLon);
+      },
+      { timeout: 5000 }
+    );
+  } else {
+    fetchWeatherForCoords(weatherLat, weatherLon);
   }
 }
 
@@ -312,11 +345,11 @@ function updateWeatherDisplay() {
   const code = currentWeatherData.weathercode;
   const weatherTexts = WEATHER_BY_LANG[currentLang] || WEATHER_CODES;
   const desc = weatherTexts[code] || WEATHER_CODES[code] || '—';
-  el.textContent = '📍 Paris · ' + temp + '°C · ' + desc;
+  el.textContent = '📍 ' + weatherCity + ' · ' + temp + '°C · ' + desc;
 }
 
-fetchWeather();
-setInterval(fetchWeather, 600000); // Rafraîchir toutes les 10 min
+initWeather();
+setInterval(() => fetchWeatherForCoords(weatherLat, weatherLon), 600000);
 
 // ============== LANGUES ==============
 const UI_STRINGS = {
@@ -460,8 +493,8 @@ function setLang(lang) {
     }
   });
 
-  // Weather
-  updateWeatherDisplay();
+  // Weather — re-geocode for translated city name
+  reverseGeocode(weatherLat, weatherLon).then(() => updateWeatherDisplay());
 
   // Store preference
   try { localStorage.setItem('synapse-lang', lang); } catch(_) {}
