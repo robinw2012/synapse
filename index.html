@@ -229,7 +229,225 @@ Faut-il y voir un simple effet de mode ? Peut-être. Mais il est aussi possible 
       <span class="modal-category">Information</span>
       <h1 class="modal-title">${t.title}</h1>
       <div class="modal-body" style="margin-top: 1.5rem;">${t.body}</div>
-    `,document.getElementById("modal").classList.add("open"),document.querySelector(".modal-overlay").classList.add("open"),document.querySelector(".modal").scrollTop=0}function makeSvgForCategory(e,t){const n="edsvg"+t,s={Science:`<defs><linearGradient id="${n}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1a1a2e"/><stop offset="100%" stop-color="#4a2040"/></linearGradient><radialGradient id="${n}r" cx="0.5" cy="0.3"><stop offset="0%" stop-color="#e85a60" stop-opacity="0.5"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><rect width="800" height="450" fill="url(#${n})"/><circle cx="400" cy="225" r="200" fill="url(#${n}r)"/><g stroke="#d4a858" stroke-width="0.5" fill="none" opacity="0.6"><circle cx="400" cy="225" r="60"/><circle cx="400" cy="225" r="100"/><circle cx="400" cy="225" r="140"/><circle cx="400" cy="225" r="180"/></g><g fill="#f2ece0"><circle cx="400" cy="225" r="6"/><circle cx="460" cy="210" r="3"/><circle cx="340" cy="240" r="4"/><circle cx="520" cy="225" r="2"/><circle cx="280" cy="215" r="3"/></g>`,Tech:`<rect width="800" height="450" fill="#0f1419"/><g opacity="0.9"><circle cx="400" cy="225" r="70" fill="none" stroke="#e85a60" stroke-width="1.5"/><circle cx="400" cy="225" r="50" fill="none" stroke="#d4a858" stroke-width="1"/><circle cx="400" cy="225" r="30" fill="none" stroke="#f2ece0" stroke-width="0.8"/><circle cx="400" cy="225" r="6" fill="#e85a60"/></g><g fill="#f2ece0" font-family="JetBrains Mono" font-size="10" opacity="0.5"><text x="60" y="60">0xA4F2</text><text x="660" y="60">0xBE18</text><text x="60" y="400">▲ 2048d</text><text x="650" y="400">λ=0.732</text></g><g stroke="#e85a60" stroke-width="0.5" opacity="0.3"><line x1="0" y1="225" x2="800" y2="225"/><line x1="400" y1="0" x2="400" y2="450"/></g>`,"Économie":`<rect width="800" height="450" fill="#2a3a4a"/><g stroke="#d4a858" stroke-width="1" fill="none" opacity="0.8"><path d="M0,300 Q200,180 400,240 T800,150"/><path d="M0,320 Q200,260 400,280 T800,220" opacity="0.5"/></g><g fill="#f2ece0" opacity="0.9"><rect x="80" y="300" width="6" height="80"/><rect x="180" y="260" width="6" height="120"/><rect x="280" y="220" width="6" height="160"/><rect x="380" y="200" width="6" height="180"/><rect x="480" y="180" width="6" height="200"/><rect x="580" y="160" width="6" height="220"/><rect x="680" y="140" width="6" height="240"/></g>`,Politique:`<rect width="800" height="450" fill="#1a2a3a"/><g fill="none" stroke="#f2ece0" stroke-width="1" opacity="0.4"><rect x="200" y="100" width="120" height="200" rx="4"/><rect x="340" y="80" width="120" height="220" rx="4"/><rect x="480" y="120" width="120" height="180" rx="4"/></g><g fill="#d4a858" opacity="0.8"><circle cx="260" cy="160" r="15"/><circle cx="400" cy="140" r="15"/><circle cx="540" cy="180" r="15"/></g><line x1="100" y1="350" x2="700" y2="350" stroke="#a72328" stroke-width="2"/>`,Culture:`<defs><linearGradient id="${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7d1a1e"/><stop offset="100%" stop-color="#b08a3e"/></linearGradient></defs><rect width="800" height="450" fill="url(#${n})"/><g fill="none" stroke="#f2ece0" stroke-width="1" opacity="0.4"><rect x="120" y="100" width="160" height="220"/><rect x="320" y="80" width="160" height="240"/><rect x="520" y="110" width="160" height="210"/></g><rect x="0" y="330" width="800" height="120" fill="#0a0a0a" opacity="0.3"/><g fill="#f2ece0" opacity="0.5"><circle cx="200" cy="380" r="3"/><circle cx="400" cy="390" r="3"/><circle cx="600" cy="375" r="3"/></g>`,"Société":`<rect width="800" height="450" fill="#e8dfc9"/><g fill="#141414" opacity="0.85"><rect x="100" y="80" width="60" height="280"/><rect x="200" y="140" width="60" height="220"/><rect x="300" y="100" width="60" height="260"/><rect x="400" y="160" width="60" height="200"/><rect x="500" y="70" width="60" height="290"/><rect x="600" y="120" width="60" height="240"/></g><line x1="50" y1="360" x2="750" y2="360" stroke="#a72328" stroke-width="2"/>`,Sport:`<defs><linearGradient id="${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#b85c3a"/><stop offset="100%" stop-color="#6b2e1a"/></linearGradient></defs><rect width="800" height="450" fill="url(#${n})"/><line x1="0" y1="225" x2="800" y2="225" stroke="#f2ece0" stroke-width="2"/><rect x="385" y="120" width="30" height="210" fill="#f2ece0" opacity="0.6"/><circle cx="400" cy="130" r="12" fill="#f2ece0"/><g stroke="#f2ece0" stroke-width="1" opacity="0.35"><line x1="100" y1="140" x2="700" y2="140"/><line x1="100" y1="310" x2="700" y2="310"/><line x1="100" y1="80" x2="100" y2="370"/><line x1="700" y1="80" x2="700" y2="370"/></g>`,"Idées":`<rect width="800" height="450" fill="#1a1a1a"/><g stroke="#f2ece0" stroke-width="0.5" fill="none" opacity="0.7"><circle cx="200" cy="225" r="60"/><circle cx="400" cy="225" r="90"/><circle cx="600" cy="225" r="50"/><line x1="260" y1="225" x2="310" y2="225"/><line x1="490" y1="225" x2="550" y2="225"/></g><g fill="#d4a858"><circle cx="200" cy="225" r="4"/><circle cx="400" cy="225" r="5"/><circle cx="600" cy="225" r="4"/></g>`};return s[e]||s.Science}function escapeHtml(e){return String(e||"").replace(/[&<>"']/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[e]))}async function loadTodaysEdition(){try{const s=await fetch("edition.json",{cache:"no-cache"});if(!s.ok)return;const e=await s.json();if(!e.articles||!Array.isArray(e.articles)||e.articles.length===0)return;if(e.editionNumber){const t=document.getElementById("edition");t&&(t.textContent=e.editionNumber)}const o={Politique:"politique","Économie":"economie",Tech:"tech",Science:"science",Culture:"culture","Société":"societe",Sport:"sport","Idées":"opinion"},i=articles.length;e.articles.forEach(e=>articles.push(e));const a=document.getElementById("todays-edition");a.style.display="block",a.dataset.hasEdition="true",document.getElementById("todays-edition-date").textContent=e.editionDate||"",document.getElementById("todays-edition-meta").textContent=`Généré par ${e.model||"Claude"} · ${e.articles.length} article${e.articles.length>1?"s":""}`;const t=e.articles[0],n=i,c=makeSvgForCategory(t.category,n),r=document.getElementById("todays-hero-wrap");r.innerHTML=`
+    `,document.getElementById("modal").classList.add("open"),document.querySelector(".modal-overlay").classList.add("open"),document.querySelector(".modal").scrollTop=0}function hashStr(str) {
+  // Simple deterministic hash → integer
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = (h * 0x01000193) >>> 0;
+  }
+  return h;
+}
+
+function hsvToHex(h, s, v) {
+  // h 0-360, s 0-1, v 0-1
+  const f = n => {
+    const k = (n + h / 60) % 6;
+    return Math.round((v - v * s * Math.max(0, Math.min(k, 4 - k, 1))) * 255);
+  };
+  const r = f(5).toString(16).padStart(2, '0');
+  const g = f(3).toString(16).padStart(2, '0');
+  const b = f(1).toString(16).padStart(2, '0');
+  return `#${r}${g}${b}`;
+}
+
+// Category base hues (keeps category color identity)
+const CAT_HUES = {
+  'Science': 220, 'Tech': 200, 'Technologie': 200,
+  'Économie': 40, 'Économie · Exclusif': 40,
+  'Politique': 10, 'Société': 140, 'Sport': 15,
+  'Culture': 330, 'Idées': 260, 'Grand Reportage': 140,
+  'Gastronomie': 30, 'Science · Exclusif': 220
+};
+
+function makeSvgForArticle(article, idx) {
+  const cat = (article && article.category) ? article.category : 'Science';
+  const title = (article && article.title) ? article.title : '';
+  const tags = (article && article.tags) ? article.tags.join(' ') : '';
+  const seed = title + tags + cat;
+
+  const id = 'asvg' + idx;
+  const h = hashStr(seed);
+  const h2 = hashStr(seed + 'b');
+  const h3 = hashStr(seed + 'c');
+  const h4 = hashStr(seed + 'd');
+
+  // Color palette derived from article
+  const baseHue = CAT_HUES[cat] || (h % 360);
+  const hue1 = baseHue;
+  const hue2 = (baseHue + 30 + (h2 % 40)) % 360;
+  const hue3 = (baseHue + 180 + (h3 % 30)) % 360;
+
+  const c1 = hsvToHex(hue1, 0.7 + (h & 0xf) / 80, 0.12 + (h >> 4 & 0xf) / 100);
+  const c2 = hsvToHex(hue2, 0.6 + (h2 & 0xf) / 80, 0.25 + (h2 >> 4 & 0xf) / 80);
+  const c3 = hsvToHex(hue3, 0.8, 0.7);          // accent
+  const cGold = hsvToHex((baseHue + 50) % 360, 0.65, 0.78); // gold variant
+
+  // Layout type (0-5) → 6 distinct compositions
+  const layout = h % 6;
+
+  // Seeded positions
+  const px = (n) => 50 + (hashStr(seed + n) % 700);
+  const py = (n) => 30 + (hashStr(seed + 'y' + n) % 380);
+  const pr = (n) => 15 + (hashStr(seed + 'r' + n) % 80);
+
+  let innerSvg = '';
+
+  // Background gradient always unique
+  innerSvg += `<defs>
+    <linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="${c1}"/>
+      <stop offset="100%" stop-color="${c2}"/>
+    </linearGradient>
+    <radialGradient id="${id}r" cx="${30 + h % 40}%" cy="${20 + h2 % 30}%">
+      <stop offset="0%" stop-color="${c3}" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="${c3}" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#${id}g)"/>
+  <rect width="800" height="450" fill="url(#${id}r)"/>`;
+
+  if (layout === 0) {
+    // Constellation : points reliés par des lignes
+    const pts = Array.from({length: 7}, (_, i) => [px(i), py(i)]);
+    const lines = [[0,1],[1,2],[2,3],[3,4],[1,4],[2,5],[5,6]];
+    innerSvg += `<g stroke="${c3}" stroke-width="0.8" opacity="0.5">`;
+    lines.forEach(([a, b]) => {
+      innerSvg += `<line x1="${pts[a][0]}" y1="${pts[a][1]}" x2="${pts[b][0]}" y2="${pts[b][1]}"/>`;
+    });
+    innerSvg += `</g><g fill="${c3}" opacity="0.8">`;
+    pts.forEach(([x, y], i) => {
+      innerSvg += `<circle cx="${x}" cy="${y}" r="${3 + i % 4}"/>`;
+    });
+    innerSvg += `</g>`;
+    // Large faded circle
+    innerSvg += `<circle cx="${px('c')}" cy="${py('c')}" r="${100 + h % 80}" fill="none" stroke="${c3}" stroke-width="1" opacity="0.2"/>`;
+
+  } else if (layout === 1) {
+    // Grille de modules / data
+    const cols = 6 + h % 3, rows = 4;
+    const cw = 800 / (cols + 1), ch = 450 / (rows + 1);
+    innerSvg += `<g opacity="0.6">`;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const filled = hashStr(seed + r + c) % 3 !== 0;
+        const x = cw * (c + 0.5) + (hashStr(seed + r * 99 + c) % 20) - 10;
+        const y = ch * (r + 0.5) + (hashStr(seed + r + c * 77) % 15) - 7;
+        const size = 4 + hashStr(seed + r + c + 'sz') % 12;
+        if (filled) {
+          innerSvg += `<rect x="${x - size/2}" y="${y - size/2}" width="${size}" height="${size}" fill="${c3}" opacity="${0.3 + (hashStr(seed+r+c+'op') % 5) / 10}" rx="2"/>`;
+        } else {
+          innerSvg += `<circle cx="${x}" cy="${y}" r="${size/2}" fill="none" stroke="${cGold}" stroke-width="0.8" opacity="0.4"/>`;
+        }
+      }
+    }
+    innerSvg += `</g>`;
+    // Diagonal accent line
+    innerSvg += `<line x1="0" y1="${py('dl')}" x2="800" y2="${py('dl2')}" stroke="${c3}" stroke-width="1.5" opacity="0.3"/>`;
+
+  } else if (layout === 2) {
+    // Formes géométriques emboîtées
+    const cx = 200 + h % 400, cy = 100 + h2 % 250;
+    const n = 3 + h % 5; // 3 to 7 sides
+    function polygon(cx, cy, r, sides, rotate) {
+      const pts = Array.from({length: sides}, (_, i) => {
+        const a = (i / sides) * Math.PI * 2 + rotate;
+        return `${(cx + Math.cos(a) * r).toFixed(1)},${(cy + Math.sin(a) * r).toFixed(1)}`;
+      });
+      return pts.join(' ');
+    }
+    [120, 85, 55, 30].forEach((r, i) => {
+      const rot = (h * (i + 1) % 360) * Math.PI / 180;
+      innerSvg += `<polygon points="${polygon(cx, cy, r, n, rot)}" fill="none" stroke="${i % 2 === 0 ? c3 : cGold}" stroke-width="${1.5 - i * 0.2}" opacity="${0.5 - i * 0.08}"/>`;
+    });
+    // Small circles at polygon vertices
+    const rot0 = (h % 360) * Math.PI / 180;
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 + rot0;
+      const px2 = cx + Math.cos(a) * 120, py2 = cy + Math.sin(a) * 120;
+      innerSvg += `<circle cx="${px2.toFixed(1)}" cy="${py2.toFixed(1)}" r="4" fill="${c3}" opacity="0.7"/>`;
+    }
+    // Second shape offset
+    const cx2 = 800 - cx + 50, cy2 = 450 - cy + 30;
+    innerSvg += `<polygon points="${polygon(cx2, cy2, 60, n + 1, rot0)}" fill="none" stroke="${c3}" stroke-width="1" opacity="0.2"/>`;
+
+  } else if (layout === 3) {
+    // Vagues et courbes
+    const amp = 40 + h % 60, freq = 2 + h2 % 3;
+    const generateWave = (yBase, amp, phase, opacity) => {
+      let d = `M 0 ${yBase}`;
+      for (let x = 0; x <= 800; x += 20) {
+        const y = yBase + Math.sin((x / 800) * Math.PI * freq + phase) * amp;
+        d += ` L ${x} ${y.toFixed(1)}`;
+      }
+      return `<path d="${d}" fill="none" stroke="${c3}" stroke-width="1.5" opacity="${opacity}"/>`;
+    };
+    for (let i = 0; i < 4; i++) {
+      const yBase = 100 + i * 80 + (h3 % 30);
+      const phase = (i * Math.PI / 4) + (h2 % 360) * Math.PI / 180;
+      innerSvg += generateWave(yBase, amp - i * 8, phase, 0.5 - i * 0.08);
+    }
+    // Dots on wave peaks
+    for (let x = 0; x <= 800; x += 200) {
+      const y = 150 + Math.sin((x / 800) * Math.PI * freq) * amp;
+      innerSvg += `<circle cx="${x}" cy="${y.toFixed(1)}" r="5" fill="${cGold}" opacity="0.7"/>`;
+    }
+
+  } else if (layout === 4) {
+    // Barres / data visualization abstraite
+    const bars = 12 + h % 8;
+    const bw = 800 / (bars * 1.8);
+    for (let i = 0; i < bars; i++) {
+      const bh = 50 + hashStr(seed + 'bar' + i) % 300;
+      const x = i * (800 / bars) + bw / 2;
+      const y = 450 - bh;
+      const opacity = 0.3 + (hashStr(seed + 'op' + i) % 5) / 10;
+      const col = i % 3 === 0 ? c3 : (i % 3 === 1 ? cGold : 'rgba(255,255,255,0.3)');
+      innerSvg += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" fill="${col}" opacity="${opacity}" rx="2"/>`;
+    }
+    // Trend line
+    let trendPath = 'M';
+    for (let i = 0; i < bars; i++) {
+      const bh = 50 + hashStr(seed + 'bar' + i) % 300;
+      const x = i * (800 / bars) + (800 / bars) / 2;
+      const y = 450 - bh - 8;
+      trendPath += (i === 0 ? '' : ' L') + ` ${x.toFixed(1)} ${y.toFixed(1)}`;
+    }
+    innerSvg += `<path d="${trendPath}" fill="none" stroke="${c3}" stroke-width="2" opacity="0.6"/>`;
+
+  } else {
+    // layout === 5 : Orbites / systèmes
+    const cx = 300 + h % 200, cy = 150 + h2 % 150;
+    const rings = [45, 80, 120, 165];
+    rings.forEach((r, i) => {
+      innerSvg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${i % 2 === 0 ? c3 : cGold}" stroke-width="${1.2 - i * 0.1}" opacity="${0.5 - i * 0.08}" stroke-dasharray="${i % 2 === 0 ? 'none' : '4,6'}"/>`;
+      // Satellite
+      const angle = (hashStr(seed + 'sat' + i) % 360) * Math.PI / 180;
+      const sx = cx + Math.cos(angle) * r;
+      const sy = cy + Math.sin(angle) * r;
+      innerSvg += `<circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="${3 + i}" fill="${i % 2 === 0 ? c3 : cGold}" opacity="0.8"/>`;
+    });
+    // Core
+    innerSvg += `<circle cx="${cx}" cy="${cy}" r="12" fill="${c3}" opacity="0.9"/>`;
+    innerSvg += `<circle cx="${cx}" cy="${cy}" r="6" fill="${cGold}"/>`;
+    // Second system (smaller)
+    const cx2 = 600 + h3 % 100, cy2 = 300 + h4 % 100;
+    innerSvg += `<circle cx="${cx2}" cy="${cy2}" r="30" fill="none" stroke="${c3}" stroke-width="0.8" opacity="0.25"/>`;
+    innerSvg += `<circle cx="${cx2}" cy="${cy2}" r="5" fill="${c3}" opacity="0.5"/>`;
+    // Connection
+    innerSvg += `<line x1="${cx}" y1="${cy}" x2="${cx2}" y2="${cy2}" stroke="${c3}" stroke-width="0.5" opacity="0.2"/>`;
+  }
+
+  // Watermark category
+  innerSvg += `<text x="400" y="430" font-family="Bricolage Grotesque,sans-serif" font-size="10" fill="#ffffff" text-anchor="middle" letter-spacing="4" opacity="0.35" text-transform="uppercase">${cat.toUpperCase()}</text>`;
+
+  return innerSvg;
+}
+
+// Backward compat — old call sites pass (category, idx)
+function makeSvgForCategory(cat, idx) {
+  return makeSvgForArticle({ category: cat, title: '', tags: [] }, idx);
+}function escapeHtml(e){return String(e||"").replace(/[&<>"']/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[e]))}async function loadTodaysEdition(){try{const s=await fetch("edition.json",{cache:"no-cache"});if(!s.ok)return;const e=await s.json();if(!e.articles||!Array.isArray(e.articles)||e.articles.length===0)return;if(e.editionNumber){const t=document.getElementById("edition");t&&(t.textContent=e.editionNumber)}const o={Politique:"politique","Économie":"economie",Tech:"tech",Science:"science",Culture:"culture","Société":"societe",Sport:"sport","Idées":"opinion"},i=articles.length;e.articles.forEach(e=>articles.push(e));const a=document.getElementById("todays-edition");a.style.display="block",a.dataset.hasEdition="true",document.getElementById("todays-edition-date").textContent=e.editionDate||"",document.getElementById("todays-edition-meta").textContent=`Généré par ${e.model||"Claude"} · ${e.articles.length} article${e.articles.length>1?"s":""}`;const t=e.articles[0],n=i,c=makeSvgForArticle(t,n),r=document.getElementById("todays-hero-wrap");r.innerHTML=`
         <article class="hero-article" data-article="${n}" data-cat="${o[t.category]||"une"}" style="cursor: pointer;">
           <div class="hero-image">
             <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">${c}<text x="400" y="430" font-family="Bricolage Grotesque" font-size="11" fill="#f2ece0" text-anchor="middle" letter-spacing="4" opacity="0.45">${escapeHtml(t.category).toUpperCase()} · ÉDITION DU JOUR</text></svg>
@@ -246,7 +464,7 @@ Faut-il y voir un simple effet de mode ? Peut-être. Mais il est aussi possible 
             <span>Lecture : ${t.readTime}</span>
           </div>
         </article>
-      `,r.querySelector(".hero-article").addEventListener("click",()=>openArticle(n));const l=document.getElementById("todays-grid"),d=e.articles.slice(1);d.forEach((e,t)=>{const s=i+1+t,a=makeSvgForCategory(e.category,s),n=document.createElement("article");n.className="article-card",n.dataset.article=s,n.dataset.cat=o[e.category]||"une",n.innerHTML=`
+      `,r.querySelector(".hero-article").addEventListener("click",()=>openArticle(n));const l=document.getElementById("todays-grid"),d=e.articles.slice(1);d.forEach((e,t)=>{const s=i+1+t,a=makeSvgForArticle(e,s),n=document.createElement("article");n.className="article-card",n.dataset.article=s,n.dataset.cat=o[e.category]||"une",n.innerHTML=`
           <div class="card-image">
             <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">${a}<text x="400" y="430" font-family="Bricolage Grotesque" font-size="11" fill="#f2ece0" text-anchor="middle" letter-spacing="3" opacity="0.45">${escapeHtml(e.category).toUpperCase()}</text></svg>
           </div>
@@ -257,7 +475,7 @@ Faut-il y voir un simple effet de mode ? Peut-être. Mais il est aussi possible 
             <span>${escapeHtml(e.author)}</span>
             <span>${e.readTime}</span>
           </div>
-        `,n.addEventListener("click",()=>openArticle(s)),l.appendChild(n)})}catch(e){console.log("[SYNAPSE] Pas d'édition dynamique :",e.message)}}const CAT_LABELS_FULL={science:{name:"Science",subtitle:"découvertes et recherche"},economie:{name:"Économie",subtitle:"marchés et analyses"},tech:{name:"Technologie",subtitle:"innovation et numérique"},culture:{name:"Culture",subtitle:"arts et critiques"},societe:{name:"Société",subtitle:"enquêtes et tendances"},politique:{name:"Politique",subtitle:"institutions et débats"},sport:{name:"Sport",subtitle:"compétitions et décryptages"},opinion:{name:"Idées",subtitle:"chroniques et essais"}};function buildRubriqueSections(){const n=document.getElementById("rubrique-articles");if(!n)return;const t={};articles.forEach((e,n)=>{const o=e.category||"",s={Science:"science",Technologie:"tech",Tech:"tech","Économie":"economie",Culture:"culture","Société":"societe",Politique:"politique",Sport:"sport","Idées":"opinion","Grand Reportage":"societe",Gastronomie:"culture","Science · Exclusif":"science"}[o]||o.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");t[s]||(t[s]=[]),t[s].push({article:e,index:n})});const s=["politique","economie","tech","science","culture","societe","sport","opinion"];let e="",o=1;for(const n of s){const i=t[n];if(!i||i.length===0)continue;const a=CAT_LABELS_FULL[n]||{name:n,subtitle:""};e+='<div class="section-heading" data-rubrique="'+n+'">',e+="<h2>"+a.name+"</h2>",e+='<span class="sec-subtitle">— '+a.subtitle+"</span>",e+='<span class="sec-num">'+i.length+" article"+(i.length>1?"s":"")+"</span>",e+="</div>",e+='<section class="grid-3" data-rubrique="'+n+'">';for(const s of i){const t=s.article,o=s.index,r=typeof makeSvgForCategory=="function"?makeSvgForCategory(t.category||a.name,o):'<rect width="800" height="450" fill="#2a3a4a"/>';e+='<article class="article-card" data-article="'+o+'" data-cat="'+n+'">',e+='<div class="card-image"><svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">'+r+"</svg></div>",e+='<span class="category-tag">'+(t.category||a.name)+"</span>",e+='<h3 class="card-title">'+(t.title||"")+"</h3>",e+='<p class="card-excerpt">'+(t.dek||"")+"</p>",e+='<div class="card-meta"><span>'+(t.author||"")+"</span><span>"+(t.readTime||"")+"</span></div>",e+="</article>"}e+="</section>",o++}n.innerHTML=e,n.querySelectorAll("[data-article]").forEach(e=>{e.addEventListener("click",()=>openArticle(parseInt(e.dataset.article)))})}async function initPage(){await loadTodaysEdition(),buildRubriqueSections()}initPage();const MARKET_BASE={cac:{value:7820,vol:.012},brent:{value:73.5,vol:.018}},sessionDrift=e=>(Math.random()-.5)*2*e;function formatPrice(e,t=2,n=""){return e.toLocaleString("fr-FR",{minimumFractionDigits:t,maximumFractionDigits:t})+n}function setChange(e,t,n=" %"){if(!e)return;const s=t>=0?"▲ +":"▼ ",o=t>=0?"up":"down";e.className="data-change "+o,e.textContent=s+formatPrice(t<0?-t:t,2)+n}async function fetchMarketData(){const e=MARKET_BASE.cac.value*(1+sessionDrift(MARKET_BASE.cac.vol)),i=(e/MARKET_BASE.cac.value-1)*100,t=document.getElementById("px-cac");t&&(t.textContent=formatPrice(e,2)),setChange(document.getElementById("ch-cac"),i);const n=MARKET_BASE.brent.value*(1+sessionDrift(MARKET_BASE.brent.vol)),a=(n/MARKET_BASE.brent.value-1)*100,s=document.getElementById("px-brent");s&&(s.textContent=formatPrice(n,2)+" $"),setChange(document.getElementById("ch-brent"),a);try{const e=await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true",{cache:"no-store"});if(e.ok){const t=await e.json(),n=t.bitcoin?.usd,s=t.bitcoin?.usd_24h_change;if(n){const e=document.getElementById("px-btc");e&&(e.textContent=formatPrice(n,0)+" $"),s!==0[0]&&setChange(document.getElementById("ch-btc"),s)}}}catch{const e=document.getElementById("px-btc");e&&e.textContent==="—"&&(e.textContent="— $");const t=document.getElementById("ch-btc");t&&(t.textContent="hors ligne")}try{const e=await fetch("https://api.frankfurter.app/latest?from=EUR&to=USD",{cache:"no-store"});if(e.ok){const n=await e.json(),t=n.rates?.USD;if(t){const e=document.getElementById("px-eur");e&&(e.textContent=formatPrice(t,4));try{const n=new Date(Date.now()-864e5).toISOString().slice(0,10),e=await fetch(`https://api.frankfurter.app/${n}?from=EUR&to=USD`,{cache:"no-store"});if(e.ok){const s=await e.json(),n=s.rates?.USD;if(n){const e=(t/n-1)*100;setChange(document.getElementById("ch-eur"),e)}}}catch{}}}}catch{const e=document.getElementById("px-eur");e&&e.textContent==="—"&&(e.textContent="—");const t=document.getElementById("ch-eur");t&&(t.textContent="hors ligne")}const o=document.getElementById("px-updated");if(o){const e=new Date,t=String(e.getHours()).padStart(2,"0"),n=String(e.getMinutes()).padStart(2,"0");o.textContent=`Mise à jour : ${t}:${n} · BTC & EUR/USD en temps réel · CAC 40 & Brent indicatifs`}}fetchMarketData(),setInterval(fetchMarketData,6e4);
+        `,n.addEventListener("click",()=>openArticle(s)),l.appendChild(n)})}catch(e){console.log("[SYNAPSE] Pas d'édition dynamique :",e.message)}}const CAT_LABELS_FULL={science:{name:"Science",subtitle:"découvertes et recherche"},economie:{name:"Économie",subtitle:"marchés et analyses"},tech:{name:"Technologie",subtitle:"innovation et numérique"},culture:{name:"Culture",subtitle:"arts et critiques"},societe:{name:"Société",subtitle:"enquêtes et tendances"},politique:{name:"Politique",subtitle:"institutions et débats"},sport:{name:"Sport",subtitle:"compétitions et décryptages"},opinion:{name:"Idées",subtitle:"chroniques et essais"}};function buildRubriqueSections(){const n=document.getElementById("rubrique-articles");if(!n)return;const t={};articles.forEach((e,n)=>{const o=e.category||"",s={Science:"science",Technologie:"tech",Tech:"tech","Économie":"economie",Culture:"culture","Société":"societe",Politique:"politique",Sport:"sport","Idées":"opinion","Grand Reportage":"societe",Gastronomie:"culture","Science · Exclusif":"science"}[o]||o.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");t[s]||(t[s]=[]),t[s].push({article:e,index:n})});const s=["politique","economie","tech","science","culture","societe","sport","opinion"];let e="",o=1;for(const n of s){const i=t[n];if(!i||i.length===0)continue;const a=CAT_LABELS_FULL[n]||{name:n,subtitle:""};e+='<div class="section-heading" data-rubrique="'+n+'">',e+="<h2>"+a.name+"</h2>",e+='<span class="sec-subtitle">— '+a.subtitle+"</span>",e+='<span class="sec-num">'+i.length+" article"+(i.length>1?"s":"")+"</span>",e+="</div>",e+='<section class="grid-3" data-rubrique="'+n+'">';for(const s of i){const t=s.article,o=s.index,r=typeof makeSvgForCategory=="function"?makeSvgForArticle(t,o):'<rect width="800" height="450" fill="#2a3a4a"/>';e+='<article class="article-card" data-article="'+o+'" data-cat="'+n+'">',e+='<div class="card-image"><svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">'+r+"</svg></div>",e+='<span class="category-tag">'+(t.category||a.name)+"</span>",e+='<h3 class="card-title">'+(t.title||"")+"</h3>",e+='<p class="card-excerpt">'+(t.dek||"")+"</p>",e+='<div class="card-meta"><span>'+(t.author||"")+"</span><span>"+(t.readTime||"")+"</span></div>",e+="</article>"}e+="</section>",o++}n.innerHTML=e,n.querySelectorAll("[data-article]").forEach(e=>{e.addEventListener("click",()=>openArticle(parseInt(e.dataset.article)))})}async function initPage(){await loadTodaysEdition(),buildRubriqueSections()}initPage();const MARKET_BASE={cac:{value:7820,vol:.012},brent:{value:73.5,vol:.018}},sessionDrift=e=>(Math.random()-.5)*2*e;function formatPrice(e,t=2,n=""){return e.toLocaleString("fr-FR",{minimumFractionDigits:t,maximumFractionDigits:t})+n}function setChange(e,t,n=" %"){if(!e)return;const s=t>=0?"▲ +":"▼ ",o=t>=0?"up":"down";e.className="data-change "+o,e.textContent=s+formatPrice(t<0?-t:t,2)+n}async function fetchMarketData(){const e=MARKET_BASE.cac.value*(1+sessionDrift(MARKET_BASE.cac.vol)),i=(e/MARKET_BASE.cac.value-1)*100,t=document.getElementById("px-cac");t&&(t.textContent=formatPrice(e,2)),setChange(document.getElementById("ch-cac"),i);const n=MARKET_BASE.brent.value*(1+sessionDrift(MARKET_BASE.brent.vol)),a=(n/MARKET_BASE.brent.value-1)*100,s=document.getElementById("px-brent");s&&(s.textContent=formatPrice(n,2)+" $"),setChange(document.getElementById("ch-brent"),a);try{const e=await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true",{cache:"no-store"});if(e.ok){const t=await e.json(),n=t.bitcoin?.usd,s=t.bitcoin?.usd_24h_change;if(n){const e=document.getElementById("px-btc");e&&(e.textContent=formatPrice(n,0)+" $"),s!==0[0]&&setChange(document.getElementById("ch-btc"),s)}}}catch{const e=document.getElementById("px-btc");e&&e.textContent==="—"&&(e.textContent="— $");const t=document.getElementById("ch-btc");t&&(t.textContent="hors ligne")}try{const e=await fetch("https://api.frankfurter.app/latest?from=EUR&to=USD",{cache:"no-store"});if(e.ok){const n=await e.json(),t=n.rates?.USD;if(t){const e=document.getElementById("px-eur");e&&(e.textContent=formatPrice(t,4));try{const n=new Date(Date.now()-864e5).toISOString().slice(0,10),e=await fetch(`https://api.frankfurter.app/${n}?from=EUR&to=USD`,{cache:"no-store"});if(e.ok){const s=await e.json(),n=s.rates?.USD;if(n){const e=(t/n-1)*100;setChange(document.getElementById("ch-eur"),e)}}}catch{}}}}catch{const e=document.getElementById("px-eur");e&&e.textContent==="—"&&(e.textContent="—");const t=document.getElementById("ch-eur");t&&(t.textContent="hors ligne")}const o=document.getElementById("px-updated");if(o){const e=new Date,t=String(e.getHours()).padStart(2,"0"),n=String(e.getMinutes()).padStart(2,"0");o.textContent=`Mise à jour : ${t}:${n} · BTC & EUR/USD en temps réel · CAC 40 & Brent indicatifs`}}fetchMarketData(),setInterval(fetchMarketData,6e4);
 
 // ============== MÉTÉO EN DIRECT ==============
 // Open-Meteo API (gratuit, sans clé, CORS ouvert)
