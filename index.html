@@ -229,225 +229,658 @@ Faut-il y voir un simple effet de mode ? Peut-être. Mais il est aussi possible 
       <span class="modal-category">Information</span>
       <h1 class="modal-title">${t.title}</h1>
       <div class="modal-body" style="margin-top: 1.5rem;">${t.body}</div>
-    `,document.getElementById("modal").classList.add("open"),document.querySelector(".modal-overlay").classList.add("open"),document.querySelector(".modal").scrollTop=0}function hashStr(str) {
-  // Simple deterministic hash → integer
+    `,document.getElementById("modal").classList.add("open"),document.querySelector(".modal-overlay").classList.add("open"),document.querySelector(".modal").scrollTop=0}
+// ================================================================
+//  MOTEUR D'ILLUSTRATION SYNAPSE DAILY
+//  Génère un visuel SVG unique lié au contenu de chaque article.
+//  Basé sur : titre + tags + rubrique → motifs iconiques + couleurs
+// ================================================================
+
+function hashStr(str) {
   let h = 0x811c9dc5;
-  for (let i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i);
-    h = (h * 0x01000193) >>> 0;
-  }
+  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = (h * 0x01000193) >>> 0; }
   return h;
 }
+function seededRand(seed) { return (hashStr(String(seed)) % 1000) / 1000; }
+function hsl(h, s, l) { return `hsl(${h},${s}%,${l}%)`; }
 
-function hsvToHex(h, s, v) {
-  // h 0-360, s 0-1, v 0-1
-  const f = n => {
-    const k = (n + h / 60) % 6;
-    return Math.round((v - v * s * Math.max(0, Math.min(k, 4 - k, 1))) * 255);
+// Palettes par rubrique — chaque article décale légèrement selon son hash
+const PALETTES = {
+  'Science':    { bg: [218, 40, 10], accent: [185, 80, 55], gold: [45, 90, 60] },
+  'Tech':       { bg: [200, 35, 8],  accent: [160, 75, 45], gold: [195, 80, 65] },
+  'Technologie':{ bg: [200, 35, 8],  accent: [160, 75, 45], gold: [195, 80, 65] },
+  'Économie':   { bg: [38, 40, 10],  accent: [42, 85, 55],  gold: [140, 60, 45] },
+  'Politique':  { bg: [8, 45, 10],   accent: [5, 80, 50],   gold: [42, 85, 60] },
+  'Culture':    { bg: [320, 35, 10], accent: [340, 75, 55], gold: [30, 80, 58] },
+  'Société':    { bg: [145, 30, 10], accent: [142, 65, 45], gold: [38, 85, 58] },
+  'Sport':      { bg: [14, 45, 10],  accent: [12, 80, 52],  gold: [42, 88, 58] },
+  'Idées':      { bg: [265, 35, 10], accent: [262, 70, 58], gold: [45, 80, 60] },
+};
+const DEFAULT_PAL = { bg: [220, 35, 10], accent: [210, 70, 50], gold: [42, 80, 58] };
+
+function getPalette(cat, seed) {
+  const p = PALETTES[cat] || DEFAULT_PAL;
+  const d = Math.floor(seededRand(seed + 'hd') * 25) - 12;
+  return {
+    bg:     hsl(p.bg[0] + d,     p.bg[1],     p.bg[2]),
+    bg2:    hsl(p.bg[0] + d + 20, p.bg[1] + 8, p.bg[2] + 8),
+    accent: hsl(p.accent[0] + d, p.accent[1], p.accent[2]),
+    gold:   hsl(p.gold[0] + d,   p.gold[1],   p.gold[2]),
+    light:  hsl(p.bg[0] + d,     15,           82),
+    dark:   hsl(p.bg[0] + d,     40,           5),
   };
-  const r = f(5).toString(16).padStart(2, '0');
-  const g = f(3).toString(16).padStart(2, '0');
-  const b = f(1).toString(16).padStart(2, '0');
-  return `#${r}${g}${b}`;
 }
 
-// Category base hues (keeps category color identity)
-const CAT_HUES = {
-  'Science': 220, 'Tech': 200, 'Technologie': 200,
-  'Économie': 40, 'Économie · Exclusif': 40,
-  'Politique': 10, 'Société': 140, 'Sport': 15,
-  'Culture': 330, 'Idées': 260, 'Grand Reportage': 140,
-  'Gastronomie': 30, 'Science · Exclusif': 220
+// ============================================================
+//  BIBLIOTHÈQUE DE MOTIFS SVG (viewBox 0 0 800 450)
+//  Chaque motif = fonction(x, y, scale, color, seed) → SVG string
+// ============================================================
+
+const MOTIFS = {
+
+  // ——— SCIENCE / ESPACE ———
+  planet: (x, y, r, c, c2, seed) => {
+    const tilt = 20 + seededRand(seed+'pt') * 30;
+    const ringRx = r * 1.8, ringRy = r * 0.4;
+    return `<g>
+      <ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r}" fill="${c}" opacity="0.9"/>
+      <ellipse cx="${x}" cy="${y}" rx="${r * 0.7}" ry="${r * 0.7}" fill="${c2}" opacity="0.4"/>
+      <ellipse cx="${x}" cy="${y}" rx="${ringRx}" ry="${ringRy}" fill="none" stroke="${c2}" stroke-width="3" opacity="0.7" transform="rotate(${tilt},${x},${y})"/>
+      <ellipse cx="${x}" cy="${y}" rx="${ringRx * 0.8}" ry="${ringRy * 0.8}" fill="none" stroke="${c2}" stroke-width="1.5" opacity="0.4" transform="rotate(${tilt},${x},${y})"/>
+    </g>`;
+  },
+
+  stars: (n, c, seed) => {
+    let out = '';
+    for (let i = 0; i < n; i++) {
+      const x = seededRand(seed+'sx'+i) * 800;
+      const y = seededRand(seed+'sy'+i) * 450;
+      const r = seededRand(seed+'sr'+i) * 2.5 + 0.5;
+      const op = 0.3 + seededRand(seed+'so'+i) * 0.7;
+      out += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="${c}" opacity="${op.toFixed(2)}"/>`;
+    }
+    return out;
+  },
+
+  dna: (x, y, c, c2, seed) => {
+    let out = '<g>';
+    const pts = 12, h = 280, period = h / 4;
+    for (let i = 0; i < pts; i++) {
+      const t = i / (pts - 1);
+      const yy = y - h/2 + t * h;
+      const x1 = x + Math.sin(t * Math.PI * 4) * 60;
+      const x2 = x - Math.sin(t * Math.PI * 4) * 60;
+      out += `<circle cx="${x1.toFixed(1)}" cy="${yy.toFixed(1)}" r="8" fill="${c}" opacity="0.85"/>`;
+      out += `<circle cx="${x2.toFixed(1)}" cy="${yy.toFixed(1)}" r="8" fill="${c2}" opacity="0.85"/>`;
+      out += `<line x1="${x1.toFixed(1)}" y1="${yy.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${yy.toFixed(1)}" stroke="${c}" stroke-width="2" opacity="0.4"/>`;
+    }
+    // Backbone curves
+    let d1 = '', d2 = '';
+    for (let i = 0; i <= 40; i++) {
+      const t = i / 40;
+      const yy = y - h/2 + t * h;
+      const x1 = x + Math.sin(t * Math.PI * 4) * 60;
+      const x2 = x - Math.sin(t * Math.PI * 4) * 60;
+      d1 += (i === 0 ? 'M' : 'L') + `${x1.toFixed(1)},${yy.toFixed(1)} `;
+      d2 += (i === 0 ? 'M' : 'L') + `${x2.toFixed(1)},${yy.toFixed(1)} `;
+    }
+    out += `<path d="${d1}" fill="none" stroke="${c}" stroke-width="3" opacity="0.6"/>`;
+    out += `<path d="${d2}" fill="none" stroke="${c2}" stroke-width="3" opacity="0.6"/>`;
+    return out + '</g>';
+  },
+
+  atom: (cx, cy, r, c, c2) => {
+    let out = `<circle cx="${cx}" cy="${cy}" r="${r*0.15}" fill="${c}"/>`;
+    const orbits = [[1, 0], [0.7, 60], [0.7, 120]];
+    orbits.forEach(([sc, rot]) => {
+      out += `<ellipse cx="${cx}" cy="${cy}" rx="${r}" ry="${r*0.35*sc}" fill="none" stroke="${c2}" stroke-width="1.5" opacity="0.65" transform="rotate(${rot},${cx},${cy})"/>`;
+    });
+    return out;
+  },
+
+  // ——— TECH / IA ———
+  circuit: (x, y, w, h2, c, c2, seed) => {
+    let out = '';
+    const cols = 8, rows = 5;
+    const cw = w / cols, ch2 = h2 / rows;
+    // Nodes
+    for (let r = 0; r < rows; r++) {
+      for (let cc = 0; cc < cols; cc++) {
+        if (seededRand(seed+'cn'+r+cc) > 0.4) {
+          const nx = x + cc * cw + cw/2, ny = y + r * ch2 + ch2/2;
+          const isHub = seededRand(seed+'ch'+r+cc) > 0.8;
+          out += `<circle cx="${nx.toFixed(1)}" cy="${ny.toFixed(1)}" r="${isHub ? 6 : 3}" fill="${isHub ? c : c2}" opacity="${isHub ? 0.9 : 0.6}"/>`;
+          // Horizontal trace
+          if (cc < cols - 1 && seededRand(seed+'ht'+r+cc) > 0.4) {
+            out += `<line x1="${nx.toFixed(1)}" y1="${ny.toFixed(1)}" x2="${(x+(cc+1)*cw+cw/2).toFixed(1)}" y2="${ny.toFixed(1)}" stroke="${c2}" stroke-width="1.5" opacity="0.35"/>`;
+          }
+          // Vertical trace
+          if (r < rows - 1 && seededRand(seed+'vt'+r+cc) > 0.5) {
+            out += `<line x1="${nx.toFixed(1)}" y1="${ny.toFixed(1)}" x2="${nx.toFixed(1)}" y2="${(y+(r+1)*ch2+ch2/2).toFixed(1)}" stroke="${c2}" stroke-width="1.5" opacity="0.35"/>`;
+          }
+        }
+      }
+    }
+    return out;
+  },
+
+  neuralNet: (x, y, c, c2, seed) => {
+    const layers = [3, 5, 5, 3];
+    const lw = 180, lh = 220;
+    let nodes = [], out = '';
+    layers.forEach((n, li) => {
+      const lx = x + li * (lw / (layers.length - 1));
+      nodes[li] = [];
+      for (let ni = 0; ni < n; ni++) {
+        const ny = y - lh/2 + (ni + 0.5) * (lh / n);
+        nodes[li].push([lx, ny]);
+      }
+    });
+    // Connections
+    for (let li = 0; li < layers.length - 1; li++) {
+      nodes[li].forEach(([ax, ay]) => {
+        nodes[li+1].forEach(([bx, by]) => {
+          if (seededRand(seed+ax+ay+bx+by) > 0.3) {
+            const op = 0.15 + seededRand(seed+'op'+ax+by) * 0.25;
+            out += `<line x1="${ax.toFixed(1)}" y1="${ay.toFixed(1)}" x2="${bx.toFixed(1)}" y2="${by.toFixed(1)}" stroke="${c2}" stroke-width="1" opacity="${op.toFixed(2)}"/>`;
+          }
+        });
+      });
+    }
+    // Nodes
+    nodes.forEach((layer, li) => {
+      layer.forEach(([nx, ny]) => {
+        const isActive = seededRand(seed+'act'+nx+ny) > 0.5;
+        out += `<circle cx="${nx.toFixed(1)}" cy="${ny.toFixed(1)}" r="7" fill="${isActive ? c : 'none'}" stroke="${c}" stroke-width="${isActive ? 0 : 1.5}" opacity="${isActive ? 0.9 : 0.5}"/>`;
+      });
+    });
+    return out;
+  },
+
+  binaryRain: (c, seed) => {
+    let out = '';
+    for (let i = 0; i < 30; i++) {
+      const x = seededRand(seed+'bx'+i) * 800;
+      const y = seededRand(seed+'by'+i) * 450;
+      const bit = hashStr(seed+'b'+i) % 2;
+      const size = 8 + seededRand(seed+'bs'+i) * 8;
+      const op = 0.1 + seededRand(seed+'bo'+i) * 0.35;
+      out += `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-family="JetBrains Mono,monospace" font-size="${size.toFixed(0)}" fill="${c}" opacity="${op.toFixed(2)}">${bit}</text>`;
+    }
+    return out;
+  },
+
+  // ——— ÉCONOMIE / FINANCE ———
+  candlesticks: (x, y, w, h2, c, c2, seed) => {
+    let out = '';
+    const n = 12;
+    const bw = w / n * 0.6;
+    let prev = y;
+    for (let i = 0; i < n; i++) {
+      const trend = seededRand(seed+'ct'+i) > 0.45 ? 1 : -1;
+      const bh = 15 + seededRand(seed+'ch'+i) * 50;
+      const x0 = x + i * (w / n) + w / n * 0.2;
+      const yOpen = prev;
+      const yClose = yOpen + trend * bh;
+      const wickHi = Math.min(yOpen, yClose) - (10 + seededRand(seed+'cw'+i) * 20);
+      const wickLo = Math.max(yOpen, yClose) + (10 + seededRand(seed+'cl'+i) * 20);
+      const col = trend > 0 ? c2 : c;
+      out += `<line x1="${(x0+bw/2).toFixed(1)}" y1="${wickHi.toFixed(1)}" x2="${(x0+bw/2).toFixed(1)}" y2="${wickLo.toFixed(1)}" stroke="${col}" stroke-width="1.5" opacity="0.7"/>`;
+      out += `<rect x="${x0.toFixed(1)}" y="${Math.min(yOpen,yClose).toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.abs(yClose-yOpen).toFixed(1) || 2}" fill="${col}" opacity="0.85" rx="1"/>`;
+      prev = yClose;
+    }
+    return out;
+  },
+
+  trendArrow: (x1, y1, x2, y2, c, thickness = 4) => {
+    const dx = x2 - x1, dy = y2 - y1;
+    const len = Math.sqrt(dx*dx + dy*dy);
+    const nx = dx/len, ny = dy/len;
+    const aw = thickness * 3;
+    const ax = x2 - nx * aw * 2, ay = y2 - ny * aw * 2;
+    const p1x = ax - ny * aw, p1y = ay + nx * aw;
+    const p2x = ax + ny * aw, p2y = ay - nx * aw;
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${thickness}" opacity="0.85"/>
+    <polygon points="${p1x.toFixed(1)},${p1y.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)} ${p2x.toFixed(1)},${p2y.toFixed(1)}" fill="${c}" opacity="0.85"/>`;
+  },
+
+  euroSign: (cx, cy, size, c) => {
+    return `<text x="${cx}" y="${cy + size*0.35}" font-family="Fraunces,serif" font-size="${size}" fill="${c}" text-anchor="middle" font-weight="700" opacity="0.18">€</text>`;
+  },
+
+  // ——— POLITIQUE ———
+  columns: (x, y, w, h2, c, c2, n = 4) => {
+    let out = '';
+    const cw = w / (n * 1.6), gap = w / n;
+    for (let i = 0; i < n; i++) {
+      const cx = x + i * gap + gap/2 - cw/2;
+      const ch = h2 * (0.6 + seededRand('col'+i) * 0.4);
+      const cy = y + h2 - ch;
+      // Column body
+      out += `<rect x="${cx.toFixed(1)}" y="${cy.toFixed(1)}" width="${cw.toFixed(1)}" height="${ch.toFixed(1)}" fill="${c}" opacity="0.75" rx="3"/>`;
+      // Capital
+      out += `<rect x="${(cx - 4).toFixed(1)}" y="${cy.toFixed(1)}" width="${(cw + 8).toFixed(1)}" height="${cw * 0.2}" fill="${c2}" opacity="0.9" rx="2"/>`;
+      // Base
+      out += `<rect x="${(cx - 6).toFixed(1)}" y="${(y + h2 - 8).toFixed(1)}" width="${(cw + 12).toFixed(1)}" height="10" fill="${c2}" opacity="0.9" rx="2"/>`;
+    }
+    // Entablature
+    out += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="14" fill="${c2}" opacity="0.85" rx="3"/>`;
+    return out;
+  },
+
+  scales: (cx, cy, size, c, c2) => {
+    const aw = size * 0.8;
+    let out = '';
+    // Pole
+    out += `<line x1="${cx}" y1="${cy - size/2}" x2="${cx}" y2="${cy + size * 0.3}" stroke="${c2}" stroke-width="3" opacity="0.8"/>`;
+    // Beam
+    out += `<line x1="${cx - aw/2}" y1="${cy - size/2}" x2="${cx + aw/2}" y2="${cy - size/2}" stroke="${c2}" stroke-width="2.5" opacity="0.9"/>`;
+    // Left pan
+    const lDrop = size * 0.2;
+    out += `<line x1="${cx - aw/2}" y1="${cy - size/2}" x2="${cx - aw/2}" y2="${cy - size/2 + lDrop}" stroke="${c}" stroke-width="1.5" opacity="0.7"/>`;
+    out += `<ellipse cx="${cx - aw/2}" cy="${cy - size/2 + lDrop}" rx="${size * 0.2}" ry="${size * 0.06}" fill="${c}" opacity="0.7"/>`;
+    // Right pan (slightly lower = unbalanced)
+    const rDrop = size * 0.35;
+    out += `<line x1="${cx + aw/2}" y1="${cy - size/2}" x2="${cx + aw/2}" y2="${cy - size/2 + rDrop}" stroke="${c}" stroke-width="1.5" opacity="0.7"/>`;
+    out += `<ellipse cx="${cx + aw/2}" cy="${cy - size/2 + rDrop}" rx="${size * 0.2}" ry="${size * 0.06}" fill="${c}" opacity="0.7"/>`;
+    return out;
+  },
+
+  // ——— CULTURE ———
+  filmStrip: (y, c, c2, seed) => {
+    let out = `<rect x="0" y="${y-30}" width="800" height="90" fill="${c}" opacity="0.85" rx="4"/>`;
+    const fw = 110, fh = 70, n = 7;
+    for (let i = 0; i < n; i++) {
+      const x = 20 + i * (fw + 10);
+      out += `<rect x="${x}" y="${y - 25}" width="${fw}" height="${fh}" fill="${c2}" opacity="0.7" rx="3"/>`;
+      out += `<rect x="${x + 10}" y="${y - 15}" width="${fw - 20}" height="${fh - 20}" fill="rgba(0,0,0,0.5)" rx="2"/>`;
+    }
+    // Sprocket holes
+    for (let i = 0; i < 14; i++) {
+      const x = 10 + i * 55;
+      out += `<rect x="${x}" y="${y - 28}" width="10" height="6" fill="rgba(0,0,0,0.5)" rx="2"/>`;
+      out += `<rect x="${x}" y="${y + 25}" width="10" height="6" fill="rgba(0,0,0,0.5)" rx="2"/>`;
+    }
+    return out;
+  },
+
+  brushStrokes: (c, c2, seed) => {
+    let out = '';
+    for (let i = 0; i < 5; i++) {
+      const x1 = 80 + seededRand(seed+'bx'+i) * 600;
+      const y1 = 60 + seededRand(seed+'by'+i) * 330;
+      const x2 = x1 + (seededRand(seed+'bx2'+i) - 0.5) * 300;
+      const y2 = y1 + (seededRand(seed+'by2'+i) - 0.5) * 150;
+      const sw = 12 + seededRand(seed+'bw'+i) * 28;
+      const col = i % 2 === 0 ? c : c2;
+      out += `<line x1="${x1.toFixed(0)}" y1="${y1.toFixed(0)}" x2="${x2.toFixed(0)}" y2="${y2.toFixed(0)}" stroke="${col}" stroke-width="${sw.toFixed(0)}" stroke-linecap="round" opacity="${(0.3 + seededRand(seed+'bo'+i) * 0.5).toFixed(2)}"/>`;
+    }
+    return out;
+  },
+
+  musicalStaff: (y, c, c2, seed) => {
+    let out = '';
+    // Staff lines
+    for (let i = 0; i < 5; i++) {
+      out += `<line x1="60" y1="${y + i * 12}" x2="740" y2="${y + i * 12}" stroke="${c2}" stroke-width="1.5" opacity="0.6"/>`;
+    }
+    // Treble clef (simplified)
+    out += `<text x="70" y="${y + 45}" font-family="serif" font-size="60" fill="${c}" opacity="0.7">𝄞</text>`;
+    // Notes
+    const notePositions = [150, 230, 310, 390, 470, 550, 630];
+    notePositions.forEach((nx, i) => {
+      const ny = y + seededRand(seed+'ny'+i) * 40;
+      out += `<ellipse cx="${nx}" cy="${ny.toFixed(0)}" rx="9" ry="7" fill="${c}" opacity="0.8" transform="rotate(-20,${nx},${ny.toFixed(0)})"/>`;
+      out += `<line x1="${nx + 8}" y1="${ny.toFixed(0)}" x2="${nx + 8}" y2="${(ny - 35).toFixed(0)}" stroke="${c}" stroke-width="2" opacity="0.8"/>`;
+    });
+    return out;
+  },
+
+  // ——— SOCIÉTÉ ———
+  cityscape: (y, c, c2, seed) => {
+    let out = '';
+    const buildings = 14;
+    for (let i = 0; i < buildings; i++) {
+      const bw = 30 + seededRand(seed+'bw'+i) * 50;
+      const bh = 60 + seededRand(seed+'bh'+i) * 250;
+      const bx = (800 / buildings) * i + 5;
+      const by = y - bh;
+      out += `<rect x="${bx.toFixed(0)}" y="${by.toFixed(0)}" width="${bw.toFixed(0)}" height="${bh.toFixed(0)}" fill="${i % 3 === 0 ? c : c2}" opacity="${(0.4 + seededRand(seed+'bo'+i) * 0.4).toFixed(2)}" rx="2"/>`;
+      // Windows
+      const wrows = Math.floor(bh / 20), wcols = Math.floor(bw / 12);
+      for (let wr = 0; wr < wrows; wr++) {
+        for (let wc = 0; wc < wcols; wc++) {
+          if (seededRand(seed+'wl'+i+wr+wc) > 0.4) {
+            out += `<rect x="${(bx + 5 + wc * 12).toFixed(0)}" y="${(by + 8 + wr * 18).toFixed(0)}" width="6" height="8" fill="rgba(255,240,180,0.6)" rx="1"/>`;
+          }
+        }
+      }
+    }
+    // Ground
+    out += `<rect x="0" y="${y}" width="800" height="20" fill="${c}" opacity="0.3"/>`;
+    return out;
+  },
+
+  peopleSilhouettes: (c, c2, seed) => {
+    let out = '';
+    const positions = [120, 250, 400, 540, 670];
+    positions.forEach((x, i) => {
+      const y = 200 + seededRand(seed+'py'+i) * 80;
+      const scale = 0.7 + seededRand(seed+'ps'+i) * 0.6;
+      const col = i % 2 === 0 ? c : c2;
+      // Head
+      out += `<circle cx="${x}" cy="${(y - 50 * scale).toFixed(0)}" r="${(18 * scale).toFixed(0)}" fill="${col}" opacity="0.7"/>`;
+      // Body
+      out += `<ellipse cx="${x}" cy="${(y).toFixed(0)}" rx="${(14 * scale).toFixed(0)}" ry="${(35 * scale).toFixed(0)}" fill="${col}" opacity="0.65"/>`;
+    });
+    // Connection lines
+    for (let i = 0; i < positions.length - 1; i++) {
+      out += `<line x1="${positions[i]}" y1="220" x2="${positions[i+1]}" y2="220" stroke="${c2}" stroke-width="2" opacity="0.3" stroke-dasharray="6,4"/>`;
+    }
+    return out;
+  },
+
+  // ——— SPORT ———
+  tennisCourt: (c, c2) => {
+    let out = '';
+    // Court surface
+    out += `<rect x="100" y="60" width="600" height="330" fill="${c}" opacity="0.2" rx="4"/>`;
+    // Lines
+    const lines = [
+      [100, 60, 700, 60], [100, 390, 700, 390],  // baselines
+      [100, 60, 100, 390], [700, 60, 700, 390],    // sidelines
+      [100, 225, 700, 225],                         // center
+      [400, 60, 400, 390],                          // center vert
+      [100, 135, 700, 135], [100, 315, 700, 315],  // service lines
+    ];
+    lines.forEach(([x1, y1, x2, y2]) => {
+      out += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c2}" stroke-width="2.5" opacity="0.7"/>`;
+    });
+    // Net
+    out += `<line x1="100" y1="225" x2="700" y2="225" stroke="white" stroke-width="4" opacity="0.8"/>`;
+    out += `<rect x="100" y="220" width="600" height="10" fill="none" stroke="white" stroke-width="1" opacity="0.4"/>`;
+    return out;
+  },
+
+  footballPitch: (c, c2) => {
+    let out = `<rect x="80" y="50" width="640" height="350" fill="${c}" opacity="0.15" rx="6"/>`;
+    out += `<rect x="80" y="50" width="640" height="350" fill="none" stroke="${c2}" stroke-width="2.5" opacity="0.6" rx="6"/>`;
+    // Center circle
+    out += `<circle cx="400" cy="225" r="70" fill="none" stroke="${c2}" stroke-width="2" opacity="0.5"/>`;
+    out += `<circle cx="400" cy="225" r="5" fill="${c2}" opacity="0.7"/>`;
+    out += `<line x1="400" y1="50" x2="400" y2="400" stroke="${c2}" stroke-width="2" opacity="0.5"/>`;
+    // Goals
+    out += `<rect x="80" y="165" width="50" height="120" fill="none" stroke="${c2}" stroke-width="2" opacity="0.6"/>`;
+    out += `<rect x="670" y="165" width="50" height="120" fill="none" stroke="${c2}" stroke-width="2" opacity="0.6"/>`;
+    // Penalty areas
+    out += `<rect x="80" y="130" width="130" height="190" fill="none" stroke="${c2}" stroke-width="1.5" opacity="0.4"/>`;
+    out += `<rect x="590" y="130" width="130" height="190" fill="none" stroke="${c2}" stroke-width="1.5" opacity="0.4"/>`;
+    return out;
+  },
+
+  podium: (cx, cy, c, c2) => {
+    const w = 100, h = [160, 220, 120];
+    const positions = [cx - 110, cx, cx + 110];
+    const cols = [c2, c, c2];
+    const ops = [0.6, 0.9, 0.5];
+    let out = '';
+    [1, 0, 2].forEach(i => {
+      const x = positions[i] - w/2;
+      const bh = h[i];
+      const by = cy + 80 - bh;
+      out += `<rect x="${x}" y="${by}" width="${w}" height="${bh}" fill="${cols[i]}" opacity="${ops[i]}" rx="3"/>`;
+      out += `<text x="${positions[i]}" y="${by - 10}" font-family="Fraunces,serif" font-size="22" fill="${cols[i]}" text-anchor="middle" opacity="${ops[i]}">${i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'}</text>`;
+    });
+    return out;
+  },
+
+  // ——— IDÉES ———
+  lightbulb: (cx, cy, size, c, c2) => {
+    const r = size * 0.4;
+    let out = '';
+    // Glow
+    out += `<circle cx="${cx}" cy="${cy - size*0.1}" r="${r * 1.8}" fill="${c}" opacity="0.08"/>`;
+    out += `<circle cx="${cx}" cy="${cy - size*0.1}" r="${r * 1.3}" fill="${c}" opacity="0.12"/>`;
+    // Bulb
+    out += `<path d="M${cx-r},${cy} a${r},${r} 0 1,1 ${r*2},0 L${cx+r*0.7},${cy+size*0.3} L${cx-r*0.7},${cy+size*0.3} Z" fill="${c}" opacity="0.75"/>`;
+    // Base rings
+    for (let i = 0; i < 3; i++) {
+      out += `<rect x="${(cx - r*0.7).toFixed(0)}" y="${(cy + size*0.3 + i*size*0.07).toFixed(0)}" width="${(r*1.4).toFixed(0)}" height="${(size*0.06).toFixed(0)}" fill="${c2}" opacity="0.6" rx="2"/>`;
+    }
+    // Filament
+    out += `<path d="M${cx-r*0.3},${cy+size*0.05} Q${cx},${cy-r*0.4} ${cx+r*0.3},${cy+size*0.05}" fill="none" stroke="${c2}" stroke-width="2.5" opacity="0.8"/>`;
+    return out;
+  },
+
+  gears: (c, c2, seed) => {
+    let out = '';
+    const gear = (cx, cy, r, n, col, op) => {
+      const toothH = r * 0.25;
+      let d = '';
+      for (let i = 0; i < n * 2; i++) {
+        const a = (i / (n * 2)) * Math.PI * 2;
+        const rr = i % 2 === 0 ? r + toothH : r;
+        const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
+        d += (i === 0 ? 'M' : 'L') + `${x.toFixed(1)},${y.toFixed(1)} `;
+      }
+      out += `<path d="${d}Z" fill="none" stroke="${col}" stroke-width="2.5" opacity="${op}"/>`;
+      out += `<circle cx="${cx}" cy="${cy}" r="${r*0.25}" fill="${col}" opacity="${op}"/>`;
+    };
+    gear(250, 200, 90, 10, c, 0.7);
+    gear(390, 200, 60, 7, c2, 0.6);
+    gear(490, 255, 45, 6, c, 0.5);
+    return out;
+  },
+
+  // ——— GÉNÉRAL ———
+  waveBackground: (c, seed) => {
+    let d = `M 0 ${180 + seededRand(seed+'wa') * 60}`;
+    for (let x = 20; x <= 800; x += 20) {
+      const y = 150 + Math.sin(x / 120 + seededRand(seed+'wp') * 3) * 60 + seededRand(seed+'wr'+x) * 20;
+      d += ` L ${x} ${y.toFixed(0)}`;
+    }
+    return `<path d="${d} L 800 450 L 0 450 Z" fill="${c}" opacity="0.12"/>`;
+  },
+
+  gridLines: (c, opacity = 0.08) => {
+    let out = '';
+    for (let x = 0; x <= 800; x += 80) {
+      out += `<line x1="${x}" y1="0" x2="${x}" y2="450" stroke="${c}" stroke-width="1" opacity="${opacity}"/>`;
+    }
+    for (let y = 0; y <= 450; y += 80) {
+      out += `<line x1="0" y1="${y}" x2="800" y2="${y}" stroke="${c}" stroke-width="1" opacity="${opacity}"/>`;
+    }
+    return out;
+  },
 };
+
+// ============================================================
+//  CLASSIFICATEUR DE CONTENU
+//  Détermine les motifs à utiliser selon titre + tags + rubrique
+// ============================================================
+
+const KEYWORD_MAP = [
+  // Science / espace
+  { words: ['exoplanète','planète','espace','étoile','galaxie','astro','orbitale','satellite','lune','solaire','cosmos','univers','nasa','esa','télescope','kepler','webb'], motif: 'space' },
+  { words: ['adn','génétique','génome','cellule','biologie','molécule','protéine','virus','bactérie','mutation','évolution','Darwin'], motif: 'dna' },
+  { words: ['atome','particule','quantique','nucléaire','proton','électron','physique','cern','fusion','fission'], motif: 'atom' },
+  { words: ['océan','mer','marin','corail','plongée','bateau','tsunami','marée'], motif: 'waves' },
+  // Tech / IA
+  { words: ['ia','intelligence artificielle','algorithme','machine','modèle','llm','gpt','claude','neural','réseau','apprentissage','deep learning','robot','automatisation'], motif: 'neural' },
+  { words: ['circuit','puce','semi-conducteur','processeur','chip','microprocesseur','silicium','transistor'], motif: 'circuit' },
+  { words: ['code','logiciel','développeur','programmation','javascript','python','github','binaire','open source'], motif: 'binary' },
+  { words: ['cybersécurité','hack','données','pirate','ransomware','surveillance','cryptographie'], motif: 'circuit' },
+  // Économie / finance
+  { words: ['bourse','action','marché','indice','cac','wall street','bce','taux','inflation','récession','pib','croissance','investissement','dette','déficit'], motif: 'candles' },
+  { words: ['euro','dollar','monnaie','devise','bitcoin','crypto','blockchain','banque'], motif: 'candles' },
+  // Politique / institutions
+  { words: ['parlement','sénat','assemblée','constitution','élection','vote','referendum','démocracie','gouvernement','premier ministre','président','loi','réforme'], motif: 'columns' },
+  { words: ['justice','tribunal','cour','jugement','procès','droit','avocat','peine'], motif: 'scales' },
+  { words: ['europe','bruxelles','commission','traité','diplomatie','ambassade','nations unies'], motif: 'columns' },
+  // Culture / arts
+  { words: ['cinéma','film','festival','cannes','oscar','oscar','réalisateur','acteur','série','streaming'], motif: 'film' },
+  { words: ['musique','concert','album','artiste','chanson','orchestre','jazz','classique','rap','pop'], motif: 'music' },
+  { words: ['exposition','musée','art','peinture','sculpture','galerie','biennale','contemporain'], motif: 'brush' },
+  { words: ['livre','roman','auteur','littérature','prix','lecture','écriture','poésie','éditeur'], motif: 'brush' },
+  // Société / urbanisme
+  { words: ['ville','urbain','métropole','quartier','logement','immobilier','transport','mobilité','banlieue'], motif: 'city' },
+  { words: ['famille','enfant','natalité','démographie','population','génération','retraite','vieillissement'], motif: 'people' },
+  { words: ['école','éducation','université','étudiant','formation','diplôme','enseignement'], motif: 'people' },
+  { words: ['santé','hôpital','médecin','maladie','traitement','vaccin','épidémie','mental'], motif: 'dna' },
+  // Sport
+  { words: ['tennis','roland','wimbledon','open','atp','wta','raquette','court','match'], motif: 'tennis' },
+  { words: ['football','foot','ligue','champions','fifa','uefa','penalty','but','stade'], motif: 'football' },
+  { words: ['podium','médaille','champion','victoire','titre','record','olympique','jeux'], motif: 'podium' },
+  // Idées / philosophie
+  { words: ['philosophie','pensée','idée','concept','théorie','éthique','moral','conscience'], motif: 'bulb' },
+  { words: ['innovation','invention','brevet','startup','technologie','futur','progrès'], motif: 'bulb' },
+  { words: ['économie','industrie','production','entreprise','travail','emploi','chômage'], motif: 'gears' },
+];
+
+function classifyArticle(article) {
+  const text = ((article.title || '') + ' ' + (article.tags || []).join(' ')).toLowerCase();
+  const scores = {};
+  KEYWORD_MAP.forEach(({ words, motif }) => {
+    const hits = words.filter(w => text.includes(w)).length;
+    if (hits > 0) scores[motif] = (scores[motif] || 0) + hits;
+  });
+  // Best motif
+  const best = Object.entries(scores).sort((a, b) => b[1] - a[1])[0];
+  return best ? best[0] : null;
+}
+
+// ============================================================
+//  COMPOSITEUR PRINCIPAL
+// ============================================================
 
 function makeSvgForArticle(article, idx) {
   const cat = (article && article.category) ? article.category : 'Science';
   const title = (article && article.title) ? article.title : '';
   const tags = (article && article.tags) ? article.tags.join(' ') : '';
-  const seed = title + tags + cat;
+  const seed = title + tags + cat + idx;
 
-  const id = 'asvg' + idx;
-  const h = hashStr(seed);
-  const h2 = hashStr(seed + 'b');
-  const h3 = hashStr(seed + 'c');
-  const h4 = hashStr(seed + 'd');
+  const id = 'svg' + idx;
+  const P = getPalette(cat, seed);
+  const motif = classifyArticle(article);
 
-  // Color palette derived from article
-  const baseHue = CAT_HUES[cat] || (h % 360);
-  const hue1 = baseHue;
-  const hue2 = (baseHue + 30 + (h2 % 40)) % 360;
-  const hue3 = (baseHue + 180 + (h3 % 30)) % 360;
+  // Build composition
+  let layers = '';
 
-  const c1 = hsvToHex(hue1, 0.7 + (h & 0xf) / 80, 0.12 + (h >> 4 & 0xf) / 100);
-  const c2 = hsvToHex(hue2, 0.6 + (h2 & 0xf) / 80, 0.25 + (h2 >> 4 & 0xf) / 80);
-  const c3 = hsvToHex(hue3, 0.8, 0.7);          // accent
-  const cGold = hsvToHex((baseHue + 50) % 360, 0.65, 0.78); // gold variant
-
-  // Layout type (0-5) → 6 distinct compositions
-  const layout = h % 6;
-
-  // Seeded positions
-  const px = (n) => 50 + (hashStr(seed + n) % 700);
-  const py = (n) => 30 + (hashStr(seed + 'y' + n) % 380);
-  const pr = (n) => 15 + (hashStr(seed + 'r' + n) % 80);
-
-  let innerSvg = '';
-
-  // Background gradient always unique
-  innerSvg += `<defs>
-    <linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="${c1}"/>
-      <stop offset="100%" stop-color="${c2}"/>
+  // === BACKGROUND ===
+  layers += `<defs>
+    <linearGradient id="${id}bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="${P.bg}"/>
+      <stop offset="100%" stop-color="${P.bg2}"/>
     </linearGradient>
-    <radialGradient id="${id}r" cx="${30 + h % 40}%" cy="${20 + h2 % 30}%">
-      <stop offset="0%" stop-color="${c3}" stop-opacity="0.35"/>
-      <stop offset="100%" stop-color="${c3}" stop-opacity="0"/>
-    </radialGradient>
   </defs>
-  <rect width="800" height="450" fill="url(#${id}g)"/>
-  <rect width="800" height="450" fill="url(#${id}r)"/>`;
+  <rect width="800" height="450" fill="url(#${id}bg)"/>`;
 
-  if (layout === 0) {
-    // Constellation : points reliés par des lignes
-    const pts = Array.from({length: 7}, (_, i) => [px(i), py(i)]);
-    const lines = [[0,1],[1,2],[2,3],[3,4],[1,4],[2,5],[5,6]];
-    innerSvg += `<g stroke="${c3}" stroke-width="0.8" opacity="0.5">`;
-    lines.forEach(([a, b]) => {
-      innerSvg += `<line x1="${pts[a][0]}" y1="${pts[a][1]}" x2="${pts[b][0]}" y2="${pts[b][1]}"/>`;
-    });
-    innerSvg += `</g><g fill="${c3}" opacity="0.8">`;
-    pts.forEach(([x, y], i) => {
-      innerSvg += `<circle cx="${x}" cy="${y}" r="${3 + i % 4}"/>`;
-    });
-    innerSvg += `</g>`;
-    // Large faded circle
-    innerSvg += `<circle cx="${px('c')}" cy="${py('c')}" r="${100 + h % 80}" fill="none" stroke="${c3}" stroke-width="1" opacity="0.2"/>`;
+  // Subtle grid
+  layers += MOTIFS.gridLines(P.light, 0.07);
 
-  } else if (layout === 1) {
-    // Grille de modules / data
-    const cols = 6 + h % 3, rows = 4;
-    const cw = 800 / (cols + 1), ch = 450 / (rows + 1);
-    innerSvg += `<g opacity="0.6">`;
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        const filled = hashStr(seed + r + c) % 3 !== 0;
-        const x = cw * (c + 0.5) + (hashStr(seed + r * 99 + c) % 20) - 10;
-        const y = ch * (r + 0.5) + (hashStr(seed + r + c * 77) % 15) - 7;
-        const size = 4 + hashStr(seed + r + c + 'sz') % 12;
-        if (filled) {
-          innerSvg += `<rect x="${x - size/2}" y="${y - size/2}" width="${size}" height="${size}" fill="${c3}" opacity="${0.3 + (hashStr(seed+r+c+'op') % 5) / 10}" rx="2"/>`;
-        } else {
-          innerSvg += `<circle cx="${x}" cy="${y}" r="${size/2}" fill="none" stroke="${cGold}" stroke-width="0.8" opacity="0.4"/>`;
-        }
-      }
-    }
-    innerSvg += `</g>`;
-    // Diagonal accent line
-    innerSvg += `<line x1="0" y1="${py('dl')}" x2="800" y2="${py('dl2')}" stroke="${c3}" stroke-width="1.5" opacity="0.3"/>`;
+  // Ambient wave
+  layers += MOTIFS.waveBackground(P.accent, seed);
 
-  } else if (layout === 2) {
-    // Formes géométriques emboîtées
-    const cx = 200 + h % 400, cy = 100 + h2 % 250;
-    const n = 3 + h % 5; // 3 to 7 sides
-    function polygon(cx, cy, r, sides, rotate) {
-      const pts = Array.from({length: sides}, (_, i) => {
-        const a = (i / sides) * Math.PI * 2 + rotate;
-        return `${(cx + Math.cos(a) * r).toFixed(1)},${(cy + Math.sin(a) * r).toFixed(1)}`;
-      });
-      return pts.join(' ');
-    }
-    [120, 85, 55, 30].forEach((r, i) => {
-      const rot = (h * (i + 1) % 360) * Math.PI / 180;
-      innerSvg += `<polygon points="${polygon(cx, cy, r, n, rot)}" fill="none" stroke="${i % 2 === 0 ? c3 : cGold}" stroke-width="${1.5 - i * 0.2}" opacity="${0.5 - i * 0.08}"/>`;
-    });
-    // Small circles at polygon vertices
-    const rot0 = (h % 360) * Math.PI / 180;
-    for (let i = 0; i < n; i++) {
-      const a = (i / n) * Math.PI * 2 + rot0;
-      const px2 = cx + Math.cos(a) * 120, py2 = cy + Math.sin(a) * 120;
-      innerSvg += `<circle cx="${px2.toFixed(1)}" cy="${py2.toFixed(1)}" r="4" fill="${c3}" opacity="0.7"/>`;
-    }
-    // Second shape offset
-    const cx2 = 800 - cx + 50, cy2 = 450 - cy + 30;
-    innerSvg += `<polygon points="${polygon(cx2, cy2, 60, n + 1, rot0)}" fill="none" stroke="${c3}" stroke-width="1" opacity="0.2"/>`;
+  // === MAIN MOTIF (based on content) ===
+  const cx = 500 + Math.floor(seededRand(seed+'cx') * 200);
+  const cy = 180 + Math.floor(seededRand(seed+'cy') * 100);
 
-  } else if (layout === 3) {
-    // Vagues et courbes
-    const amp = 40 + h % 60, freq = 2 + h2 % 3;
-    const generateWave = (yBase, amp, phase, opacity) => {
-      let d = `M 0 ${yBase}`;
-      for (let x = 0; x <= 800; x += 20) {
-        const y = yBase + Math.sin((x / 800) * Math.PI * freq + phase) * amp;
-        d += ` L ${x} ${y.toFixed(1)}`;
-      }
-      return `<path d="${d}" fill="none" stroke="${c3}" stroke-width="1.5" opacity="${opacity}"/>`;
-    };
-    for (let i = 0; i < 4; i++) {
-      const yBase = 100 + i * 80 + (h3 % 30);
-      const phase = (i * Math.PI / 4) + (h2 % 360) * Math.PI / 180;
-      innerSvg += generateWave(yBase, amp - i * 8, phase, 0.5 - i * 0.08);
+  if (motif === 'space') {
+    layers += MOTIFS.stars(80, P.light, seed);
+    layers += MOTIFS.planet(cx, cy, 90 + seededRand(seed+'pr') * 40, P.accent, P.gold, seed);
+    // Second smaller planet
+    layers += MOTIFS.planet(150 + seededRand(seed+'p2x') * 100, 80 + seededRand(seed+'p2y') * 80, 35, P.gold, P.accent, seed+'2');
+  } else if (motif === 'dna') {
+    layers += MOTIFS.dna(cx, cy, P.accent, P.gold, seed);
+    layers += MOTIFS.stars(30, P.light, seed);
+  } else if (motif === 'atom') {
+    layers += MOTIFS.stars(40, P.light, seed);
+    layers += MOTIFS.atom(cx, cy, 130, P.accent, P.gold);
+  } else if (motif === 'neural') {
+    layers += MOTIFS.binaryRain(P.light, seed);
+    layers += MOTIFS.neuralNet(cx, cy, P.accent, P.gold, seed);
+  } else if (motif === 'circuit') {
+    layers += MOTIFS.circuit(100, 60, 600, 330, P.accent, P.gold, seed);
+    layers += MOTIFS.binaryRain(P.light, seed);
+  } else if (motif === 'binary') {
+    layers += MOTIFS.binaryRain(P.accent, seed);
+    layers += MOTIFS.circuit(200, 100, 400, 250, P.gold, P.light, seed);
+  } else if (motif === 'candles') {
+    layers += MOTIFS.euroSign(150, 225, 280, P.accent);
+    layers += MOTIFS.candlesticks(120, 80, 560, 310, P.accent, P.gold, seed);
+    const trend = seededRand(seed+'tr') > 0.5;
+    layers += MOTIFS.trendArrow(130, trend ? 380 : 100, 680, trend ? 80 : 360, P.gold, 3);
+  } else if (motif === 'columns') {
+    layers += MOTIFS.columns(100, 60, 600, 320, P.accent, P.gold);
+    layers += `<rect x="0" y="380" width="800" height="70" fill="${P.accent}" opacity="0.25"/>`;
+  } else if (motif === 'scales') {
+    layers += MOTIFS.scales(400, 240, 220, P.accent, P.gold);
+    layers += MOTIFS.columns(80, 100, 160, 280, P.gold, P.accent);
+  } else if (motif === 'film') {
+    layers += MOTIFS.brushStrokes(P.accent, P.gold, seed);
+    layers += MOTIFS.filmStrip(250, P.bg2, P.accent, seed);
+  } else if (motif === 'music') {
+    layers += MOTIFS.brushStrokes(P.accent, P.gold, seed);
+    layers += MOTIFS.musicalStaff(160, P.accent, P.gold, seed);
+  } else if (motif === 'brush') {
+    layers += MOTIFS.brushStrokes(P.accent, P.gold, seed);
+    // Frame
+    layers += `<rect x="120" y="60" width="420" height="310" fill="none" stroke="${P.gold}" stroke-width="8" opacity="0.5"/>`;
+    layers += `<rect x="130" y="70" width="400" height="290" fill="none" stroke="${P.gold}" stroke-width="2" opacity="0.3"/>`;
+  } else if (motif === 'city') {
+    layers += MOTIFS.cityscape(350, P.accent, P.gold, seed);
+    layers += MOTIFS.stars(25, P.light, seed);
+  } else if (motif === 'people') {
+    layers += MOTIFS.cityscape(400, P.bg2, P.accent, seed);
+    layers += MOTIFS.peopleSilhouettes(P.accent, P.gold, seed);
+  } else if (motif === 'tennis') {
+    layers += MOTIFS.tennisCourt(P.accent, P.gold);
+  } else if (motif === 'football') {
+    layers += MOTIFS.footballPitch(P.accent, P.gold);
+  } else if (motif === 'podium') {
+    layers += MOTIFS.stars(20, P.gold, seed);
+    layers += MOTIFS.podium(400, 330, P.accent, P.gold);
+  } else if (motif === 'bulb') {
+    layers += MOTIFS.lightbulb(300, 230, 180, P.accent, P.gold);
+    layers += MOTIFS.stars(25, P.gold, seed);
+  } else if (motif === 'gears') {
+    layers += MOTIFS.gears(P.accent, P.gold, seed);
+    layers += MOTIFS.binaryRain(P.light, seed);
+  } else if (motif === 'waves') {
+    for (let i = 0; i < 5; i++) {
+      layers += MOTIFS.waveBackground(i % 2 === 0 ? P.accent : P.gold, seed + i);
     }
-    // Dots on wave peaks
-    for (let x = 0; x <= 800; x += 200) {
-      const y = 150 + Math.sin((x / 800) * Math.PI * freq) * amp;
-      innerSvg += `<circle cx="${x}" cy="${y.toFixed(1)}" r="5" fill="${cGold}" opacity="0.7"/>`;
-    }
-
-  } else if (layout === 4) {
-    // Barres / data visualization abstraite
-    const bars = 12 + h % 8;
-    const bw = 800 / (bars * 1.8);
-    for (let i = 0; i < bars; i++) {
-      const bh = 50 + hashStr(seed + 'bar' + i) % 300;
-      const x = i * (800 / bars) + bw / 2;
-      const y = 450 - bh;
-      const opacity = 0.3 + (hashStr(seed + 'op' + i) % 5) / 10;
-      const col = i % 3 === 0 ? c3 : (i % 3 === 1 ? cGold : 'rgba(255,255,255,0.3)');
-      innerSvg += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" fill="${col}" opacity="${opacity}" rx="2"/>`;
-    }
-    // Trend line
-    let trendPath = 'M';
-    for (let i = 0; i < bars; i++) {
-      const bh = 50 + hashStr(seed + 'bar' + i) % 300;
-      const x = i * (800 / bars) + (800 / bars) / 2;
-      const y = 450 - bh - 8;
-      trendPath += (i === 0 ? '' : ' L') + ` ${x.toFixed(1)} ${y.toFixed(1)}`;
-    }
-    innerSvg += `<path d="${trendPath}" fill="none" stroke="${c3}" stroke-width="2" opacity="0.6"/>`;
-
   } else {
-    // layout === 5 : Orbites / systèmes
-    const cx = 300 + h % 200, cy = 150 + h2 % 150;
-    const rings = [45, 80, 120, 165];
-    rings.forEach((r, i) => {
-      innerSvg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${i % 2 === 0 ? c3 : cGold}" stroke-width="${1.2 - i * 0.1}" opacity="${0.5 - i * 0.08}" stroke-dasharray="${i % 2 === 0 ? 'none' : '4,6'}"/>`;
-      // Satellite
-      const angle = (hashStr(seed + 'sat' + i) % 360) * Math.PI / 180;
-      const sx = cx + Math.cos(angle) * r;
-      const sy = cy + Math.sin(angle) * r;
-      innerSvg += `<circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="${3 + i}" fill="${i % 2 === 0 ? c3 : cGold}" opacity="0.8"/>`;
-    });
-    // Core
-    innerSvg += `<circle cx="${cx}" cy="${cy}" r="12" fill="${c3}" opacity="0.9"/>`;
-    innerSvg += `<circle cx="${cx}" cy="${cy}" r="6" fill="${cGold}"/>`;
-    // Second system (smaller)
-    const cx2 = 600 + h3 % 100, cy2 = 300 + h4 % 100;
-    innerSvg += `<circle cx="${cx2}" cy="${cy2}" r="30" fill="none" stroke="${c3}" stroke-width="0.8" opacity="0.25"/>`;
-    innerSvg += `<circle cx="${cx2}" cy="${cy2}" r="5" fill="${c3}" opacity="0.5"/>`;
-    // Connection
-    innerSvg += `<line x1="${cx}" y1="${cy}" x2="${cx2}" y2="${cy2}" stroke="${c3}" stroke-width="0.5" opacity="0.2"/>`;
+    // Default: abstract geometric based on seed
+    const def = Math.floor(seededRand(seed+'def') * 3);
+    if (def === 0) {
+      layers += MOTIFS.neuralNet(cx, cy, P.accent, P.gold, seed);
+    } else if (def === 1) {
+      layers += MOTIFS.candlesticks(100, 80, 600, 320, P.accent, P.gold, seed);
+    } else {
+      layers += MOTIFS.cityscape(360, P.accent, P.gold, seed);
+    }
   }
 
-  // Watermark category
-  innerSvg += `<text x="400" y="430" font-family="Bricolage Grotesque,sans-serif" font-size="10" fill="#ffffff" text-anchor="middle" letter-spacing="4" opacity="0.35" text-transform="uppercase">${cat.toUpperCase()}</text>`;
+  // === TITLE EXCERPT (bottom label) ===
+  // Truncate title to 60 chars
+  const shortTitle = title.length > 58 ? title.slice(0, 55) + '…' : title;
+  // Escape for SVG
+  const safeTitle = shortTitle.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
-  return innerSvg;
+  layers += `
+  <rect x="0" y="370" width="800" height="80" fill="${P.dark}" opacity="0.7"/>
+  <text x="20" y="396" font-family="Bricolage Grotesque,sans-serif" font-size="10" fill="${P.gold}" opacity="0.8" letter-spacing="3">${cat.toUpperCase()}</text>
+  <text x="20" y="418" font-family="Fraunces,serif" font-size="16" fill="${P.light}" opacity="0.92" font-style="italic">${safeTitle}</text>`;
+
+  return layers;
 }
 
-// Backward compat — old call sites pass (category, idx)
+// Backward compat
 function makeSvgForCategory(cat, idx) {
   return makeSvgForArticle({ category: cat, title: '', tags: [] }, idx);
-}function escapeHtml(e){return String(e||"").replace(/[&<>"']/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[e]))}async function loadTodaysEdition(){try{const s=await fetch("edition.json",{cache:"no-cache"});if(!s.ok)return;const e=await s.json();if(!e.articles||!Array.isArray(e.articles)||e.articles.length===0)return;if(e.editionNumber){const t=document.getElementById("edition");t&&(t.textContent=e.editionNumber)}const o={Politique:"politique","Économie":"economie",Tech:"tech",Science:"science",Culture:"culture","Société":"societe",Sport:"sport","Idées":"opinion"},i=articles.length;e.articles.forEach(e=>articles.push(e));const a=document.getElementById("todays-edition");a.style.display="block",a.dataset.hasEdition="true",document.getElementById("todays-edition-date").textContent=e.editionDate||"",document.getElementById("todays-edition-meta").textContent=`Généré par ${e.model||"Claude"} · ${e.articles.length} article${e.articles.length>1?"s":""}`;const t=e.articles[0],n=i,c=makeSvgForArticle(t,n),r=document.getElementById("todays-hero-wrap");r.innerHTML=`
+}
+function escapeHtml(e){return String(e||"").replace(/[&<>"']/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[e]))}async function loadTodaysEdition(){try{const s=await fetch("edition.json",{cache:"no-cache"});if(!s.ok)return;const e=await s.json();if(!e.articles||!Array.isArray(e.articles)||e.articles.length===0)return;if(e.editionNumber){const t=document.getElementById("edition");t&&(t.textContent=e.editionNumber)}const o={Politique:"politique","Économie":"economie",Tech:"tech",Science:"science",Culture:"culture","Société":"societe",Sport:"sport","Idées":"opinion"},i=articles.length;e.articles.forEach(e=>articles.push(e));const a=document.getElementById("todays-edition");a.style.display="block",a.dataset.hasEdition="true",document.getElementById("todays-edition-date").textContent=e.editionDate||"",document.getElementById("todays-edition-meta").textContent=`Généré par ${e.model||"Claude"} · ${e.articles.length} article${e.articles.length>1?"s":""}`;const t=e.articles[0],n=i,c=makeSvgForArticle(t,n),r=document.getElementById("todays-hero-wrap");r.innerHTML=`
         <article class="hero-article" data-article="${n}" data-cat="${o[t.category]||"une"}" style="cursor: pointer;">
           <div class="hero-image">
             <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">${c}<text x="400" y="430" font-family="Bricolage Grotesque" font-size="11" fill="#f2ece0" text-anchor="middle" letter-spacing="4" opacity="0.45">${escapeHtml(t.category).toUpperCase()} · ÉDITION DU JOUR</text></svg>
