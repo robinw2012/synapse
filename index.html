@@ -499,6 +499,200 @@ function setLang(lang) {
   // Store preference
   try { localStorage.setItem('synapse-lang', lang); } catch(_) {}
 }
+// ============== TRADUCTION DES ARTICLES ==============
+// Utilise l'API Google Translate (gratuite, sans clé) pour traduire
+// les titres, chapeaux et corps des articles quand on change de langue.
+
+const translationCache = {}; // { 'fr->en:text': 'translated' }
+
+async function googleTranslate(text, from, to) {
+  if (from === to || !text) return text;
+  const cacheKey = `${from}->${to}:${text.slice(0, 40)}`;
+  if (translationCache[cacheKey]) return translationCache[cacheKey];
+  
+  try {
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
+    const r = await fetch(url);
+    if (!r.ok) return text;
+    const d = await r.json();
+    // Google returns [[['translated','original',...], ...], ...]
+    const translated = d[0]?.map(seg => seg[0]).join('') || text;
+    translationCache[cacheKey] = translated;
+    return translated;
+  } catch(e) {
+    return text; // fallback to original
+  }
+}
+
+// Chunk text into pieces of max 4000 chars (API limit)
+function chunkText(text, maxLen = 4000) {
+  if (text.length <= maxLen) return [text];
+  const chunks = [];
+  let i = 0;
+  while (i < text.length) {
+    let end = i + maxLen;
+    // Try to break at a sentence boundary
+    if (end < text.length) {
+      const lastDot = text.lastIndexOf('.', end);
+      if (lastDot > i + 500) end = lastDot + 1;
+    }
+    chunks.push(text.slice(i, Math.min(end, text.length)));
+    i = end;
+  }
+  return chunks;
+}
+
+async function translateLongText(text, from, to) {
+  if (from === to) return text;
+  const chunks = chunkText(text);
+  const translated = await Promise.all(chunks.map(c => googleTranslate(c, from, to)));
+  return translated.join('');
+}
+
+// Stores original article data in FR before translating
+const originalArticles = {};
+
+async function translateArticlesTo(lang) {
+  if (lang === 'fr') {
+    // Restore originals
+    articles.forEach((a, i) => {
+      if (originalArticles[i]) {
+        a.title = originalArticles[i].title;
+        a.dek = originalArticles[i].dek;
+        // Don't restore body eagerly, it will be shown fresh
+      }
+    });
+    // Rebuild UI
+    buildRubriqueSections();
+    rebuildTodaysEditionCards();
+    return;
+  }
+
+  const langMap = { en: 'en', de: 'de', es: 'es', fr: 'fr' };
+  const to = langMap[lang] || 'en';
+  
+  // Show translating indicator
+  showToast(lang === 'en' ? 'Translating articles…' : lang === 'de' ? 'Artikel werden übersetzt…' : 'Traduciendo artículos…');
+
+  // Save originals & translate visible card titles/deks
+  const translatePromises = articles.map(async (a, i) => {
+    if (!originalArticles[i]) {
+      originalArticles[i] = { title: a.title, dek: a.dek, body: a.body };
+    }
+    // Translate title and dek (short texts, fast)
+    const [newTitle, newDek] = await Promise.all([
+      googleTranslate(originalArticles[i].title, 'fr', to),
+      googleTranslate(originalArticles[i].dek, 'fr', to)
+    ]);
+    a.title = newTitle;
+    a.dek = newDek;
+  });
+
+  await Promise.all(translatePromises);
+  
+  // Rebuild card displays with translated titles
+  buildRubriqueSections();
+  rebuildTodaysEditionCards();
+  
+  showToast(lang === 'en' ? '✓ Articles translated' : lang === 'de' ? '✓ Übersetzt' : '✓ Artículos traducidos');
+}
+
+// Rebuild today's edition cards (hero + grid) after translation
+function rebuildTodaysEditionCards() {
+  const heroWrap = document.getElementById('todays-hero-wrap');
+  const grid = document.getElementById('todays-grid');
+  if (!heroWrap || !grid) return;
+  // Re-render hero and grid cards
+  const section = document.getElementById('todays-edition');
+  if (!section || section.style.display === 'none') return;
+  
+  // Find the today articles (those added by loadTodaysEdition)
+  // They are in articles[] starting from the first todays article index
+  // We track this via the data-article attributes in the grid
+  grid.querySelectorAll('[data-article]').forEach(card => {
+    const idx = parseInt(card.dataset.article);
+    const a = articles[idx];
+    if (!a) return;
+    const titleEl = card.querySelector('.card-title');
+    const dekEl = card.querySelector('.card-excerpt');
+    if (titleEl) titleEl.textContent = a.title;
+    if (dekEl) dekEl.textContent = a.dek;
+  });
+  
+  // Update hero title and dek
+  const heroTitle = heroWrap.querySelector('.hero-title');
+  const heroDek = heroWrap.querySelector('.hero-dek');
+  const heroIdx = heroWrap.querySelector('[data-article]')?.dataset?.article;
+  if (heroIdx !== undefined) {
+    const a = articles[parseInt(heroIdx)];
+    if (heroTitle && a) heroTitle.textContent = a.title;
+    if (heroDek && a) heroDek.textContent = a.dek;
+  }
+}
+
+// Patch openArticle to translate body on demand
+const _origOpenArticle = openArticle;
+window.openArticle = async function(idx) {
+  // First open with current text
+  _origOpenArticle(idx);
+  
+  // If not French, translate body on the fly
+  if (currentLang !== 'fr' && articles[idx]) {
+    const a = articles[idx];
+    const orig = originalArticles[idx];
+    if (!orig) return; // No original saved yet
+    
+    const langMap = { en: 'en', de: 'de', es: 'es' };
+    const to = langMap[currentLang];
+    if (!to) return;
+    
+    // Show loading indicator in modal
+    const modalBody = document.getElementById('modal-content')?.querySelector('.modal-body');
+    if (modalBody) {
+      const loadingDiv = document.createElement('div');
+      loadingDiv.id = 'translation-loading';
+      loadingDiv.style.cssText = 'text-align:center;padding:1rem;font-family:Bricolage Grotesque,sans-serif;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)';
+      loadingDiv.textContent = to === 'en' ? '⟳ Translating…' : to === 'de' ? '⟳ Übersetzen…' : '⟳ Traduciendo…';
+      modalBody.insertBefore(loadingDiv, modalBody.firstChild);
+    }
+    
+    try {
+      // Strip HTML tags for translation, then re-apply
+      const plainBody = orig.body;
+      const translated = await translateLongText(plainBody, 'fr', to);
+      a.body = translated;
+      
+      // Re-render modal with translated content
+      const loader = document.getElementById('translation-loading');
+      if (loader) loader.remove();
+      
+      // Update modal body
+      if (modalBody) {
+        const rendered = translated.split('\n').map(p => {
+          p = p.trim();
+          if (!p) return '';
+          if (p.startsWith('<h3>') || p.startsWith('<blockquote>')) return p;
+          return `<p>${p}</p>`;
+        }).join('\n');
+        
+        modalBody.innerHTML = rendered;
+      }
+    } catch(e) {
+      const loader = document.getElementById('translation-loading');
+      if (loader) loader.remove();
+    }
+  }
+};
+
+// Extend setLang to also translate articles
+const _origSetLang = setLang;
+window.setLang = function(lang) {
+  _origSetLang(lang);
+  translateArticlesTo(lang);
+  localStorage.setItem('synapse-lang', lang);
+};
+
+
 
 // Restore saved language
 try {
