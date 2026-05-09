@@ -1130,6 +1130,87 @@ function motifCamera(cx, cy, P, id) {
   <rect x="${cx-85}" y="${cy-45}" width="30" height="14" fill="${P.gold}" opacity="0.6" rx="3"/>`;
 }
 
+
+// ——— MÉMOIRE & HISTOIRE ———
+function motifMemorial(P, id, seed) {
+  // Fond solennel + flamme centrale + colonnes latérales + étoiles
+  let o = '';
+  // Colonnes latérales discrètes
+  [[120,180],[680,180]].forEach(([cx2,h2])=>{
+    const cw=45;
+    o+=`<rect x="${cx2-cw/2}" y="${390-h2}" width="${cw}" height="${h2}" fill="${P.mid}" opacity="0.4" rx="3"/>`;
+    o+=`<rect x="${cx2-cw/2-5}" y="${390-h2}" width="${cw+10}" height="12" fill="${P.gold}" opacity="0.55" rx="2"/>`;
+    o+=`<rect x="${cx2-cw/2-7}" y="382" width="${cw+14}" height="10" fill="${P.gold}" opacity="0.5" rx="2"/>`;
+  });
+  // Flamme centrale animée
+  const fx=400, fh=160;
+  o+=`<path d="M${fx},390 Q${fx-45},${390-fh*.4} ${fx},${390-fh} Q${fx+38},${390-fh*.72} ${fx+42},${390-fh*.28} Q${fx+48},${390-fh*.08} ${fx},390Z" fill="${P.accent}" opacity="0.85" filter="url(#${id}glow)">
+    <animate attributeName="d"
+      values="M${fx},390 Q${fx-45},${390-fh*.4} ${fx},${390-fh} Q${fx+38},${390-fh*.72} ${fx+42},${390-fh*.28} Q${fx+48},${390-fh*.08} ${fx},390Z;M${fx+6},390 Q${fx-38},${390-fh*.45} ${fx+4},${390-fh*1.08} Q${fx+44},${390-fh*.78} ${fx+46},${390-fh*.32} Q${fx+50},${390-fh*.06} ${fx+6},390Z;M${fx},390 Q${fx-45},${390-fh*.4} ${fx},${390-fh} Q${fx+38},${390-fh*.72} ${fx+42},${390-fh*.28} Q${fx+48},${390-fh*.08} ${fx},390Z"
+      dur="0.6s" repeatCount="indefinite"/>
+  </path>`;
+  o+=`<path d="M${fx},390 Q${fx-25},${390-fh*.5} ${fx},${390-fh*.85} Q${fx+20},${390-fh*.7} ${fx+22},${390-fh*.35} Q${fx},390 ${fx},390Z" fill="${P.gold}" opacity="0.8">
+    <animate attributeName="d"
+      values="M${fx},390 Q${fx-25},${390-fh*.5} ${fx},${390-fh*.85} Q${fx+20},${390-fh*.7} ${fx+22},${390-fh*.35} Q${fx},390 ${fx},390Z;M${fx+4},390 Q${fx-18},${390-fh*.55} ${fx+3},${390-fh*.9} Q${fx+24},${390-fh*.75} ${fx+25},${390-fh*.32} Q${fx+4},390 ${fx+4},390Z;M${fx},390 Q${fx-25},${390-fh*.5} ${fx},${390-fh*.85} Q${fx+20},${390-fh*.7} ${fx+22},${390-fh*.35} Q${fx},390 ${fx},390Z"
+      dur="0.45s" begin="0.1s" repeatCount="indefinite"/>
+  </path>`;
+  // Halo
+  o+=`<circle cx="${fx}" cy="${390-fh*.4}" r="80" fill="${P.accent}" opacity="0.08" filter="url(#${id}glow)">
+    <animate attributeName="r" values="80;110;80" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.08;0.03;0.08" dur="3s" repeatCount="indefinite"/>
+  </circle>`;
+  // Particules qui montent
+  [fx-20,fx,fx+15,fx-8].forEach((px,i)=>{
+    const delay=(i*.4).toFixed(1);
+    o+=`<circle cx="${px}" cy="390" r="3" fill="${P.gold}" opacity="0.7">
+      <animate attributeName="cy" values="390;${390-fh*1.3}" dur="3s" begin="${delay}s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.7;0" dur="3s" begin="${delay}s" repeatCount="indefinite"/>
+      <animate attributeName="r" values="3;1" dur="3s" begin="${delay}s" repeatCount="indefinite"/>
+    </circle>`;
+  });
+  // Ligne du sol
+  o+=`<rect x="0" y="388" width="800" height="62" fill="${P.dark}" opacity="0.35"/>`;
+  o+=`<line x1="0" y1="388" x2="800" y2="388" stroke="${P.gold}" stroke-width="2" opacity="0.45"/>`;
+  return o;
+}
+
+// ——— ARCHITECTURE ———
+function motifArchitecture(P, id, seed) {
+  // Perspective architecturale avec fenêtres et arches
+  let o='';
+  // Bâtiment central
+  const bh=280, bw=200, bx=300, by=390-bh;
+  o+=`<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="${P.accent}" opacity="0.6" rx="4" filter="url(#${id}shadow)"/>`;
+  // Façade : fenêtres
+  for (let r=0;r<5;r++) for (let c=0;c<4;c++) {
+    const wx=bx+15+c*48, wy=by+18+r*52;
+    const isLit=sR(seed+'al'+r+c)>.35;
+    o+=`<rect x="${wx}" y="${wy}" width="32" height="38" fill="${isLit?P.gold:P.bg2}" opacity="${isLit?.65:.25}" rx="3">`;
+    if(isLit){ const dur=(1.5+sR(seed+'ald'+r+c)*2.5).toFixed(1);
+      o+=`<animate attributeName="opacity" values=".65;.3;.65" dur="${dur}s" begin="${(r*.3+c*.2).toFixed(1)}s" repeatCount="indefinite"/>`;
+    }
+    o+=`</rect>`;
+  }
+  // Portail arrondi
+  o+=`<path d="M${bx+60},390 L${bx+60},${390-65} A40,40 0 0,1 ${bx+140},${390-65} L${bx+140},390Z" fill="${P.bg2}" opacity="0.6"/>`;
+  // Bâtiments latéraux
+  [[80,150,180],[570,120,160]].forEach(([x2,w2,h2])=>{
+    o+=`<rect x="${x2}" y="${390-h2}" width="${w2}" height="${h2}" fill="${P.gold}" opacity="0.3" rx="3"/>`;
+    for(let r2=0;r2<3;r2++) for(let c2=0;c2<3;c2++){
+      if(sR(seed+'bl'+x2+r2+c2)>.4) o+=`<rect x="${x2+10+c2*52}" y="${390-h2+12+r2*48}" width="36" height="32" fill="${P.gold}" opacity="0.35" rx="2"/>`;
+    }
+  });
+  // Sol
+  o+=`<rect x="0" y="388" width="800" height="62" fill="${P.mid}" opacity="0.2"/>`;
+  // Reflets
+  o+=`<line x1="${bx}" y1="389" x2="${bx+bw}" y2="389" stroke="${P.gold}" stroke-width="1.5" opacity="0.3"/>`;
+  // Étoile/soleil
+  o+=`<circle cx="650" cy="78" r="38" fill="${P.gold}" opacity="0.6" filter="url(#${id}glow)">
+    <animate attributeName="opacity" values=".6;.42;.6" dur="5s" repeatCount="indefinite"/>
+  </circle>`;
+  return o;
+}
+
 // ================================================================
 //  CLASSIFICATEUR
 // ================================================================
@@ -1182,6 +1263,27 @@ const KEYWORD_MAP = [
   {w:['philosophie','pensée','idée','éthique','moral','conscience'],m:'bulb'},
   {w:['innovation','invention','startup','futur','progrès'],m:'bulb'},
   {w:['industrie','production','entreprise','usine','travail'],m:'gears'},
+
+  // Culture / Venise / architecture / histoire
+  {w:['venise','biennale','pavilion','pavillon','anthropocene','anthropocène','climat','réchauffement','environnement','écologie'],m:'brush'},
+  {w:['mémoire','commémoration','8 mai','14 juillet','11 novembre','devoir mémoire','souvenir','anniversaire'],m:'memorial'},
+  {w:['guerre','bataille','conflit','armée','soldat','combattant','victoire militaire','résistance','libération'],m:'memorial'},
+  {w:['architecture','bâtiment','patrimoine','cathédrale','monument','château','abbaye','édifice'],m:'architecture'},
+  {w:['mer','lagune','lac','rivière','fleuve','seine','rhône','loire'],m:'wave'},
+  {w:['gastronomie','cuisine','restaurant','chef','michelin','recette','vin'],m:'wheat'},
+  {w:['mode','fashion','luxe','couture','défilé','styliste'],m:'brush'},
+  {w:['psychologie','thérapie','bien-être','burnout','stress','anxiété'],m:'brain'},
+  {w:['immigration','migration','réfugié','exil','diaspora','frontière'],m:'people'},
+  {w:['énergie','pétrole','gaz','charbon','fossile','transition énergétique','nucléaire civil'],m:'solarpanel'},
+  {w:['presse','journalisme','liberté','censure','désinformation','fake news','médias','information'],m:'microphone'},
+  {w:['inégalités','pauvreté','précarité','chômage','rsa','minima sociaux'],m:'people'},
+  {w:['féminisme','égalité','genre','parité','discrimination','droits'],m:'scales'},
+  {w:['jeunesse','génération z','millennials','adolescents','lycéens'],m:'people'},
+  {w:['littoral','côte','plage','île','archipel'],m:'wave'},
+  {w:['finance','financement','budget','déficit','dette','fiscalité','impôt'],m:'candles'},
+  {w:['entrepreneuriat','startup','levée fonds','valorisation','licorne'],m:'bulb'},
+  {w:['espace public','démocratie','citoyenneté','participation','délibération'],m:'columns'},
+  {w:['corruption','scandale','affaire','détournement','fraude'],m:'scales'},
 ];
 
 function classifyArticle(article) {
@@ -1208,8 +1310,8 @@ function makeSvgForArticle(article, idx) {
   const P     = getPalette(cat, seed);
   const motif = classifyArticle(article);
 
-  const cx = Math.floor(470+sR(seed+'cx')*140);
-  const cy = Math.floor(155+sR(seed+'cy')*100);
+  const cx = Math.floor(310+sR(seed+'cx')*180);
+  const cy = Math.floor(140+sR(seed+'cy')*130);
 
   // Helper pour remplacer le placeholder d'id dans pulse()
   const withId = str => str.replace(/__idglow__/g, id+'glow').replace(/__id__/g, id);
@@ -1258,14 +1360,19 @@ function makeSvgForArticle(article, idx) {
   else if(motif==='cycling'){ L+=motifMountain(P,id,seed);           L+=motifBicycle(cx,cy,P,id); }
   else if(motif==='bulb')   { L+=motifLightbulb(cx,cy,P,id);         L+=motifStars(18,P,seed); }
   else if(motif==='gears')  { L+=motifGears(P,id,seed); }
+    else if(motif==='memorial')   { L+=motifMemorial(P,id,seed); }
+  else if(motif==='architecture'){ L+=motifArchitecture(P,id,seed); }
   else {
-    const def=Math.floor(sR(seed+'def')*6);
-    if(def===0)      { L+=motifStars(55,P,seed); L+=motifPlanet(cx,cy,P,id,seed); }
-    else if(def===1) { L+=motifNeural(cx,cy,P,id,seed); }
-    else if(def===2) { L+=motifCandles(P,id,seed); }
-    else if(def===3) { L+=motifCity(P,id,seed); }
-    else if(def===4) { L+=motifGears(P,id,seed); }
-    else             { L+=motifGlobe(cx,cy,P,id); }
+    // Fallback : basé sur la rubrique pour être plus pertinent
+    if(cat==='Science')         { L+=motifStars(55,P,seed); L+=motifPlanet(cx,cy,P,id,seed); }
+    else if(cat==='Tech'||cat==='Technologie') { L+=motifNeural(cx,cy,P,id,seed); }
+    else if(cat==='Économie')   { L+=motifCandles(P,id,seed); }
+    else if(cat==='Politique')  { L+=motifColumns(P,id); }
+    else if(cat==='Culture')    { L+=motifBrushStrokes(P,id,seed); }
+    else if(cat==='Société')    { L+=motifCity(P,id,seed); }
+    else if(cat==='Sport')      { L+=motifPodium(cx,cy,P,id); }
+    else if(cat==='Idées')      { L+=motifLightbulb(cx,cy,P,id); }
+    else                        { L+=motifGlobe(cx,cy,P,id); }
   }
 
   // Bandeau titre (bas)
