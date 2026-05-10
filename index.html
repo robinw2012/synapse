@@ -248,973 +248,1104 @@ Faut-il y voir un simple effet de mode ? Peut-être. Mais il est aussi possible 
 //  animations SMIL fluides par motif, particules, glows.
 // ================================================================
 
+// ================================================================
+//  SYNAPSE DAILY — MOTEUR D'ILLUSTRATION ÉDITORIALE v5
+//  Scènes cinématiques composées selon le contenu de l'article.
+//  Chaque illustration est unique, narrative, et ancrée dans le sujet.
+// ================================================================
+
 function hashStr(str) {
   let h = 0x811c9dc5;
   for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = (h * 0x01000193) >>> 0; }
   return h;
 }
 function sR(seed) { return (hashStr(String(seed)) % 10000) / 10000; }
-function hsl(h, s, l) { return `hsl(${h},${s}%,${l}%)`; }
-function hslA(h, s, l, a) { return `hsla(${h},${s}%,${l}%,${a})`; }
+function hsl(h,s,l) { return `hsl(${h},${s}%,${l}%)`; }
+function hslA(h,s,l,a) { return `hsla(${h},${s}%,${l}%,${a})`; }
 
-// Palettes raffinées par rubrique
+// Palettes éditoriales par rubrique
 const PALETTES = {
-  'Science':    { bg:[218,55,7],  bg2:[225,45,14], accent:[185,90,55], gold:[48,95,62], glow:[185,90,70] },
-  'Tech':       { bg:[198,60,6],  bg2:[205,50,12], accent:[155,85,48], gold:[192,88,68], glow:[155,85,65] },
-  'Technologie':{ bg:[198,60,6],  bg2:[205,50,12], accent:[155,85,48], gold:[192,88,68], glow:[155,85,65] },
-  'Économie':   { bg:[35,55,8],   bg2:[42,45,15],  accent:[40,92,58],  gold:[138,68,48], glow:[40,92,72] },
-  'Politique':  { bg:[5,60,8],    bg2:[10,50,14],  accent:[4,88,52],   gold:[40,92,62], glow:[4,88,68] },
-  'Culture':    { bg:[318,50,8],  bg2:[325,42,14], accent:[338,82,58], gold:[28,88,60], glow:[338,82,72] },
-  'Société':    { bg:[142,45,8],  bg2:[148,38,14], accent:[140,72,48], gold:[35,90,60], glow:[140,72,62] },
-  'Sport':      { bg:[12,60,8],   bg2:[18,50,14],  accent:[10,88,55],  gold:[40,95,60], glow:[10,88,70] },
-  'Idées':      { bg:[262,50,8],  bg2:[268,42,14], accent:[260,75,60], gold:[42,88,62], glow:[260,75,75] },
+  'Science':    {bg:[215,60,6], mid:[215,50,12], accent:[185,88,52], gold:[45,90,60]},
+  'Tech':       {bg:[195,65,5], mid:[195,55,11], accent:[150,82,45], gold:[188,85,65]},
+  'Technologie':{bg:[195,65,5], mid:[195,55,11], accent:[150,82,45], gold:[188,85,65]},
+  'Économie':   {bg:[32,55,6],  mid:[32,45,13],  accent:[38,90,55],  gold:[135,65,45]},
+  'Politique':  {bg:[4,62,6],   mid:[4,52,12],   accent:[2,88,50],   gold:[38,90,60]},
+  'Culture':    {bg:[315,55,7], mid:[315,45,13], accent:[335,80,55], gold:[25,85,58]},
+  'Société':    {bg:[138,48,6], mid:[138,40,12], accent:[136,70,45], gold:[32,88,58]},
+  'Sport':      {bg:[10,62,6],  mid:[10,52,12],  accent:[8,88,52],   gold:[40,92,58]},
+  'Idées':      {bg:[258,52,6], mid:[258,44,12], accent:[255,75,58], gold:[40,88,60]},
 };
-const DEF_PAL = { bg:[218,50,8], bg2:[225,42,14], accent:[208,78,52], gold:[42,88,60], glow:[208,78,68] };
+const DEF = {bg:[215,52,6], mid:[215,44,12], accent:[205,75,50], gold:[40,85,58]};
 
-function getPalette(cat, seed) {
-  const p = PALETTES[cat] || DEF_PAL;
-  const d = Math.floor(sR(seed+'hd') * 22) - 11;
+function P(cat, seed) {
+  const p = PALETTES[cat] || DEF;
+  const d = Math.floor(sR(seed+'d')*18)-9;
   return {
-    bg:     hsl(p.bg[0]+d,     p.bg[1],     p.bg[2]),
-    bg2:    hsl(p.bg2[0]+d,    p.bg2[1],    p.bg2[2]),
-    accent: hsl(p.accent[0]+d, p.accent[1], p.accent[2]),
-    accentD:hsl(p.accent[0]+d, p.accent[1], p.accent[2]-15),
-    gold:   hsl(p.gold[0]+d,   p.gold[1],   p.gold[2]),
-    glow:   hslA(p.glow[0]+d,  p.glow[1],   p.glow[2], 0.35),
-    light:  hsl(p.bg[0]+d,     12,           85),
-    dark:   hsl(p.bg[0]+d,     45,           4),
-    mid:    hsl(p.bg[0]+d,     30,           35),
+    bg:    hsl(p.bg[0]+d,     p.bg[1],    p.bg[2]),
+    mid:   hsl(p.mid[0]+d,    p.mid[1],   p.mid[2]),
+    mid2:  hsl(p.mid[0]+d,    p.mid[1]-8, p.mid[2]+8),
+    acc:   hsl(p.accent[0]+d, p.accent[1],p.accent[2]),
+    accD:  hsl(p.accent[0]+d, p.accent[1],p.accent[2]-18),
+    accL:  hsl(p.accent[0]+d, p.accent[1],p.accent[2]+18),
+    gold:  hsl(p.gold[0]+d,   p.gold[1],  p.gold[2]),
+    goldD: hsl(p.gold[0]+d,   p.gold[1],  p.gold[2]-22),
+    light: hsl(p.bg[0]+d,     12,          88),
+    dark:  hsl(p.bg[0]+d,     50,          3),
+    fog:   hslA(p.mid[0]+d,   p.mid[1],   p.mid[2]+15, 0.4),
   };
 }
 
-// ================================================================
-//  GÉNÉRATEUR DE FILTRES SVG (glow, blur, ombre)
-// ================================================================
-function makeFilters(id, P) {
+// Filtres communs
+function filters(id, col) {
   return `<defs>
-    <linearGradient id="${id}bgG" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="${P.bg}"/>
-      <stop offset="60%" stop-color="${P.bg2}"/>
-      <stop offset="100%" stop-color="${P.accentD}" stop-opacity="0.4"/>
-    </linearGradient>
-    <radialGradient id="${id}glowG" cx="50%" cy="40%" r="55%">
-      <stop offset="0%" stop-color="${P.glow}"/>
-      <stop offset="100%" stop-color="${P.bg}" stop-opacity="0"/>
-    </radialGradient>
-    <filter id="${id}glow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="8" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <filter id="${id}softglow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="4" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <filter id="${id}shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="${P.dark}" flood-opacity="0.6"/>
-    </filter>
-    <filter id="${id}noise">
-      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
-      <feColorMatrix type="saturate" values="0"/>
-      <feBlend in="SourceGraphic" mode="overlay" result="blend"/>
-      <feComposite in="blend" in2="SourceGraphic" operator="in"/>
-    </filter>
+  <filter id="${id}gl" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="${id}g2" x="-30%" y="-30%" width="160%" height="160%">
+    <feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="${id}bl">
+    <feGaussianBlur stdDeviation="6"/>
+  </filter>
+  <filter id="${id}sh">
+    <feDropShadow dx="0" dy="5" stdDeviation="10" flood-color="${col}" flood-opacity="0.7"/>
+  </filter>
+  </defs>`;
+}
+
+// ================================================================
+//  SCÈNES ÉDITORIALES — chacune raconte une histoire
+// ================================================================
+
+// --- SCÈNE 1 : ESPACE PROFOND ---
+// Pour : astronomie, exoplanète, espace, cosmos, NASA
+function sceneSpace(id, C, seed) {
+  const s = (k,n=10000) => (hashStr(seed+k)%n)/n;
+  let o = filters(id, C.dark);
+
+  // Fond : espace profond avec nébuleuse
+  o += `<defs>
+  <radialGradient id="${id}sky" cx="38%" cy="32%" r="70%">
+    <stop offset="0%" stop-color="${C.accD}" stop-opacity="0.9"/>
+    <stop offset="40%" stop-color="${C.mid}"/>
+    <stop offset="100%" stop-color="${C.bg}"/>
+  </radialGradient>
+  <radialGradient id="${id}neb" cx="65%" cy="55%" r="45%">
+    <stop offset="0%" stop-color="${C.gold}" stop-opacity="0.18"/>
+    <stop offset="100%" stop-color="${C.bg}" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="${id}pG" cx="32%" cy="28%" r="68%">
+    <stop offset="0%" stop-color="${C.accL}"/>
+    <stop offset="55%" stop-color="${C.acc}"/>
+    <stop offset="100%" stop-color="${C.accD}"/>
+  </radialGradient>
   </defs>
-  <rect width="800" height="450" fill="url(#${id}bgG)"/>
-  <rect width="800" height="450" fill="url(#${id}glowG)"/>`;
-}
+  <rect width="800" height="450" fill="url(#${id}sky)"/>
+  <rect width="800" height="450" fill="url(#${id}neb)"/>`;
 
-// Grid trame légère
-function grid(P) {
-  let o = '';
-  for (let x = 0; x <= 800; x += 80) o += `<line x1="${x}" y1="0" x2="${x}" y2="450" stroke="${P.light}" stroke-width="1" opacity="0.05"/>`;
-  for (let y = 0; y <= 450; y += 80) o += `<line x1="0" y1="${y}" x2="800" y2="${y}" stroke="${P.light}" stroke-width="1" opacity="0.05"/>`;
-  return o;
-}
-
-// Particules de fond (étoiles/poussière)
-function particles(n, P, seed, maxR = 2.5) {
-  let o = '';
-  for (let i = 0; i < n; i++) {
-    const x = sR(seed+'px'+i)*800, y = sR(seed+'py'+i)*450;
-    const r = sR(seed+'pr'+i)*maxR + 0.4;
-    const dur = (2 + sR(seed+'pd'+i)*4).toFixed(1);
-    const delay = (sR(seed+'pde'+i)*dur).toFixed(1);
-    const op1 = (0.2 + sR(seed+'op1'+i)*0.6).toFixed(2);
-    const op2 = (0.05 + sR(seed+'op2'+i)*0.2).toFixed(2);
-    o += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="${P.light}" opacity="${op1}">
-      <animate attributeName="opacity" values="${op1};${op2};${op1}" dur="${dur}s" begin="${delay}s" repeatCount="indefinite"/>
-      <animate attributeName="r" values="${r.toFixed(1)};${(r*.6).toFixed(1)};${r.toFixed(1)}" dur="${dur}s" begin="${delay}s" repeatCount="indefinite"/>
+  // Étoiles avec scintillement
+  for (let i = 0; i < 120; i++) {
+    const x=(s('sx'+i)*800).toFixed(1), y=(s('sy'+i)*450).toFixed(1);
+    const r=(s('sr'+i)*2.2+0.3).toFixed(1), op=(0.2+s('so'+i)*0.75).toFixed(2);
+    const dur=(2+s('sd'+i)*5).toFixed(1), del=(s('sb'+i)*6).toFixed(1);
+    o += `<circle cx="${x}" cy="${y}" r="${r}" fill="${C.light}" opacity="${op}">
+    <animate attributeName="opacity" values="${op};${(op*0.1).toFixed(2)};${op}" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
     </circle>`;
   }
-  return o;
-}
 
-// Pulse animé sur un cercle
-function pulse(cx, cy, r, c, dur = '3s', delay = '0s') {
-  return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${c}" opacity="0.85" filter="url(#__idglow__)">
-    <animate attributeName="r" values="${r};${r*1.25};${r}" dur="${dur}" begin="${delay}" repeatCount="indefinite"/>
-    <animate attributeName="opacity" values="0.85;0.4;0.85" dur="${dur}" begin="${delay}" repeatCount="indefinite"/>
-  </circle>`;
-}
+  // Nébuleuse colorée (nuage gazeux)
+  for (let i = 0; i < 8; i++) {
+    const nx=(150+s('nx'+i)*500).toFixed(0), ny=(50+s('ny'+i)*280).toFixed(0);
+    const nr=(60+s('nr'+i)*120).toFixed(0);
+    const cols = [C.acc, C.gold, C.accL, C.accD];
+    o += `<circle cx="${nx}" cy="${ny}" r="${nr}" fill="${cols[i%4]}" opacity="${(0.04+s('no'+i)*0.08).toFixed(3)}" filter="url(#${id}bl)"/>`;
+  }
 
-// ================================================================
-//  MOTIFS AMÉLIORÉS — qualité et animations
-// ================================================================
-
-// ——— ESPACE ———
-function motifPlanet(cx,cy,P,id,seed){
-  const r=90+sR(seed+'pr')*28;
-  const tilt=16+sR(seed+'pt')*28;
-  const moonR=r*.22, moonOrb=r*2.0;
-  // Nébuleuse derrière
-  let o=`<circle cx="${cx-110}" cy="${cy-75}" r="175" fill="${P.acD}" opacity="0.14" filter="url(#${id}blur)"/>
-  <circle cx="${cx+90}" cy="${cy+55}" r="130" fill="${P.goldD}" opacity="0.1" filter="url(#${id}blur)"/>`;
-  // Dégradé planète
-  o+=`<defs>
-  <radialGradient id="${id}pG" cx="33%" cy="30%" r="65%">
-    <stop offset="0%" stop-color="${P.acL}"/>
-    <stop offset="50%" stop-color="${P.accent}"/>
-    <stop offset="100%" stop-color="${P.acD}"/>
-  </radialGradient>
-  <radialGradient id="${id}atmG" cx="40%" cy="35%" r="60%">
-    <stop offset="70%" stop-color="${P.accent}" stop-opacity="0"/>
-    <stop offset="100%" stop-color="${P.acL}" stop-opacity="0.55"/>
-  </radialGradient>
-  </defs>`;
-  // Ombre
-  o+=`<circle cx="${cx+6}" cy="${cy+6}" r="${r+4}" fill="${P.dark}" opacity="0.8" filter="url(#${id}sh)"/>`;
-  // Corps
-  o+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#${id}pG)" opacity="0.95"/>`;
+  // Planète principale
+  const px = 480, py = 195, pr = 105;
+  o += `<circle cx="${px+8}" cy="${py+8}" r="${pr+3}" fill="${C.dark}" opacity="0.8" filter="url(#${id}bl)"/>`;
+  o += `<circle cx="${px}" cy="${py}" r="${pr}" fill="url(#${id}pG)"/>`;
   // Bandes atmosphériques
-  for(let i=0;i<6;i++){
-    const by=cy-r+(i+.5)*(r*2/6);
-    const hw=Math.sqrt(Math.max(0,r*r-(by-cy)*(by-cy)));
-    if(hw>5) o+=`<ellipse cx="${cx}" cy="${by.toFixed(0)}" rx="${(hw*.92).toFixed(0)}" ry="${(r/7.5).toFixed(0)}" fill="${i%2===0?P.acL:P.gold}" opacity="${(.06+i*.012).toFixed(3)}"/>`;
+  for (let i = 0; i < 7; i++) {
+    const by = py-pr+(i+0.5)*(pr*2/7);
+    const hw = Math.sqrt(Math.max(0, pr*pr-(by-py)*(by-py)));
+    if (hw > 8) o += `<ellipse cx="${px}" cy="${by.toFixed(0)}" rx="${(hw*.9).toFixed(0)}" ry="${(pr/8).toFixed(0)}" fill="${i%2===0?C.accL:C.gold}" opacity="${(0.07+i*0.01).toFixed(3)}"/>`;
   }
   // Calotte polaire
-  o+=`<ellipse cx="${cx}" cy="${cy-r*.74}" rx="${r*.36}" ry="${r*.17}" fill="${P.light}" opacity="0.22"/>`;
-  // Atmosphère
-  o+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#${id}atmG)"/>`;
-  // Terminateur
-  o+=`<path d="M${cx},${cy-r} Q${cx-r*.38},${cy} ${cx},${cy+r}" fill="${P.dark}" opacity="0.32"/>`;
-  // Anneaux (3 couches)
-  o+=`<g transform="rotate(${tilt},${cx},${cy})">`;
-  [{rx:r*2.05,ry:r*.41,sw:8,op:.72},{rx:r*1.72,ry:r*.34,sw:5,op:.52},{rx:r*2.38,ry:r*.47,sw:3,op:.32}].forEach(({rx,ry,sw,op})=>{
-    o+=`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="${P.gold}" stroke-width="${sw}" opacity="${op}">
-    <animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="${20+sw*4}s" repeatCount="indefinite"/>
+  o += `<ellipse cx="${px}" cy="${py-pr*.72}" rx="${(pr*.38).toFixed(0)}" ry="${(pr*.16).toFixed(0)}" fill="${C.light}" opacity="0.25"/>`;
+  // Terminateur (côté nuit)
+  o += `<path d="M${px},${py-pr} Q${px-pr*.35},${py} ${px},${py+pr}" fill="${C.dark}" opacity="0.38" clip-path="url(#${id}cp)"/>`;
+  // Anneaux
+  o += `<defs><clipPath id="${id}cp"><rect width="800" height="450"/></clipPath></defs>`;
+  const tilt = 20 + s('tilt')*25;
+  o += `<g transform="rotate(${tilt},${px},${py})">`;
+  [{rx:pr*2.0,ry:pr*.38,sw:9,op:0.65},{rx:pr*1.65,ry:pr*.32,sw:5,op:0.45},{rx:pr*2.35,ry:pr*.46,sw:3,op:0.28}].forEach(({rx,ry,sw,op}) => {
+    o += `<ellipse cx="${px}" cy="${py}" rx="${rx}" ry="${ry}" fill="none" stroke="${C.gold}" stroke-width="${sw}" opacity="${op}">
+    <animateTransform attributeName="transform" type="rotate" from="0 ${px} ${py}" to="360 ${px} ${py}" dur="${22+sw*3}s" repeatCount="indefinite"/>
     </ellipse>`;
   });
-  // Particules dans les anneaux
-  for(let i=0;i<14;i++){
-    const a=i/14*Math.PI*2, px2=cx+Math.cos(a)*r*2.05*.98, py2=cy+Math.cos(a)*r*.41;
-    o+=`<circle cx="${px2.toFixed(0)}" cy="${py2.toFixed(0)}" r="${1+sR(seed+'rp'+i)*2}" fill="${P.light}" opacity="${(.25+sR(seed+'rpo'+i)*.5).toFixed(2)}"/>`;
-  }
-  o+=`</g>`;
-  // Lune avec cratères
-  let moon=`<circle r="${moonR*1.1}" fill="${P.dark}" opacity="0.5" filter="url(#${id}blur)"/>`;
-  moon+=`<circle r="${moonR}" fill="${P.light}" opacity="0.75"/>`;
-  for(let i=0;i<6;i++){
-    const ca=(sR(seed+'mca'+i)-.5)*moonR*1.5, cb=(sR(seed+'mcb'+i)-.5)*moonR*1.5, cr=moonR*.1+sR(seed+'mcr'+i)*moonR*.2;
-    if(Math.sqrt(ca*ca+cb*cb)+cr<moonR*.88) moon+=`<circle cx="${ca.toFixed(0)}" cy="${cb.toFixed(0)}" r="${cr.toFixed(0)}" fill="${P.mid}" opacity="0.45"/>`;
-  }
-  const moonPath=`M ${cx+moonOrb} ${cy} A ${moonOrb} ${moonOrb*.3} 0 1 1 ${cx+moonOrb-.01} ${cy}`;
-  o+=`<g filter="url(#${id}sh)"><animateMotion path="${moonPath}" dur="${10+sR(seed+'md')*5}s" repeatCount="indefinite"/>${moon}</g>`;
-  return o;
-}
-function motifStars(n, P, seed) {
-  return particles(n, P, seed, 2.2);
-}
-
-function motifRocket(cx, cy, P, id, seed) {
-  const ang = -25 + sR(seed+'ra')*10;
-  return `
-  <g transform="translate(${cx},${cy}) rotate(${ang})">
-    <path d="M0,-100 Q28,-55 28,18 L0,32 L-28,18 Q-28,-55 0,-100Z" fill="${P.accent}" opacity="0.9" filter="url(#${id}shadow)"/>
-    <path d="M28,10 Q52,28 46,52 L22,38Z" fill="${P.gold}" opacity="0.8"/>
-    <path d="M-28,10 Q-52,28 -46,52 L-22,38Z" fill="${P.gold}" opacity="0.8"/>
-    <ellipse cx="0" cy="-62" rx="17" ry="13" fill="${P.light}" opacity="0.55"/>
-    <circle cx="0" cy="-60" r="9" fill="${P.mid}" opacity="0.7"/>
-    <rect x="-4" y="-35" width="8" height="28" fill="${P.gold}" opacity="0.4" rx="3"/>
-    <rect x="-12" y="-22" width="6" height="14" fill="${P.light}" opacity="0.3" rx="2"/>
-    <rect x="6" y="-22" width="6" height="14" fill="${P.light}" opacity="0.3" rx="2"/>
-    <!-- Flamme animée -->
-    <ellipse cx="0" cy="48" rx="10" ry="18" fill="${P.gold}" opacity="0.9" filter="url(#${id}glow)">
-      <animate attributeName="ry" values="18;28;16;24;18" dur="0.4s" repeatCount="indefinite"/>
-      <animate attributeName="opacity" values="0.9;0.6;0.95;0.7;0.9" dur="0.4s" repeatCount="indefinite"/>
-    </ellipse>
-    <ellipse cx="0" cy="56" rx="6" ry="14" fill="${P.light}" opacity="0.75">
-      <animate attributeName="ry" values="14;22;12;18;14" dur="0.35s" repeatCount="indefinite"/>
-    </ellipse>
-    <ellipse cx="2" cy="38" rx="5" ry="8" fill="white" opacity="0.4">
-      <animate attributeName="opacity" values="0.4;0.1;0.5;0.2;0.4" dur="0.3s" repeatCount="indefinite"/>
-    </ellipse>
-    <!-- Trainée de fumée -->
-    <ellipse cx="-5" cy="72" rx="14" ry="8" fill="${P.mid}" opacity="0.25">
-      <animate attributeName="opacity" values="0.25;0.05;0.25" dur="1.2s" repeatCount="indefinite"/>
-      <animate attributeName="ry" values="8;18;8" dur="1.2s" repeatCount="indefinite"/>
-    </ellipse>
-    <ellipse cx="8" cy="92" rx="18" ry="10" fill="${P.mid}" opacity="0.15">
-      <animate attributeName="opacity" values="0.15;0.03;0.15" dur="1.8s" begin="0.3s" repeatCount="indefinite"/>
-      <animate attributeName="ry" values="10;22;10" dur="1.8s" begin="0.3s" repeatCount="indefinite"/>
-    </ellipse>
-  </g>
-  <!-- Particules d'échappement -->
-  <circle cx="${cx+20}" cy="${cy+90}" r="4" fill="${P.gold}" opacity="0.6">
-    <animate attributeName="cy" values="${cy+90};${cy+160};${cy+90}" dur="2s" repeatCount="indefinite"/>
-    <animate attributeName="opacity" values="0.6;0;0.6" dur="2s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="${cx-15}" cy="${cy+100}" r="3" fill="${P.light}" opacity="0.4">
-    <animate attributeName="cy" values="${cy+100};${cy+180};${cy+100}" dur="2.5s" begin="0.5s" repeatCount="indefinite"/>
-    <animate attributeName="opacity" values="0.4;0;0.4" dur="2.5s" begin="0.5s" repeatCount="indefinite"/>
+  o += '</g>';
+  // Lune
+  const moonR = pr*0.24;
+  o += `<g><animateMotion path="M${px+pr*2.1} ${py} A${pr*2.1} ${pr*0.55} 0 1 1 ${px+pr*2.1-0.01} ${py}" dur="12s" repeatCount="indefinite"/>
+  <circle r="${moonR}" fill="${C.dark}" opacity="0.7" filter="url(#${id}bl)"/>
+  <circle r="${moonR}" fill="${C.light}" opacity="0.78"/>
+  <circle r="${moonR*.5}" cx="-${moonR*.3}" cy="-${moonR*.2}" fill="${C.mid2}" opacity="0.3"/>
+  </g>`;
+  // Étoile proche (soleil lointain)
+  o += `<circle cx="80" cy="75" r="18" fill="${C.gold}" opacity="0.85" filter="url(#${id}gl)">
+  <animate attributeName="r" values="18;22;18" dur="6s" repeatCount="indefinite"/>
   </circle>`;
-}
-
-function motifBlackHole(cx, cy, P, id, seed) {
-  const r = 65;
-  return `
-  <circle cx="${cx}" cy="${cy}" r="${r*3}" fill="${P.accentD}" opacity="0.08" filter="url(#${id}glow)"/>
-  <circle cx="${cx}" cy="${cy}" r="${r*2}" fill="${P.accentD}" opacity="0.12"/>
-  <ellipse cx="${cx}" cy="${cy}" rx="${r*3.2}" ry="${r*.55}" fill="${P.accent}" opacity="0.35">
-    <animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="12s" repeatCount="indefinite"/>
+  for (let i = 0; i < 8; i++) {
+    const a = i/8*Math.PI*2;
+    o += `<line x1="${(80+Math.cos(a)*22).toFixed(0)}" y1="${(75+Math.sin(a)*22).toFixed(0)}" x2="${(80+Math.cos(a)*36).toFixed(0)}" y2="${(75+Math.sin(a)*36).toFixed(0)}" stroke="${C.gold}" stroke-width="2.5" opacity="0.55">
+    <animate attributeName="opacity" values="0.55;0.15;0.55" dur="${1.5+i*0.3}s" repeatCount="indefinite"/>
+    </line>`;
+  }
+  // Vaisseau spatial (simple mais reconnaissable)
+  o += `<g transform="translate(180,310) rotate(-18)" opacity="0.7">
+  <ellipse cx="0" cy="0" rx="45" ry="10" fill="${C.mid2}"/>
+  <ellipse cx="-10" cy="-5" rx="20" ry="7" fill="${C.acc}" opacity="0.8"/>
+  <rect x="-55" y="-3" width="18" height="6" fill="${C.gold}" rx="2"/>
+  <rect x="37" y="-3" width="18" height="6" fill="${C.gold}" rx="2"/>
+  <circle cx="-12" cy="-5" r="4" fill="${C.light}" opacity="0.6"/>
+  <ellipse cx="12" cy="2" rx="10" ry="5" fill="${C.accD}" opacity="0.9">
+  <animate attributeName="opacity" values="0.9;0.4;0.9" dur="0.4s" repeatCount="indefinite"/>
   </ellipse>
-  <ellipse cx="${cx}" cy="${cy}" rx="${r*2.6}" ry="${r*.42}" fill="${P.gold}" opacity="0.22">
-    <animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="-360 ${cx} ${cy}" dur="8s" repeatCount="indefinite"/>
-  </ellipse>
-  <ellipse cx="${cx}" cy="${cy}" rx="${r*2}" ry="${r*.3}" fill="${P.accent}" opacity="0.4">
-    <animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="6s" repeatCount="indefinite"/>
-  </ellipse>
-  <circle cx="${cx}" cy="${cy}" r="${r}" fill="${P.dark}" opacity="0.98" filter="url(#${id}shadow)"/>
-  <circle cx="${cx}" cy="${cy}" r="${r*.5}" fill="${P.bg}" opacity="0.6"/>
-  <circle cx="${cx}" cy="${cy}" r="8" fill="${P.accent}" opacity="0.5">
-    <animate attributeName="opacity" values="0.5;0.9;0.5" dur="3s" repeatCount="indefinite"/>
-    <animate attributeName="r" values="8;14;8" dur="3s" repeatCount="indefinite"/>
-  </circle>`;
-}
-
-function motifSatellite(cx, cy, P, id) {
-  return `
-  <g filter="url(#${id}shadow)">
-    <animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="25s" repeatCount="indefinite"/>
-    <rect x="${cx-14}" y="${cy-9}" width="28" height="18" fill="${P.accent}" opacity="0.9" rx="4"/>
-    <rect x="${cx-62}" y="${cy-6}" width="40" height="12" fill="${P.gold}" opacity="0.85" rx="3"/>
-    <rect x="${cx+22}" y="${cy-6}" width="40" height="12" fill="${P.gold}" opacity="0.85" rx="3"/>
-    <rect x="${cx-70}" y="${cy-14}" width="10" height="28" fill="${P.accent}" opacity="0.7" rx="3"/>
-    <rect x="${cx+60}" y="${cy-14}" width="10" height="28" fill="${P.accent}" opacity="0.7" rx="3"/>
-    <circle cx="${cx}" cy="${cy}" r="5" fill="${P.light}" opacity="0.95">
-      <animate attributeName="opacity" values="0.95;0.3;0.95" dur="1.5s" repeatCount="indefinite"/>
-    </circle>
-  </g>
-  <circle cx="${cx}" cy="${cy}" r="120" fill="none" stroke="${P.mid}" stroke-width="1.5" opacity="0.25" stroke-dasharray="6,4"/>
-  <circle cx="${cx}" cy="${cy}" r="180" fill="none" stroke="${P.mid}" stroke-width="1" opacity="0.15" stroke-dasharray="4,6"/>`;
-}
-
-// ——— BIOLOGIE ———
-function motifDNA(cx, cy, P, id, seed) {
-  const pts = 14, h = 300, steps = 50;
-  let d1 = '', d2 = '';
-  for (let i = 0; i <= steps; i++) {
-    const t = i/steps, yy = cy - h/2 + t*h;
-    d1 += (i===0?'M':'L') + `${(cx+Math.sin(t*Math.PI*4)*65).toFixed(1)},${yy.toFixed(1)} `;
-    d2 += (i===0?'M':'L') + `${(cx-Math.sin(t*Math.PI*4)*65).toFixed(1)},${yy.toFixed(1)} `;
-  }
-  let rungs = '', nodes = '';
-  for (let i = 0; i < pts; i++) {
-    const t = i/(pts-1), yy = cy - h/2 + t*h;
-    const x1 = cx+Math.sin(t*Math.PI*4)*65, x2 = cx-Math.sin(t*Math.PI*4)*65;
-    const delay = (i*0.12).toFixed(2);
-    rungs += `<line x1="${x1.toFixed(1)}" y1="${yy.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${yy.toFixed(1)}" stroke="${P.mid}" stroke-width="1.5" opacity="0.4"/>`;
-    nodes += `<circle cx="${x1.toFixed(1)}" cy="${yy.toFixed(1)}" r="8" fill="${P.accent}" opacity="0.9" filter="url(#${id}softglow)">
-      <animate attributeName="r" values="8;10;8" dur="2s" begin="${delay}s" repeatCount="indefinite"/>
-      <animate attributeName="opacity" values="0.9;0.5;0.9" dur="2s" begin="${delay}s" repeatCount="indefinite"/>
-    </circle>
-    <circle cx="${x2.toFixed(1)}" cy="${yy.toFixed(1)}" r="8" fill="${P.gold}" opacity="0.9" filter="url(#${id}softglow)">
-      <animate attributeName="r" values="8;10;8" dur="2s" begin="${(parseFloat(delay)+0.5).toFixed(2)}s" repeatCount="indefinite"/>
-      <animate attributeName="opacity" values="0.9;0.5;0.9" dur="2s" begin="${(parseFloat(delay)+0.5).toFixed(2)}s" repeatCount="indefinite"/>
-    </circle>`;
-  }
-  return `${rungs}
-  <path d="${d1}" fill="none" stroke="${P.accent}" stroke-width="3.5" opacity="0.75" filter="url(#${id}softglow)"/>
-  <path d="${d2}" fill="none" stroke="${P.gold}" stroke-width="3.5" opacity="0.75" filter="url(#${id}softglow)"/>
-  ${nodes}
-  <!-- Signal qui remonte le brin -->
-  <circle r="5" fill="${P.light}" opacity="0.9" filter="url(#${id}glow)">
-    <animateMotion path="${d1}" dur="4s" repeatCount="indefinite"/>
-  </circle>
-  <circle r="5" fill="${P.light}" opacity="0.9" filter="url(#${id}glow)">
-    <animateMotion path="${d2}" dur="5s" begin="1.5s" repeatCount="indefinite"/>
-  </circle>`;
-}
-
-function motifAtom(cx, cy, P, id) {
-  const r = 130;
-  const orbits = [[1, 0, '20s'], [0.72, 60, '14s'], [0.72, 120, '17s']];
-  let o = `<circle cx="${cx}" cy="${cy}" r="${r*.18}" fill="${P.accent}" opacity="0.95" filter="url(#${id}glow)">
-    <animate attributeName="r" values="${r*.18};${r*.24};${r*.18}" dur="2s" repeatCount="indefinite"/>
-  </circle>`;
-  orbits.forEach(([sc, rot, dur]) => {
-    o += `<g transform="rotate(${rot},${cx},${cy})">
-      <ellipse cx="${cx}" cy="${cy}" rx="${r}" ry="${r*.35*sc}" fill="none" stroke="${P.gold}" stroke-width="2" opacity="0.6">
-        <animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="${dur}" repeatCount="indefinite"/>
-      </ellipse>
-      <circle r="7" fill="${P.accent}" opacity="0.9" filter="url(#${id}softglow)">
-        <animateMotion path="M ${cx+r} ${cy} A ${r} ${r*.35*sc} 0 1 1 ${cx+r-0.01} ${cy}" dur="${dur}" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0.9;0.5;0.9" dur="${dur}" repeatCount="indefinite"/>
-      </circle>
-    </g>`;
-  });
+  </g>`;
   return o;
 }
 
-function motifVirus(cx, cy, P, id, seed) {
-  const r = 70;
-  let spikes = '';
-  for (let i = 0; i < 14; i++) {
-    const a = i/14*Math.PI*2;
-    const bx = cx+Math.cos(a)*(r+30), by = cy+Math.sin(a)*(r+30);
-    const delay = (i*0.15).toFixed(2);
-    spikes += `<line x1="${(cx+Math.cos(a)*r).toFixed(1)}" y1="${(cy+Math.sin(a)*r).toFixed(1)}" x2="${bx.toFixed(1)}" y2="${by.toFixed(1)}" stroke="${P.gold}" stroke-width="2.5" opacity="0.75"/>
-    <circle cx="${bx.toFixed(1)}" cy="${by.toFixed(1)}" r="6" fill="${P.gold}" opacity="0.85" filter="url(#${id}softglow)">
-      <animate attributeName="r" values="6;9;6" dur="2s" begin="${delay}s" repeatCount="indefinite"/>
-    </circle>`;
-  }
-  return `${spikes}
-  <circle cx="${cx}" cy="${cy}" r="${r}" fill="${P.accent}" opacity="0.8" filter="url(#${id}shadow)">
-    <animate attributeName="r" values="${r};${r*1.04};${r}" dur="3s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="${cx}" cy="${cy}" r="${r*.5}" fill="${P.gold}" opacity="0.3"/>
-  <circle cx="${cx-15}" cy="${cy-15}" r="${r*.18}" fill="${P.light}" opacity="0.2"/>`;
-}
+// --- SCÈNE 2 : VILLE NOCTURNE ---
+// Pour : ville, urbanisme, immigration, société urbaine
+function sceneCity(id, C, seed) {
+  const s = k => (hashStr(seed+k)%10000)/10000;
+  let o = filters(id, C.dark);
+  o += `<defs>
+  <linearGradient id="${id}sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="${C.bg}"/>
+    <stop offset="60%" stop-color="${C.mid}"/>
+    <stop offset="100%" stop-color="${C.acc}" stop-opacity="0.2"/>
+  </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#${id}sky)"/>`;
 
-function motifBrain(cx, cy, P, id) {
-  return `
-  <path d="M${cx-75},${cy} Q${cx-85},${cy-65} ${cx-42},${cy-75} Q${cx-12},${cy-95} ${cx+22},${cy-80} Q${cx+75},${cy-90} ${cx+80},${cy-48} Q${cx+95},${cy-12} ${cx+75},${cy+22} Q${cx+85},${cy+58} ${cx+52},${cy+68} Q${cx+22},${cy+78} ${cx-12},${cy+68} Q${cx-52},${cy+82} ${cx-68},${cy+58} Q${cx-88},${cy+32} ${cx-75},${cy}Z" 
-    fill="${P.accent}" opacity="0.75" filter="url(#${id}shadow)"/>
-  <path d="M${cx},${cy-62} Q${cx+12},${cy-42} ${cx},${cy+52}" fill="none" stroke="${P.gold}" stroke-width="2.5" opacity="0.6"/>
-  <path d="M${cx-42},${cy-32} Q${cx-10},${cy-22} ${cx+32},${cy-12}" fill="none" stroke="${P.gold}" stroke-width="2" opacity="0.5"/>
-  <path d="M${cx-52},${cy+12} Q${cx-10},${cy+22} ${cx+42},${cy+17}" fill="none" stroke="${P.gold}" stroke-width="2" opacity="0.5"/>
-  <path d="M${cx-32},${cy+38} Q${cx+12},${cy+42} ${cx+48},${cy+36}" fill="none" stroke="${P.gold}" stroke-width="2" opacity="0.45"/>
-  <!-- Neurones pulsants -->
-  <circle cx="${cx-30}" cy="${cy-20}" r="5" fill="${P.gold}" opacity="0.8" filter="url(#${id}softglow)">
-    <animate attributeName="opacity" values="0.8;0.2;0.8" dur="2.5s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="${cx+35}" cy="${cy-5}" r="4" fill="${P.light}" opacity="0.7" filter="url(#${id}softglow)">
-    <animate attributeName="opacity" values="0.7;0.15;0.7" dur="3.2s" begin="0.8s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="${cx}" cy="${cy+32}" r="5" fill="${P.gold}" opacity="0.75" filter="url(#${id}softglow)">
-    <animate attributeName="opacity" values="0.75;0.2;0.75" dur="2.8s" begin="1.5s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="${cx-50}" cy="${cy+10}" r="4" fill="${P.accent}" opacity="0.7" filter="url(#${id}softglow)">
-    <animate attributeName="opacity" values="0.7;0.1;0.7" dur="3.5s" begin="0.4s" repeatCount="indefinite"/>
-  </circle>`;
-}
-
-function motifHeartbeat(P, id) {
-  const path = "M50,225 L190,225 L228,155 L268,298 L308,175 L348,265 L388,225 L750,225";
-  return `
-  <path d="${path}" fill="none" stroke="${P.accent}" stroke-width="3.5" opacity="0.85" stroke-linecap="round" stroke-linejoin="round" filter="url(#${id}glow)"
-    stroke-dasharray="1200" stroke-dashoffset="1200">
-    <animate attributeName="stroke-dashoffset" from="1200" to="0" dur="3s" repeatCount="indefinite"/>
-  </path>
-  <path d="${path}" fill="none" stroke="${P.gold}" stroke-width="1.5" opacity="0.4" stroke-linecap="round"/>
-  <!-- Point courant qui avance -->
-  <circle r="7" fill="${P.light}" opacity="0.9" filter="url(#${id}glow)">
-    <animateMotion path="${path}" dur="3s" repeatCount="indefinite"/>
-    <animate attributeName="opacity" values="0.9;0.3;0.9" dur="3s" repeatCount="indefinite"/>
-  </circle>
-  <line x1="400" y1="80" x2="400" y2="380" stroke="${P.mid}" stroke-width="1" opacity="0.2"/>
-  <line x1="0" y1="225" x2="800" y2="225" stroke="${P.mid}" stroke-width="1" opacity="0.25"/>`;
-}
-
-// ——— TECH ———
-function motifNeural(cx, cy, P, id, seed) {
-  const layers = [3,5,5,3], lw = 200, lh = 240;
-  let nodes = [], o = '';
-  layers.forEach((n, li) => {
-    const lx = cx - lw/2 + li*(lw/(layers.length-1));
-    nodes[li] = [];
-    for (let ni = 0; ni < n; ni++) {
-      const ny = cy - lh/2 + (ni+.5)*(lh/n);
-      nodes[li].push([lx, ny]);
+  // Bâtiments (17 immeubles avec fenêtres)
+  const bldgs = [
+    [5,58,185,10],[65,42,260,14],[109,34,175,9],[145,52,225,12],
+    [201,38,295,15],[243,29,150,8],[274,65,245,13],[340,44,320,17],
+    [386,34,185,10],[422,56,265,14],[480,38,170,9],[522,46,290,15],
+    [570,33,205,11],[606,60,245,13],[668,38,180,10],[708,50,225,12],[760,29,145,8]
+  ];
+  bldgs.forEach(([x,w,h,floors], bi) => {
+    const by = 388-h;
+    const col = bi%5===0?C.acc:bi%5===1?C.gold:bi%5===2?C.mid2:bi%5===3?C.accD:C.mid;
+    o += `<rect x="${x}" y="${by}" width="${w}" height="${h}" fill="${col}" opacity="${(0.32+s('bo'+bi)*0.28).toFixed(2)}" rx="2"/>`;
+    // Reflet latéral
+    o += `<rect x="${x+2}" y="${by+4}" width="${w*0.22}" height="${h-8}" fill="${C.light}" opacity="0.07" rx="1"/>`;
+    // Antenne ou corniche
+    if (bi%4===0) {
+      o += `<line x1="${x+w/2}" y1="${by}" x2="${x+w/2}" y2="${by-20}" stroke="${C.gold}" stroke-width="2" opacity="0.6"/>`;
+      o += `<circle cx="${x+w/2}" cy="${by-22}" r="2.5" fill="${C.acc}" opacity="0.9"><animate attributeName="opacity" values="0.9;0.1;0.9" dur="${1+bi*0.2}s" repeatCount="indefinite"/></circle>`;
+    } else o += `<rect x="${x-3}" y="${by}" width="${w+6}" height="5" fill="${col}" opacity="0.45" rx="1"/>`;
+    // Fenêtres allumées
+    const wc = Math.max(2,Math.floor(w/12)), wr = floors;
+    for (let r = 0; r < wr; r++) for (let c = 0; c < wc; c++) {
+      const wx = x+3+c*(w-6)/wc, wy = by+6+r*(h-12)/wr;
+      const ww = Math.max(3,(w-6)/wc-2.5), wh = Math.max(3,(h-12)/wr-2.5);
+      if (s('wl'+bi+r+c) > 0.38) {
+        const dur = (1.5+s('wd'+bi+r+c)*3).toFixed(1);
+        o += `<rect x="${wx.toFixed(0)}" y="${wy.toFixed(0)}" width="${ww.toFixed(0)}" height="${wh.toFixed(0)}" fill="rgba(255,238,140,0.82)" rx="1">
+        <animate attributeName="opacity" values="0.82;0.18;0.82" dur="${dur}s" begin="${(s('wde'+bi+r+c)*5).toFixed(1)}s" repeatCount="indefinite"/>
+        </rect>`;
+      }
     }
   });
+
+  // Sol, route, trottoir
+  o += `<rect x="0" y="386" width="800" height="64" fill="${C.dark}" opacity="0.55"/>`;
+  o += `<line x1="0" y1="388" x2="800" y2="388" stroke="${C.gold}" stroke-width="2" opacity="0.4"/>`;
+  // Reflets dans le sol
+  bldgs.forEach(([x,w,h], bi) => {
+    o += `<rect x="${x+3}" y="390" width="${w-6}" height="${h*0.2}" fill="${bi%3===0?C.acc:C.gold}" opacity="${(0.025+s('rf'+bi)*0.03).toFixed(3)}" rx="0"/>`;
+  });
+  // Lampadaires
+  [100,240,395,545,695].forEach(lx => {
+    o += `<line x1="${lx}" y1="374" x2="${lx}" y2="410" stroke="${C.mid2}" stroke-width="3" opacity="0.5"/>`;
+    o += `<circle cx="${lx}" cy="372" r="5" fill="${C.gold}" opacity="0.7" filter="url(#${id}g2)"/>`;
+    o += `<ellipse cx="${lx}" cy="372" rx="20" ry="8" fill="${C.gold}" opacity="0.18" filter="url(#${id}bl)"/>`;
+  });
+  // Voiture qui passe
+  o += `<g opacity="0.65"><animateTransform attributeName="transform" type="translate" values="-120,0;920,0" dur="12s" repeatCount="indefinite"/>
+  <rect x="0" y="370" width="55" height="16" fill="${C.mid2}" rx="5"/>
+  <rect x="8" y="362" width="38" height="12" fill="${C.acc}" opacity="0.7" rx="4"/>
+  <circle cx="10" cy="387" r="6" fill="${C.dark}" opacity="0.9"/><circle cx="10" cy="387" r="3" fill="${C.mid2}" opacity="0.5"/>
+  <circle cx="45" cy="387" r="6" fill="${C.dark}" opacity="0.9"/><circle cx="45" cy="387" r="3" fill="${C.mid2}" opacity="0.5"/>
+  <rect x="55" y="373" width="20" height="4" fill="${C.gold}" opacity="0.8" rx="2"/>
+  </g>`;
+  // Lune + nuages
+  o += `<circle cx="680" cy="62" r="32" fill="${C.light}" opacity="0.62" filter="url(#${id}g2)"/>`;
+  o += `<circle cx="694" cy="56" r="26" fill="${C.mid}" opacity="0.72"/>`;
+  // Nuage devant la lune
+  o += `<ellipse cx="660" cy="60" rx="38" ry="14" fill="${C.mid2}" opacity="0.45" filter="url(#${id}bl)"/>`;
+  return o;
+}
+
+// --- SCÈNE 3 : PARLEMENT / INSTITUTIONS ---
+// Pour : politique, sénat, assemblée, élection, loi
+function sceneParlement(id, C, seed) {
+  const s = k => (hashStr(seed+k)%10000)/10000;
+  let o = filters(id, C.dark);
+  o += `<defs>
+  <linearGradient id="${id}sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="${C.bg}"/>
+    <stop offset="100%" stop-color="${C.mid}"/>
+  </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#${id}sky)"/>`;
+
+  // Fronton triangulaire
+  o += `<polygon points="80,75 400,18 720,75" fill="${C.acc}" opacity="0.6" filter="url(#${id}sh)"/>`;
+  o += `<polygon points="100,75 400,26 700,75" fill="${C.accL}" opacity="0.2"/>`;
+  // Tympan avec décoration
+  o += `<ellipse cx="400" cy="54" rx="52" ry="24" fill="${C.gold}" opacity="0.32"/>`;
+  o += `<text x="400" y="62" font-family="serif" font-size="24" fill="${C.light}" text-anchor="middle" opacity="0.6">⚖</text>`;
+  // Entablement
+  o += `<rect x="78" y="75" width="644" height="26" fill="${C.acc}" opacity="0.68" rx="2"/>`;
+  o += `<rect x="78" y="75" width="644" height="9" fill="${C.accL}" opacity="0.28"/>`;
+  o += `<rect x="78" y="95" width="644" height="26" fill="${C.gold}" opacity="0.32"/>`;
+  // Triglyphes
+  for (let i = 0; i < 11; i++) {
+    const x = 88+i*54;
+    o += `<rect x="${x}" y="97" width="22" height="22" fill="${C.accD}" opacity="0.42" rx="1"/>`;
+    o += `<line x1="${x+7}" y1="98" x2="${x+7}" y2="118" stroke="${C.light}" stroke-width="2" opacity="0.18"/>`;
+    o += `<line x1="${x+14}" y1="98" x2="${x+14}" y2="118" stroke="${C.light}" stroke-width="2" opacity="0.18"/>`;
+  }
+
+  // Colonnes (6) avec cannelures et chapiteaux
+  const colXs = [118,206,294,506,594,682];
+  colXs.forEach((cx2, ci) => {
+    const cw=56, ch=242;
+    o += `<rect x="${cx2-cw/2}" y="121" width="${cw}" height="${ch}" fill="${C.acc}" opacity="${0.52+ci*0.02}" rx="3" filter="url(#${id}sh)">
+    <animate attributeName="opacity" values="${0.52+ci*0.02};${0.35+ci*0.02};${0.52+ci*0.02}" dur="${3.5+ci*0.4}s" repeatCount="indefinite"/>
+    </rect>`;
+    // Cannelures (5)
+    for (let j = 0; j < 5; j++) {
+      const lx = cx2-cw/2+5+j*9;
+      o += `<line x1="${lx}" y1="125" x2="${lx}" y2="${121+ch-5}" stroke="${C.light}" stroke-width="1.5" opacity="0.1"/>`;
+    }
+    // Reflet
+    o += `<rect x="${cx2-cw/2+3}" y="125" width="${cw*0.26}" height="${ch-10}" fill="${C.light}" opacity="0.07" rx="1"/>`;
+    // Chapiteau
+    o += `<rect x="${cx2-cw/2-7}" y="121" width="${cw+14}" height="17" fill="${C.gold}" opacity="0.72" rx="3"/>`;
+    o += `<path d="M${cx2-cw/2-10},${123} Q${cx2-cw/2},${108} ${cx2},${113} Q${cx2+cw/2},${108} ${cx2+cw/2+10},${123}" fill="none" stroke="${C.gold}" stroke-width="2" opacity="0.45"/>`;
+    // Base
+    o += `<rect x="${cx2-cw/2-8}" y="${121+ch-10}" width="${cw+16}" height="14" fill="${C.gold}" opacity="0.65" rx="2"/>`;
+    o += `<rect x="${cx2-cw/2-11}" y="${121+ch}" width="${cw+22}" height="10" fill="${C.gold}" opacity="0.52" rx="2"/>`;
+  });
+
+  // Corps du bâtiment (entre les colonnes)
+  o += `<rect x="78" y="121" width="644" height="242" fill="${C.acc}" opacity="0.2"/>`;
+  // Fenêtres avec arches
+  [[162,140,84,188,true],[348,140,84,188,false],[515,140,84,188,true],[648,140,84,188,false]].forEach(([x,y,w,h,lit]) => {
+    o += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${lit?C.gold:C.mid}" opacity="${lit?0.16:0.2}" rx="4"/>`;
+    o += `<line x1="${x+w/2}" y1="${y+5}" x2="${x+w/2}" y2="${y+h-5}" stroke="${C.mid2}" stroke-width="2" opacity="0.3"/>`;
+    o += `<line x1="${x+5}" y1="${y+h*0.42}" x2="${x+w-5}" y2="${y+h*0.42}" stroke="${C.mid2}" stroke-width="2" opacity="0.3"/>`;
+    o += `<path d="M${x+8},${y+5} Q${x+w/2},${y-14} ${x+w-8},${y+5}" fill="none" stroke="${C.gold}" stroke-width="2.5" opacity="0.45"/>`;
+    if (lit) o += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${C.gold}" opacity="0" rx="4">
+    <animate attributeName="opacity" values="0;0.1;0" dur="${2.5+x*0.003}s" repeatCount="indefinite"/></rect>`;
+  });
+
+  // Portail central avec arc
+  o += `<path d="M320,363 L320,268 Q400,238 480,268 L480,363Z" fill="${C.mid}" opacity="0.55"/>`;
+  o += `<path d="M328,363 L328,272 Q400,246 472,272 L472,363Z" fill="${C.dark}" opacity="0.5"/>`;
+  o += `<path d="M328,272 Q400,246 472,272" fill="none" stroke="${C.gold}" stroke-width="3" opacity="0.55"/>`;
+  // Garde devant l'entrée
+  [350,450].forEach(gx => {
+    o += `<circle cx="${gx}" cy="342" r="10" fill="${C.mid2}" opacity="0.65"/>`;
+    o += `<rect x="${gx-5}" y="352" width="10" height="22" fill="${C.mid2}" opacity="0.6" rx="3"/>`;
+    o += `<line x1="${gx+8}" y1="348" x2="${gx+8}" y2="340" stroke="${C.gold}" stroke-width="2" opacity="0.55"/>`;
+  });
+
+  // Marches
+  [358,362,366].forEach((y,i) => {
+    o += `<rect x="${80-i*12}" y="${y}" width="${640+i*24}" height="9" fill="${C.gold}" opacity="${0.42+i*0.12}" rx="1"/>`;
+  });
+  // Sol et drapeaux
+  o += `<rect x="0" y="375" width="800" height="75" fill="${C.dark}" opacity="0.3"/>`;
+  // Drapeau
+  o += `<line x1="400" y1="18" x2="400" y2="0" stroke="${C.gold}" stroke-width="2.5" opacity="0.7"/>`;
+  o += `<path d="M400,0 L430,8 L400,16Z" fill="${C.gold}" opacity="0.8"><animate attributeName="d" values="M400,0 L430,8 L400,16Z;M400,0 L432,10 L400,18Z;M400,0 L428,7 L400,15Z;M400,0 L430,8 L400,16Z" dur="2s" repeatCount="indefinite"/></path>`;
+  // Soleil/ciel
+  o += `<circle cx="650" cy="60" r="30" fill="${C.gold}" opacity="0.55" filter="url(#${id}g2)">
+  <animate attributeName="opacity" values="0.55;0.42;0.55" dur="5s" repeatCount="indefinite"/></circle>`;
+  return o;
+}
+
+// --- SCÈNE 4 : MARCHÉ FINANCIER ---
+// Pour : bourse, économie, finance, marchés, BCE, taux
+function sceneFinance(id, C, seed) {
+  const s = k => (hashStr(seed+k)%10000)/10000;
+  let o = filters(id, C.dark);
+  o += `<rect width="800" height="450" fill="${C.dark}" opacity="0.95"/>`;
+  o += `<rect width="800" height="450" fill="${C.bg}"/>`;
+
+  // Grille trading terminal
+  for (let x = 60; x <= 780; x += 36) o += `<line x1="${x}" y1="40" x2="${x}" y2="380" stroke="${C.gold}" stroke-width="0.5" opacity="${x%180===60?0.25:0.09}"/>`;
+  for (let y = 60; y <= 380; y += 40) o += `<line x1="60" y1="${y}" x2="780" y2="${y}" stroke="${C.gold}" stroke-width="0.5" opacity="${y===220?0.28:0.09}"/>`;
+
+  // Bougies japonaises (14)
+  const n=14, bw=34; let prev=200;
+  const candles = Array.from({length:n}, (_,i) => {
+    const up = s('cu'+i) > 0.44;
+    const bh = 18+s('ch'+i)*60;
+    const yO=prev, yC=Math.min(Math.max(yO+(up?-bh:bh), 80), 340);
+    prev=yC; return {up,bh,yO,yC,i};
+  });
+
+  // Ligne MA (moving average)
+  const maPath = candles.map(({yO,yC,i}) => `${i===0?'M':'L'}${88+i*(660/n)+bw/2},${((yO+yC)/2).toFixed(0)}`).join(' ');
+  o += `<path d="${maPath}" fill="none" stroke="${C.gold}" stroke-width="1.8" opacity="0.38" stroke-dasharray="5,3"/>`;
+
+  // Volumes
+  candles.forEach(({up,i}) => {
+    const x=88+i*(660/n), vh=10+s('vol'+i)*28;
+    o += `<rect x="${x}" y="${395-vh}" width="${bw*0.82}" height="${vh}" fill="${up?C.gold:C.acc}" opacity="0.28" rx="2"/>`;
+  });
+
+  // Bougies
+  let lastY = 220;
+  candles.forEach(({up,bh,yO,yC,i}) => {
+    const x0=88+i*(660/n), mid=x0+bw/2;
+    const col=up?C.gold:C.acc;
+    const y1=Math.min(yO,yC), y2=Math.max(yO,yC);
+    const wHi=y1-(8+s('wh'+i)*18), wLo=y2+(8+s('wl'+i)*16);
+    o += `<line x1="${mid}" y1="${wHi.toFixed(0)}" x2="${mid}" y2="${wLo.toFixed(0)}" stroke="${col}" stroke-width="1.5" opacity="0.6"/>`;
+    o += `<rect x="${x0}" y="${y1.toFixed(0)}" width="${bw}" height="${(Math.abs(y2-y1)||3).toFixed(0)}" fill="${col}" opacity="0.88" rx="2" filter="url(#${id}g2)">
+    <animate attributeName="opacity" values="0.88;0.58;0.88" dur="${(0.7+s('cd'+i)*1.5).toFixed(2)}s" begin="${(i*0.1).toFixed(2)}s" repeatCount="indefinite"/>
+    </rect>`;
+    o += `<rect x="${x0+3}" y="${y1.toFixed(0)}" width="${bw*0.32}" height="${(Math.abs(y2-y1)*0.38||2).toFixed(0)}" fill="${C.light}" opacity="0.16" rx="1"/>`;
+    lastY = (y1+y2)/2;
+  });
+
+  // Flèche tendance
+  const trend = lastY < 200;
+  o += `<line x1="90" y1="${trend?340:100}" x2="730" y2="${lastY.toFixed(0)}" stroke="${trend?C.gold:C.acc}" stroke-width="2.5" opacity="0.5" stroke-dasharray="8,4">
+  <animate attributeName="stroke-dashoffset" from="120" to="0" dur="3s" repeatCount="indefinite"/></line>`;
+
+  // Badge prix
+  o += `<rect x="648" y="${(lastY-11).toFixed(0)}" width="96" height="22" fill="${trend?C.gold:C.acc}" opacity="0.82" rx="4"/>`;
+  o += `<text x="696" y="${(lastY+5).toFixed(0)}" font-family="JetBrains Mono,monospace" font-size="12" fill="${C.dark}" text-anchor="middle" font-weight="bold">${(2800+s('lp')*6000).toFixed(0)}</text>`;
+  o += `<text x="52" y="${(lastY+5).toFixed(0)}" font-family="JetBrains Mono,monospace" font-size="9" fill="${trend?C.gold:C.acc}" text-anchor="end" opacity="0.65">${(400-lastY).toFixed(0)}</text>`;
+
+  // Indicateurs HUD
+  o += `<text x="65" y="58" font-family="JetBrains Mono,monospace" font-size="14" fill="${trend?C.gold:C.acc}" opacity="0.88" font-weight="bold" filter="url(#${id}g2)">${trend?'▲':'▼'} ${(s('chg')*4.8+0.2).toFixed(2)}%</text>`;
+  o += `<text x="65" y="75" font-family="JetBrains Mono,monospace" font-size="9" fill="${C.gold}" opacity="0.5">VOL: ${(s('vol2')*8+1.2).toFixed(1)}M  |  RSI: ${(35+s('rsi')*45).toFixed(0)}</text>`;
+  o += `<text x="65" y="422" font-family="JetBrains Mono,monospace" font-size="9" fill="${C.mid2}" opacity="0.45">SYNAPSE MARKETS  |  ${new Date().toLocaleDateString('fr-FR')}  |  DONNÉES SIMULÉES</text>`;
+
+  // Courbe secondaire (indice)
+  let idx2Path = 'M 65 280';
+  for (let x = 65; x <= 740; x += 12) idx2Path += ` L ${x} ${(280+Math.sin(x/45)*22+s('i2'+x)*15-8).toFixed(0)}`;
+  o += `<path d="${idx2Path}" fill="none" stroke="${C.acc}" stroke-width="1.2" opacity="0.3"/>`;
+  return o;
+}
+
+// --- SCÈNE 5 : FORÊT / NATURE ---
+// Pour : environnement, forêt, biodiversité, écologie, nature
+function sceneForest(id, C, seed) {
+  const s = k => (hashStr(seed+k)%10000)/10000;
+  let o = filters(id, C.dark);
+  o += `<defs>
+  <linearGradient id="${id}sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="${C.bg}"/>
+    <stop offset="55%" stop-color="${C.mid}"/>
+    <stop offset="100%" stop-color="${C.acc}" stop-opacity="0.25"/>
+  </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#${id}sky)"/>`;
+
+  // Soleil et rayons
+  const sunX=640, sunY=78;
+  o += `<circle cx="${sunX}" cy="${sunY}" r="42" fill="${C.gold}" opacity="0.7" filter="url(#${id}gl)">
+  <animate attributeName="r" values="42;48;42" dur="6s" repeatCount="indefinite"/></circle>`;
+  o += `<circle cx="${sunX}" cy="${sunY}" r="30" fill="${C.light}" opacity="0.5"/>`;
+  for (let i = 0; i < 12; i++) {
+    const a = i/12*Math.PI*2;
+    o += `<line x1="${(sunX+Math.cos(a)*50).toFixed(0)}" y1="${(sunY+Math.sin(a)*50).toFixed(0)}" x2="${(sunX+Math.cos(a)*72).toFixed(0)}" y2="${(sunY+Math.sin(a)*72).toFixed(0)}" stroke="${C.gold}" stroke-width="${2+s('sl'+i)}" opacity="${(0.4+s('so'+i)*0.45).toFixed(2)}">
+    <animate attributeName="opacity" values="${(0.4+s('so'+i)*0.45).toFixed(2)};0.1;${(0.4+s('so'+i)*0.45).toFixed(2)}" dur="${2+i*0.3}s" repeatCount="indefinite"/>
+    </line>`;
+  }
+  // Rayons de lumière dans la forêt
+  for (let i = 0; i < 6; i++) {
+    const x1=sunX, y1=sunY, x2=100+i*100+s('rx'+i)*80, y2=420;
+    o += `<line x1="${x1}" y1="${y1}" x2="${x2.toFixed(0)}" y2="${y2}" stroke="${C.gold}" stroke-width="${8+s('rw'+i)*12}" opacity="${(0.04+s('ro'+i)*0.06).toFixed(3)}" stroke-linecap="round"/>`;
+  }
+
+  // Fond : forêt lointaine (silhouettes)
+  for (let i = 0; i < 24; i++) {
+    const tx=s('ftx'+i)*820-10, th=80+s('fth'+i)*120, tw=30+s('ftw'+i)*25;
+    o += `<polygon points="${tx},${390-th} ${tx-tw},390 ${tx+tw},390" fill="${C.accD}" opacity="${(0.2+s('fto'+i)*0.2).toFixed(2)}"/>`;
+  }
+
+  // Arbres principaux (premier plan)
+  const trees = [
+    [70,320,80],[160,360,70],[270,300,90],[390,345,75],[500,310,85],[620,350,72],[720,295,88],[780,340,68]
+  ];
+  trees.forEach(([tx,ty,size], ti) => {
+    const col = ti%3===0?C.acc:ti%3===1?C.gold:C.mid;
+    // Tronc
+    o += `<rect x="${tx-7}" y="${ty}" width="14" height="${420-ty}" fill="${C.goldD}" opacity="0.55" rx="4"/>`;
+    // Branches principales
+    [[-1,0.5],[1,0.55],[0,1.0],[-0.8,0.72],[0.7,0.68]].forEach(([bx,bsc]) => {
+      const bw2=size*bsc, bh=bw2*0.85;
+      o += `<ellipse cx="${tx+bx*size*0.28}" cy="${ty-bw2*0.45}" rx="${bw2}" ry="${bh}" fill="${col}" opacity="${(0.5+ti*0.04).toFixed(2)}" filter="url(#${id}g2)"/>`;
+    });
+    // Reflets lumineux
+    o += `<ellipse cx="${tx-size*0.25}" cy="${ty-size*0.6}" rx="${size*0.4}" ry="${size*0.3}" fill="${C.light}" opacity="0.12"/>`;
+    // Animation légère (vent)
+    const dur=(2.5+ti*0.3).toFixed(1);
+    o += `<animateTransform attributeName="transform" type="rotate" values="0 ${tx} ${ty};1.5 ${tx} ${ty};-1 ${tx} ${ty};0 ${tx} ${ty}" dur="${dur}s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1"/>`;
+  });
+
+  // Sol herbeux
+  o += `<rect x="0" y="400" width="800" height="50" fill="${C.goldD}" opacity="0.35"/>`;
+  o += `<path d="M0,400 Q200,392 400,396 Q600,400 800,393 L800,420 L0,420Z" fill="${C.gold}" opacity="0.15"/>`;
+  // Fleurs et herbes
+  for (let i = 0; i < 30; i++) {
+    const fx=s('fx'+i)*800, fy=398+s('fy'+i)*18;
+    o += `<line x1="${fx.toFixed(0)}" y1="${fy.toFixed(0)}" x2="${(fx+s('fax'+i)*8-4).toFixed(0)}" y2="${(fy-15-s('fah'+i)*12).toFixed(0)}" stroke="${C.gold}" stroke-width="1.5" opacity="${(0.3+s('fo'+i)*0.4).toFixed(2)}"/>`;
+    if (s('ffl'+i) > 0.6) o += `<circle cx="${(fx+s('fax'+i)*8-4).toFixed(0)}" cy="${(fy-15-s('fah'+i)*12).toFixed(0)}" r="2.5" fill="${[C.acc,C.gold,C.light][Math.floor(s('ffc'+i)*3)]}" opacity="${(0.5+s('ffo'+i)*0.4).toFixed(2)}"/>`;
+  }
+  // Oiseau en vol
+  o += `<g opacity="0.55"><animateMotion path="M-60,120 Q200,75 500,100 Q700,115 870,85" dur="18s" repeatCount="indefinite"/>
+  <path d="M0,0 Q-14,-7 -22,0" fill="none" stroke="${C.light}" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M0,0 Q14,-7 22,0" fill="none" stroke="${C.light}" stroke-width="2.5" stroke-linecap="round"/>
+  </g>`;
+  return o;
+}
+
+// --- SCÈNE 6 : SALLE DE CONCERT / OPÉRA ---
+// Pour : musique, concert, opéra, festival
+function sceneConcert(id, C, seed) {
+  const s = k => (hashStr(seed+k)%10000)/10000;
+  let o = filters(id, C.dark);
+  o += `<rect width="800" height="450" fill="${C.dark}"/>`;
+  o += `<rect width="800" height="450" fill="${C.bg}" opacity="0.92"/>`;
+
+  // Scène (fond)
+  o += `<rect x="80" y="60" width="640" height="280" fill="${C.mid}" opacity="0.5" rx="4"/>`;
+  o += `<rect x="80" y="60" width="640" height="14" fill="${C.gold}" opacity="0.5" rx="4"/>`;
+  // Rideau de scène (gauche et droite)
+  o += `<path d="M80,60 Q110,140 95,340 L80,340Z" fill="${C.acc}" opacity="0.7"/>`;
+  o += `<path d="M80,60 L95,60 Q125,160 110,340 L80,340Z" fill="${C.accL}" opacity="0.3"/>`;
+  o += `<path d="M720,60 Q690,140 705,340 L720,340Z" fill="${C.acc}" opacity="0.7"/>`;
+  o += `<path d="M720,60 L705,60 Q675,160 690,340 L720,340Z" fill="${C.accL}" opacity="0.3"/>`;
+  // Projecteurs scène
+  [[180,62],[280,62],[400,62],[520,62],[620,62]].forEach(([lx,ly],i) => {
+    o += `<path d="M${lx},${ly} L${lx-30},340 L${lx+30},340Z" fill="${C.gold}" opacity="${0.04+i*0.01}" filter="url(#${id}gl)"/>`;
+    o += `<rect x="${lx-8}" y="${ly-12}" width="16" height="16" fill="${C.mid2}" opacity="0.7" rx="3"/>`;
+    o += `<circle cx="${lx}" cy="${ly-4}" r="5" fill="${C.gold}" opacity="0.85" filter="url(#${id}g2)">
+    <animate attributeName="opacity" values="0.85;0.5;0.85" dur="${1.5+i*0.3}s" repeatCount="indefinite"/>
+    </circle>`;
+  });
+
+  // Chef d'orchestre + orchestre
+  o += `<circle cx="400" cy="285" r="12" fill="${C.mid2}" opacity="0.8"/>`;
+  o += `<rect x="394" y="297" width="12" height="22" fill="${C.mid2}" opacity="0.75" rx="3"/>`;
+  o += `<path d="M400,305 L428,295 L426,290 L400,300Z" fill="${C.gold}" opacity="0.65"/>`;
+  // Musiciens (silhouettes)
+  [[200,290],[240,292],[280,290],[310,295],[340,291],[460,290],[490,293],[530,290],[560,292],[595,290]].forEach(([mx,my]) => {
+    o += `<circle cx="${mx}" cy="${my-18}" r="9" fill="${C.mid2}" opacity="0.65"/>`;
+    o += `<rect x="${mx-5}" y="${my-9}" width="10" height="18" fill="${C.mid2}" opacity="0.6" rx="3"/>`;
+    o += `<line x1="${mx+8}" y1="${my-6}" x2="${mx+20}" y2="${my-14}" stroke="${C.gold}" stroke-width="2" opacity="0.5"/>`;
+  });
+  // Partition (pupitres)
+  [[200,275],[240,278],[280,276],[310,280]].forEach(([px,py]) => {
+    o += `<rect x="${px-10}" y="${py}" width="20" height="14" fill="${C.light}" opacity="0.35" rx="2"/>`;
+    o += `<line x1="${px-7}" y1="${py+4}" x2="${px+7}" y2="${py+4}" stroke="${C.mid}" stroke-width="1" opacity="0.4"/>`;
+    o += `<line x1="${px-7}" y1="${py+8}" x2="${px+7}" y2="${py+8}" stroke="${C.mid}" stroke-width="1" opacity="0.4"/>`;
+  });
+
+  // Balcons du public
+  o += `<rect x="0" y="328" width="800" height="122" fill="${C.dark}" opacity="0.7"/>`;
+  o += `<rect x="0" y="326" width="800" height="6" fill="${C.gold}" opacity="0.45"/>`;
+  // Têtes du public
+  for (let i = 0; i < 55; i++) {
+    const px=10+i*14+s('px'+i)*8, py=348+s('py'+i)*18;
+    o += `<circle cx="${px.toFixed(0)}" cy="${py.toFixed(0)}" r="${4+s('pr'+i)*3}" fill="${C.mid2}" opacity="${(0.3+s('po'+i)*0.4).toFixed(2)}"/>`;
+  }
+  // Notes de musique qui s'envolent
+  ['𝄞','♩','♪','♫','♬'].forEach((note,i) => {
+    const nx=160+i*120, dur=(3+i*0.7).toFixed(1), del=(i*0.5).toFixed(1);
+    o += `<text x="${nx}" y="260" font-family="serif" font-size="${18+i*3}" fill="${C.gold}" opacity="0" filter="url(#${id}g2)">
+    ${note}<animate attributeName="y" values="260;140;80" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0.7;0" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+    </text>`;
+  });
+  // Portée musicale sur l'arrière-scène
+  for (let i = 0; i < 5; i++) o += `<line x1="120" y1="${185+i*14}" x2="680" y2="${185+i*14}" stroke="${C.gold}" stroke-width="1" opacity="0.15"/>`;
+  return o;
+}
+
+// --- SCÈNE 7 : LABORATOIRE / SCIENCE ---
+// Pour : ADN, biologie, médecine, santé, recherche, microscope
+function sceneLab(id, C, seed) {
+  const s = k => (hashStr(seed+k)%10000)/10000;
+  let o = filters(id, C.dark);
+  o += `<rect width="800" height="450" fill="${C.bg}"/>`;
+  o += `<rect width="800" height="450" fill="${C.mid}" opacity="0.3"/>`;
+
+  // Paillasse de labo (plan de travail)
+  o += `<rect x="0" y="310" width="800" height="140" fill="${C.mid}" opacity="0.7"/>`;
+  o += `<rect x="0" y="308" width="800" height="6" fill="${C.gold}" opacity="0.4"/>`;
+
+  // Microscope (gauche)
+  const mx=150, my=280;
+  o += `<rect x="${mx-10}" y="${my-80}" width="20" height="95" fill="${C.accD}" opacity="0.85" rx="5"/>`;
+  o += `<rect x="${mx-30}" y="${my-90}" width="60" height="18" fill="${C.acc}" opacity="0.8" rx="4"/>`;
+  o += `<rect x="${mx-5}" y="${my+15}" width="10" height="32" fill="${C.accD}" opacity="0.8"/>`;
+  o += `<rect x="${mx-38}" y="${my+44}" width="76" height="10" fill="${C.mid2}" opacity="0.75" rx="3"/>`;
+  o += `<ellipse cx="${mx}" cy="${my-86}" rx="22" ry="12" fill="${C.mid2}" opacity="0.6"/>`;
+  o += `<circle cx="${mx}" cy="${my-58}" r="18" fill="${C.acc}" opacity="0.4"/>`;
+  o += `<circle cx="${mx}" cy="${my-58}" r="11" fill="${C.gold}" opacity="0.5" filter="url(#${id}g2)">
+  <animate attributeName="opacity" values="0.5;0.8;0.5" dur="3s" repeatCount="indefinite"/>
+  </circle>`;
+
+  // Double hélice ADN (centre-droite)
+  const dcy=220, pts=14, dh=280, dcx=400;
+  const baseColors=['#e85a60','#d4a858','#5ab8e8','#7be878'];
+  let d1='', d2='';
+  for (let i=0;i<=50;i++) {
+    const t=i/50, yy=dcy-dh/2+t*dh;
+    d1+=(i===0?'M':'L')+`${(dcx+Math.sin(t*Math.PI*4)*65).toFixed(1)},${yy.toFixed(1)} `;
+    d2+=(i===0?'M':'L')+`${(dcx-Math.sin(t*Math.PI*4)*65).toFixed(1)},${yy.toFixed(1)} `;
+  }
+  o += `<path d="${d1}" fill="none" stroke="${C.acc}" stroke-width="4" opacity="0.7" filter="url(#${id}g2)"/>`;
+  o += `<path d="${d2}" fill="none" stroke="${C.gold}" stroke-width="4" opacity="0.7" filter="url(#${id}g2)"/>`;
+  for (let i=0;i<pts;i++) {
+    const t=i/(pts-1), yy=dcy-dh/2+t*dh;
+    const x1=dcx+Math.sin(t*Math.PI*4)*65, x2=dcx-Math.sin(t*Math.PI*4)*65;
+    const delay=(i*0.12).toFixed(2);
+    o += `<line x1="${x1.toFixed(1)}" y1="${yy.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${yy.toFixed(1)}" stroke="${C.mid2}" stroke-width="1.5" opacity="0.4" stroke-dasharray="3,2"/>`;
+    o += `<circle cx="${x1.toFixed(1)}" cy="${yy.toFixed(1)}" r="9" fill="${baseColors[i%4]}" opacity="0.85" filter="url(#${id}g2)">
+    <animate attributeName="r" values="9;11;9" dur="2s" begin="${delay}s" repeatCount="indefinite"/></circle>`;
+    o += `<circle cx="${x2.toFixed(1)}" cy="${yy.toFixed(1)}" r="8" fill="${baseColors[(i+2)%4]}" opacity="0.85" filter="url(#${id}g2)">
+    <animate attributeName="r" values="8;10;8" dur="2s" begin="${(parseFloat(delay)+0.5).toFixed(2)}s" repeatCount="indefinite"/></circle>`;
+    o += `<text x="${x1.toFixed(1)}" y="${(yy+3.5).toFixed(1)}" font-family="JetBrains Mono,monospace" font-size="7" fill="${C.light}" text-anchor="middle" opacity="${(0.4+i*0.02).toFixed(2)}">${['A','T','G','C'][i%4]}</text>`;
+  }
+  // Signal qui remonte
+  o += `<circle r="6" fill="${C.light}" opacity="0.9" filter="url(#${id}gl)"><animateMotion path="${d1}" dur="4s" repeatCount="indefinite"/></circle>`;
+  o += `<circle r="5" fill="${C.gold}" opacity="0.8" filter="url(#${id}gl)"><animateMotion path="${d2}" dur="5.5s" begin="1.5s" repeatCount="indefinite"/></circle>`;
+
+  // Tubes et fioles (droite)
+  [[620,290,true],[660,302,false],[700,285,true],[640,302,false]].forEach(([tx,ty,full]) => {
+    o += `<rect x="${tx-8}" y="${ty-50}" width="16" height="52" fill="${full?C.acc:C.mid2}" opacity="${full?0.6:0.3}" rx="4"/>`;
+    o += `<ellipse cx="${tx}" cy="${ty-50}" rx="10" ry="4" fill="${C.mid2}" opacity="0.6"/>`;
+    if (full) o += `<ellipse cx="${tx}" cy="${ty-28}" rx="7" ry="3" fill="${C.gold}" opacity="0.4" filter="url(#${id}g2)"><animate attributeName="opacity" values="0.4;0.7;0.4" dur="${1.5+tx*0.005}s" repeatCount="indefinite"/></ellipse>`;
+  });
+  // Boîte de Petri
+  o += `<ellipse cx="590" cy="335" rx="35" ry="14" fill="${C.mid}" opacity="0.5"/>`;
+  o += `<ellipse cx="590" cy="334" rx="35" ry="14" fill="none" stroke="${C.gold}" stroke-width="2" opacity="0.4"/>`;
+  // Colonies de bactéries
+  [[583,333],[598,329],[575,340]].forEach(([bx,by]) => {
+    o += `<circle cx="${bx}" cy="${by}" r="${3+s('br'+bx)*5}" fill="${C.acc}" opacity="0.4" filter="url(#${id}g2)">
+    <animate attributeName="r" values="${3+s('br'+bx)*5};${4+s('br'+bx)*5};${3+s('br'+bx)*5}" dur="${2+s('bd'+bx)*2}s" repeatCount="indefinite"/>
+    </circle>`;
+  });
+  // Écran de résultats (arrière-plan)
+  o += `<rect x="0" y="0" width="800" height="120" fill="${C.dark}" opacity="0.4"/>`;
+  o += `<text x="50" y="35" font-family="JetBrains Mono,monospace" font-size="11" fill="${C.gold}" opacity="0.6">SÉQUENÇAGE EN COURS...</text>`;
+  let barPath='M50,80';
+  for (let x=50;x<=750;x+=15) barPath+=` L${x},${(80+Math.sin(x/30)*18+s('bp'+x)*12-6).toFixed(0)}`;
+  o += `<path d="${barPath}" fill="none" stroke="${C.acc}" stroke-width="1.5" opacity="0.5"/>`;
+  return o;
+}
+
+// --- SCÈNE 8 : TRIBUNAL / JUSTICE ---
+// Pour : justice, droit, tribunal, jugement, loi
+function sceneTribunal(id, C, seed) {
+  const s = k => (hashStr(seed+k)%10000)/10000;
+  let o = filters(id, C.dark);
+  o += `<defs><linearGradient id="${id}sky" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="${C.bg}"/>
+  <stop offset="100%" stop-color="${C.mid}"/></linearGradient></defs>
+  <rect width="800" height="450" fill="url(#${id}sky)"/>`;
+
+  // Salle d'audience (espace)
+  o += `<rect x="0" y="380" width="800" height="70" fill="${C.dark}" opacity="0.55"/>`;
+  // Estrade du juge
+  o += `<rect x="240" y="290" width="320" height="12" fill="${C.gold}" opacity="0.55" rx="2"/>`;
+  o += `<rect x="220" y="302" width="360" height="80" fill="${C.accD}" opacity="0.5" rx="3"/>`;
+  // Juge
+  o += `<circle cx="400" cy="278" r="16" fill="${C.mid2}" opacity="0.75"/>`;
+  o += `<rect x="388" y="294" width="24" height="32" fill="${C.dark}" opacity="0.7" rx="4"/>`;
+  // Toque de juge
+  o += `<rect x="384" y="265" width="32" height="14" fill="${C.dark}" opacity="0.9" rx="3"/>`;
+  o += `<rect x="378" y="272" width="44" height="7" fill="${C.dark}" opacity="0.9" rx="2"/>`;
+  // Marteau
+  o += `<rect x="416" y="285" width="22" height="8" fill="${C.gold}" opacity="0.8" rx="2"/>`;
+  o += `<line x1="426" y1="293" x2="426" y2="310" stroke="${C.gold}" stroke-width="3" opacity="0.7"/>`;
+
+  // Grande balance de la justice (centre)
+  const bx=400, by=200, bsize=170;
+  // Pied
+  o += `<line x1="${bx}" y1="${by-bsize/2}" x2="${bx}" y2="${by+bsize*0.4}" stroke="${C.gold}" stroke-width="4" opacity="0.75"/>`;
+  o += `<rect x="${bx-15}" y="${by+bsize*0.4}" width="30" height="12" fill="${C.gold}" opacity="0.65" rx="3"/>`;
+  // Fléau
+  o += `<line x1="${bx-bsize*0.5}" y1="${by-bsize/2}" x2="${bx+bsize*0.5}" y2="${by-bsize/2}" stroke="${C.gold}" stroke-width="3.5" opacity="0.85"/>`;
+  // Chaînes des plateaux
+  const lDrop=bsize*0.22, rDrop=bsize*0.35;
+  o += `<line x1="${bx-bsize*0.5}" y1="${by-bsize/2}" x2="${bx-bsize*0.5}" y2="${by-bsize/2+lDrop}" stroke="${C.gold}" stroke-width="2" opacity="0.7" stroke-dasharray="4,3"/>`;
+  o += `<line x1="${bx+bsize*0.5}" y1="${by-bsize/2}" x2="${bx+bsize*0.5}" y2="${by-bsize/2+rDrop}" stroke="${C.gold}" stroke-width="2" opacity="0.7" stroke-dasharray="4,3"/>`;
+  // Plateaux
+  o += `<ellipse cx="${bx-bsize*0.5}" cy="${by-bsize/2+lDrop}" rx="${bsize*0.2}" ry="${bsize*0.06}" fill="${C.gold}" opacity="0.7"/>`;
+  o += `<ellipse cx="${bx+bsize*0.5}" cy="${by-bsize/2+rDrop}" rx="${bsize*0.2}" ry="${bsize*0.06}" fill="${C.gold}" opacity="0.7"/>`;
+  // Objets sur les plateaux (livre de loi / poids)
+  o += `<rect x="${bx-bsize*0.5-12}" y="${by-bsize/2+lDrop-18}" width="24" height="15" fill="${C.acc}" opacity="0.65" rx="2"/>`;
+  o += `<text x="${bx-bsize*0.5}" y="${by-bsize/2+lDrop-8}" font-family="serif" font-size="9" fill="${C.light}" text-anchor="middle" opacity="0.5">LEX</text>`;
+  o += `<rect x="${bx+bsize*0.5-10}" y="${by-bsize/2+rDrop-12}" width="20" height="10" fill="${C.mid2}" opacity="0.55" rx="2"/>`;
+
+  // Colonnes de la salle
+  [100,200,600,700].forEach(cx2 => {
+    const ch=260;
+    o += `<rect x="${cx2-18}" y="${120}" width="36" height="${ch}" fill="${C.mid}" opacity="0.4" rx="2"/>`;
+    for (let j=0;j<4;j++) o += `<line x1="${cx2-14+j*9}" y1="124" x2="${cx2-14+j*9}" y2="${120+ch-4}" stroke="${C.light}" stroke-width="1" opacity="0.08"/>`;
+    o += `<rect x="${cx2-22}" y="120" width="44" height="14" fill="${C.gold}" opacity="0.4" rx="2"/>`;
+  });
+
+  // Fenêtres hautes
+  [[220,65],[380,65],[540,65]].forEach(([fx,fy]) => {
+    o += `<rect x="${fx}" y="${fy}" width="60" height="90" fill="${C.gold}" opacity="0.1" rx="4"/>`;
+    o += `<path d="M${fx+8},${fy+5} Q${fx+30},${fy-12} ${fx+52},${fy+5}" fill="none" stroke="${C.gold}" stroke-width="2" opacity="0.35"/>`;
+    // Rayon de lumière
+    o += `<path d="M${fx+10},${fy+10} L${fx-20},${380} L${fx+80},${380}Z" fill="${C.gold}" opacity="0.03"/>`;
+  });
+
+  // Bancs du public
+  [330,354,378].forEach(y => {
+    o += `<rect x="60" y="${y}" width="280" height="10" fill="${C.mid2}" opacity="0.35" rx="2"/>`;
+    o += `<rect x="460" y="${y}" width="280" height="10" fill="${C.mid2}" opacity="0.35" rx="2"/>`;
+  });
+  // Public
+  for (let i=0;i<20;i++) {
+    const px2=70+i*27, py2=326;
+    if (i<10) o += `<circle cx="${px2}" cy="${py2}" r="${4+s('pp'+i)*2}" fill="${C.mid2}" opacity="${(0.3+s('po'+i)*0.4).toFixed(2)}"/>`;
+    else o += `<circle cx="${px2+30}" cy="${py2}" r="${4+s('pp'+i)*2}" fill="${C.mid2}" opacity="${(0.3+s('po'+i)*0.4).toFixed(2)}"/>`;
+  }
+  return o;
+}
+
+// --- SCÈNE 9 : STADE / SPORT ---
+// Pour : sport, football, compétition, match, stade
+function sceneStade(id, C, seed) {
+  const s = k => (hashStr(seed+k)%10000)/10000;
+  let o = filters(id, C.dark);
+  o += `<defs>
+  <radialGradient id="${id}lights" cx="50%" cy="20%" r="65%">
+    <stop offset="0%" stop-color="${C.gold}" stop-opacity="0.3"/>
+    <stop offset="100%" stop-color="${C.bg}" stop-opacity="0"/>
+  </radialGradient>
+  </defs>
+  <rect width="800" height="450" fill="${C.bg}"/>
+  <rect width="800" height="450" fill="url(#${id}lights)"/>`;
+
+  // Pelouse
+  o += `<ellipse cx="400" cy="320" rx="340" ry="140" fill="${C.acc}" opacity="0.2"/>`;
+  o += `<ellipse cx="400" cy="320" rx="340" ry="140" fill="none" stroke="${C.gold}" stroke-width="2.5" opacity="0.5"/>`;
+  // Rayures de pelouse
+  for (let i=0;i<8;i++) {
+    const ry=140-i*18, rx=340-i*8;
+    o += `<ellipse cx="400" cy="320" rx="${rx}" ry="${ry}" fill="${C.acc}" opacity="0.04"/>`;
+  }
+  // Lignes du terrain
+  o += `<ellipse cx="400" cy="320" rx="80" ry="30" fill="none" stroke="${C.light}" stroke-width="2" opacity="0.5"/>`;
+  o += `<circle cx="400" cy="320" r="6" fill="${C.light}" opacity="0.6"/>`;
+  o += `<line x1="400" y1="182" x2="400" y2="458" stroke="${C.light}" stroke-width="2" opacity="0.4"/>`;
+  // Buts
+  [[60,295,48,50],[740,295,48,50]].forEach(([gx,gy,gw,gh]) => {
+    o += `<rect x="${gx}" y="${gy}" width="${gw}" height="${gh}" fill="none" stroke="${C.light}" stroke-width="2.5" opacity="0.55"/>`;
+    // Filet
+    for (let i=0;i<5;i++) o += `<line x1="${gx+i*(gw/4)}" y1="${gy}" x2="${gx+i*(gw/4)}" y2="${gy+gh}" stroke="${C.light}" stroke-width="0.8" opacity="0.25"/>`;
+    for (let i=0;i<4;i++) o += `<line x1="${gx}" y1="${gy+i*(gh/3)}" x2="${gx+gw}" y2="${gy+i*(gh/3)}" stroke="${C.light}" stroke-width="0.8" opacity="0.25"/>`;
+  });
+
+  // Tribune (fond arrondi)
+  o += `<path d="M0,200 Q400,120 800,200 L800,0 L0,0Z" fill="${C.mid}" opacity="0.45"/>`;
+  o += `<path d="M0,210 Q400,130 800,210 L800,0 L0,0Z" fill="${C.mid}" opacity="0.25"/>`;
+  // Gradins et public
+  for (let r=0;r<8;r++) {
+    const y2=200-r*22;
+    o += `<line x1="0" y1="${y2}" x2="800" y2="${y2}" stroke="${C.gold}" stroke-width="1" opacity="0.15"/>`;
+    // Têtes du public
+    for (let i=0;i<50;i++) {
+      const px2=4+i*16+s('gx'+r+i)*8;
+      const col=[C.acc,C.gold,C.light,C.mid2][i%4];
+      o += `<circle cx="${px2}" cy="${y2-6}" r="${3+s('gr'+r+i)*2}" fill="${col}" opacity="${(0.2+s('go'+r+i)*0.4).toFixed(2)}"/>`;
+    }
+  }
+
+  // Projecteurs (4 coins)
+  [[30,40],[770,40],[30,180],[770,180]].forEach(([lx,ly]) => {
+    o += `<rect x="${lx-12}" y="${ly-8}" width="24" height="16" fill="${C.mid2}" opacity="0.7" rx="3"/>`;
+    o += `<path d="M${lx},${ly+8} L${lx-40},280 L${lx+40},280Z" fill="${C.gold}" opacity="0.05"/>`;
+    o += `<circle cx="${lx}" cy="${ly}" r="5" fill="${C.gold}" opacity="0.9" filter="url(#${id}g2)">
+    <animate attributeName="opacity" values="0.9;0.6;0.9" dur="${2+lx*0.005}s" repeatCount="indefinite"/>
+    </circle>`;
+  });
+
+  // Ballon animé avec trajectoire
+  o += `<circle r="15" fill="${C.light}" opacity="0.92" filter="url(#${id}g2)">
+  <animateMotion path="M160,290 Q300,200 400,220 Q500,240 640,280 Q700,310 580,320 Q450,330 320,315 Q200,300 160,290" dur="8s" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1"/>
+  </circle>`;
+  // Ombre du ballon
+  o += `<ellipse rx="12" ry="5" fill="${C.dark}" opacity="0.35" filter="url(#${id}bl)">
+  <animateMotion path="M160,300 Q300,215 400,232 Q500,252 640,290 Q700,318 580,328 Q450,338 320,323 Q200,310 160,300" dur="8s" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1"/>
+  </ellipse>`;
+  // Score
+  o += `<rect x="310" y="15" width="180" height="45" fill="${C.dark}" opacity="0.7" rx="5"/>`;
+  o += `<text x="400" y="45" font-family="JetBrains Mono,monospace" font-size="24" fill="${C.gold}" text-anchor="middle" font-weight="bold" opacity="0.9">${Math.floor(s('sc1')*4)} - ${Math.floor(s('sc2')*4)}</text>`;
+  o += `<text x="400" y="60" font-family="JetBrains Mono,monospace" font-size="9" fill="${C.light}" text-anchor="middle" opacity="0.5">${Math.floor(s('min')*90+1)}'</text>`;
+  return o;
+}
+
+// --- SCÈNE 10 : MÉMORIAL ---
+// Pour : mémoire, guerre, commémoration, histoire
+function sceneMemorial(id, C, seed) {
+  const s = k => (hashStr(seed+k)%10000)/10000;
+  let o = filters(id, C.dark);
+  o += `<defs>
+  <radialGradient id="${id}atm" cx="50%" cy="65%" r="55%">
+    <stop offset="0%" stop-color="${C.acc}" stop-opacity="0.22"/>
+    <stop offset="100%" stop-color="${C.bg}" stop-opacity="0"/>
+  </radialGradient>
+  </defs>
+  <rect width="800" height="450" fill="${C.bg}"/>
+  <rect width="800" height="450" fill="url(#${id}atm)"/>`;
+
+  // Ciel lourd, nuages
+  for (let i=0;i<6;i++) {
+    const cx2=60+i*130+s('cx'+i)*40, cy2=55+s('cy'+i)*60, cr=55+s('cr'+i)*80;
+    o += `<ellipse cx="${cx2}" cy="${cy2}" rx="${cr}" ry="${cr*0.5}" fill="${C.mid}" opacity="${(0.2+s('co'+i)*0.25).toFixed(2)}" filter="url(#${id}bl)"/>`;
+  }
+
+  // Monument central (stèle)
+  o += `<rect x="360" y="100" width="80" height="250" fill="${C.acc}" opacity="0.7" rx="4" filter="url(#${id}sh)"/>`;
+  o += `<rect x="364" y="104" width="20" height="242}" fill="${C.light}" opacity="0.07" rx="2"/>`;
+  // Haut arrondi
+  o += `<path d="M360,100 Q400,78 440,100" fill="${C.accD}" opacity="0.7"/>`;
+  o += `<path d="M362,102 Q400,82 438,102" fill="${C.acc}" opacity="0.5"/>`;
+  // Inscriptions
+  o += `<text x="400" y="175" font-family="Fraunces,serif" font-size="11" fill="${C.light}" text-anchor="middle" opacity="0.5" letter-spacing="2">IN MEMORIAM</text>`;
+  o += `<line x1="374" y1="184" x2="426" y2="184" stroke="${C.gold}" stroke-width="1" opacity="0.4"/>`;
+  o += `<text x="400" y="210" font-family="JetBrains Mono,monospace" font-size="9" fill="${C.gold}" text-anchor="middle" opacity="0.55">1939 — 1945</text>`;
+  // Couronne
+  o += `<path d="M375,100 Q400,85 425,100" fill="${C.gold}" opacity="0.4"/>`;
+  o += `<circle cx="400" cy="92" r="5" fill="${C.gold}" opacity="0.6"/>`;
+  o += `<circle cx="380" cy="98" r="3" fill="${C.gold}" opacity="0.45"/>`;
+  o += `<circle cx="420" cy="98" r="3" fill="${C.gold}" opacity="0.45"/>`;
+
+  // Socle
+  o += `<rect x="330" y="350" width="140" height="18" fill="${C.gold}" opacity="0.55" rx="3"/>`;
+  o += `<rect x="315" y="368" width="170" height="14" fill="${C.gold}" opacity="0.45" rx="2"/>`;
+  o += `<rect x="300" y="382" width="200" height="10" fill="${C.gold}" opacity="0.35" rx="2"/>`;
+
+  // Colonnes latérales
+  [[160,200],[640,200]].forEach(([cx2,h]) => {
+    o += `<rect x="${cx2-22}" y="${390-h}" width="44" height="${h}" fill="${C.mid}" opacity="0.42" rx="2"/>`;
+    for (let j=0;j<4;j++) o += `<line x1="${cx2-18+j*11}" y1="${394-h}" x2="${cx2-18+j*11}" y2="388" stroke="${C.light}" stroke-width="1.5" opacity="0.09"/>`;
+    o += `<rect x="${cx2-26}" y="${390-h}" width="52" height="14" fill="${C.gold}" opacity="0.48" rx="2"/>`;
+    o += `<rect x="${cx2-28}" y="386" width="56" height="9" fill="${C.gold}" opacity="0.42" rx="2"/>`;
+  });
+
+  // Flamme éternelle
+  const fx=400, fbase=350, fh=120;
+  const d1=`M${fx},${fbase} Q${fx-36},${fbase-fh*.42} ${fx},${fbase-fh} Q${fx+30},${fbase-fh*.7} ${fx+35},${fbase-fh*.28} Q${fx+40},${fbase-fh*.08} ${fx},${fbase}Z`;
+  const d2=`M${fx+5},${fbase} Q${fx-28},${fbase-fh*.47} ${fx+3},${fbase-fh*1.08} Q${fx+36},${fbase-fh*.76} ${fx+40},${fbase-fh*.32} Q${fx+46},${fbase-fh*.06} ${fx+5},${fbase}Z`;
+  o += `<path d="${d1}" fill="${C.acc}" opacity="0.88" filter="url(#${id}gl)">
+  <animate attributeName="d" values="${d1};${d2};${d1}" dur="0.6s" repeatCount="indefinite"/>
+  </path>`;
+  o += `<path d="M${fx},${fbase} Q${fx-20},${fbase-fh*.5} ${fx},${fbase-fh*.82} Q${fx+16},${fbase-fh*.68} ${fx+18},${fbase-fh*.3} Q${fx},${fbase} ${fx},${fbase}Z" fill="${C.gold}" opacity="0.9">
+  <animate attributeName="d" values="M${fx},${fbase} Q${fx-20},${fbase-fh*.5} ${fx},${fbase-fh*.82} Q${fx+16},${fbase-fh*.68} ${fx+18},${fbase-fh*.3} Q${fx},${fbase} ${fx},${fbase}Z;M${fx+4},${fbase} Q${fx-14},${fbase-fh*.55} ${fx+2},${fbase-fh*.88} Q${fx+20},${fbase-fh*.72} ${fx+22},${fbase-fh*.32} Q${fx+4},${fbase} ${fx+4},${fbase}Z;M${fx},${fbase} Q${fx-20},${fbase-fh*.5} ${fx},${fbase-fh*.82} Q${fx+16},${fbase-fh*.68} ${fx+18},${fbase-fh*.3} Q${fx},${fbase} ${fx},${fbase}Z" dur="0.44s" begin="0.1s" repeatCount="indefinite"/>
+  </path>`;
+  // Halo
+  o += `<circle cx="${fx}" cy="${fbase-fh*.38}" r="70" fill="${C.acc}" opacity="0.07" filter="url(#${id}bl)">
+  <animate attributeName="r" values="70;95;70" dur="3s" repeatCount="indefinite"/>
+  </circle>`;
+  // Particules
+  [[-18,0],[10,0.6],[-6,1.2],[20,0.3],[-25,1.8]].forEach(([px2,del]) => {
+    o += `<circle r="2.5" fill="${C.gold}" opacity="0.8">
+    <animateMotion path="M${fx+px2},${fbase} L${fx+px2*0.5},${fbase-fh*1.4}" dur="3s" begin="${del}s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0" dur="3s" begin="${del}s" repeatCount="indefinite"/>
+    </circle>`;
+  });
+  // Sol
+  o += `<rect x="0" y="392" width="800" height="58" fill="${C.dark}" opacity="0.45"/>`;
+  o += `<line x1="0" y1="392" x2="800" y2="392" stroke="${C.gold}" stroke-width="2" opacity="0.5"/>`;
+  return o;
+}
+
+// --- SCÈNE 11 : GALERIE D'ART / CULTURE ---
+// Pour : exposition, art, musée, biennale, culture
+function sceneGalerie(id, C, seed) {
+  const s = k => (hashStr(seed+k)%10000)/10000;
+  let o = filters(id, C.dark);
+  o += `<rect width="800" height="450" fill="${C.bg}"/>`;
+  o += `<rect width="800" height="450" fill="${C.mid}" opacity="0.35"/>`;
+
+  // Parquet du sol
+  for (let i=0;i<14;i++) {
+    const y=380+i%2*8;
+    o += `<line x1="${i*60}" y1="376" x2="${i*60+55}" y2="376" stroke="${C.goldD}" stroke-width="4" opacity="0.2"/>`;
+  }
+  o += `<rect x="0" y="376" width="800" height="74" fill="${C.goldD}" opacity="0.18"/>`;
+  o += `<line x1="0" y1="376" x2="800" y2="376" stroke="${C.gold}" stroke-width="2" opacity="0.4"/>`;
+
+  // Murs et cimaises
+  o += `<rect x="0" y="0" width="800" height="376" fill="${C.mid}" opacity="0.2"/>`;
+  o += `<line x1="0" y1="340" x2="800" y2="340" stroke="${C.gold}" stroke-width="1.5" opacity="0.3"/>`;
+
+  // Tableaux (5) avec cadres et éclairage
+  const paintings = [
+    {x:40, y:80, w:140, h:180, type:'abstract'},
+    {x:210, y:65, w:110, h:200, type:'landscape'},
+    {x:345, y:75, w:130, h:190, type:'portrait'},
+    {x:500, y:68, w:120, h:195, type:'abstract2'},
+    {x:640, y:82, w:110, h:178, type:'geometric'},
+  ];
+
+  paintings.forEach(({x,y,w,h,type},pi) => {
+    // Éclairage (spot)
+    const spotX=x+w/2, spotY=22;
+    o += `<path d="M${spotX},${spotY} L${x+5},${y} L${x+w-5},${y}Z" fill="${C.gold}" opacity="0.04"/>`;
+    o += `<circle cx="${spotX}" cy="${spotY}" r="5" fill="${C.light}" opacity="0.7" filter="url(#${id}g2)">
+    <animate attributeName="opacity" values="0.7;0.5;0.7" dur="${2+pi*0.4}s" repeatCount="indefinite"/>
+    </circle>`;
+    o += `<rect x="${spotX-10}" y="${spotY-6}" width="20" height="10" fill="${C.mid2}" opacity="0.6" rx="2"/>`;
+
+    // Cadre
+    o += `<rect x="${x-8}" y="${y-8}" width="${w+16}" height="${h+16}" fill="${C.goldD}" opacity="0.75" rx="3" filter="url(#${id}sh)"/>`;
+    o += `<rect x="${x-4}" y="${y-4}" width="${w+8}" height="${h+8}" fill="${C.goldD}" opacity="0.6" rx="2"/>`;
+    o += `<rect x="${x-6}" y="${y-6}" width="${w+12}" height="${h+12}" fill="none" stroke="${C.gold}" stroke-width="2.5" opacity="0.7" rx="3"/>`;
+
+    // Toile
+    o += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${C.mid}" opacity="0.8" rx="1"/>`;
+
+    // Contenu du tableau selon le type
+    if (type==='abstract') {
+      // Coups de pinceau abstraits
+      [[x+20,y+30,x+w-15,y+80,40,C.acc],[x+10,y+100,x+w-10,y+150,35,C.gold],[x+25,y+155,x+w-20,y+h-20,45,C.accL]].forEach(([x1,y1,x2,y2,sw,col]) => {
+        o += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${sw}" stroke-linecap="round" opacity="${0.4+pi*0.04}"/>`;
+      });
+      o += `<circle cx="${x+w*0.6}" cy="${y+h*0.4}" r="22" fill="${C.accD}" opacity="0.45"/>`;
+    } else if (type==='landscape') {
+      // Paysage minimaliste
+      o += `<rect x="${x}" y="${y}" width="${w}" height="${h*0.5}" fill="${C.accD}" opacity="0.5"/>`;
+      o += `<ellipse cx="${x+w*0.7}" cy="${y+h*0.2}" rx="${w*0.15}" ry="${w*0.15}" fill="${C.gold}" opacity="0.6"/>`;
+      o += `<polygon points="${x},${y+h} ${x+w*0.3},${y+h*0.5} ${x+w*0.6},${y+h} " fill="${C.accD}" opacity="0.6"/>`;
+      o += `<polygon points="${x+w*0.25},${y+h} ${x+w*0.55},${y+h*0.45} ${x+w*0.8},${y+h}" fill="${C.acc}" opacity="0.4"/>`;
+    } else if (type==='portrait') {
+      // Portrait stylisé
+      o += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${C.gold}" opacity="0.12"/>`;
+      o += `<ellipse cx="${x+w/2}" cy="${y+h*0.32}" rx="${w*0.28}" ry="${h*0.22}" fill="${C.mid2}" opacity="0.7"/>`;
+      o += `<rect x="${x+w*0.3}" y="${y+h*0.52}" width="${w*0.4}" height="${h*0.35}" fill="${C.mid2}" opacity="0.6" rx="8"/>`;
+      o += `<ellipse cx="${x+w*0.38}" cy="${y+h*0.28}" rx="${w*0.06}" ry="${h*0.04}" fill="${C.dark}" opacity="0.5"/>`;
+      o += `<ellipse cx="${x+w*0.62}" cy="${y+h*0.28}" rx="${w*0.06}" ry="${h*0.04}" fill="${C.dark}" opacity="0.5"/>`;
+    } else if (type==='abstract2') {
+      // Géométrique coloré (Mondrian-like)
+      o += `<rect x="${x}" y="${y}" width="${w*0.4}" height="${h*0.45}" fill="${C.acc}" opacity="0.55"/>`;
+      o += `<rect x="${x+w*0.42}" y="${y}" width="${w*0.58}" height="${h*0.3}" fill="${C.gold}" opacity="0.5"/>`;
+      o += `<rect x="${x}" y="${y+h*0.47}" width="${w*0.6}" height="${h*0.53}" fill="${C.accL}" opacity="0.35"/>`;
+      o += `<rect x="${x+w*0.62}" y="${y+h*0.32}" width="${w*0.38}" height="${h*0.68}" fill="${C.mid}" opacity="0.55"/>`;
+      [y+h*0.45,x+w*0.4,x+w*0.62,y+h*0.3].forEach((v,i) => {
+        if (i<2) o += `<line x1="${x}" y1="${v}" x2="${x+w}" y2="${v}" stroke="${C.dark}" stroke-width="3" opacity="0.5"/>`;
+        else o += `<line x1="${v}" y1="${y}" x2="${v}" y2="${y+h}" stroke="${C.dark}" stroke-width="3" opacity="0.5"/>`;
+      });
+    } else {
+      // Géométrique abstrait
+      for (let gi=0;gi<6;gi++) {
+        const gx=x+s('gx'+pi+gi)*w*0.7+w*0.1, gy=y+s('gy'+pi+gi)*h*0.7+h*0.1;
+        const gr=10+s('gr'+pi+gi)*30;
+        o += `<polygon points="${gx},${gy-gr} ${gx+gr*0.86},${gy+gr*0.5} ${gx-gr*0.86},${gy+gr*0.5}" fill="${[C.acc,C.gold,C.accL][gi%3]}" opacity="${0.35+gi*0.06}"/>`;
+      }
+    }
+
+    // Étiquette sous le tableau
+    o += `<rect x="${x}" y="${y+h+10}" width="${w}" height="18" fill="${C.dark}" opacity="0.4" rx="2"/>`;
+    o += `<text x="${x+w/2}" y="${y+h+22}" font-family="Fraunces,serif" font-size="9" fill="${C.light}" text-anchor="middle" opacity="0.55" font-style="italic">Sans titre, ${2020+pi}</text>`;
+  });
+
+  // Visiteurs (silhouettes)
+  [[220,340],[380,345],[560,342],[680,338]].forEach(([vx,vy],vi) => {
+    o += `<circle cx="${vx}" cy="${vy-18}" r="10" fill="${C.mid2}" opacity="0.65"/>`;
+    o += `<rect x="${vx-6}" y="${vy-8}" width="12" height="20" fill="${C.mid2}" opacity="0.6" rx="3"/>`;
+  });
+
+  // Plante (détail)
+  o += `<line x1="755" y1="376" x2="755" y2="340" stroke="${C.goldD}" stroke-width="3" opacity="0.5"/>`;
+  for (let i=0;i<5;i++) {
+    const lx=755+(i%2===0?1:-1)*22, ly=355-i*8;
+    o += `<path d="M755,${ly} Q${lx},${ly-12} ${lx+5},${ly-22}" fill="none" stroke="${C.acc}" stroke-width="4" stroke-linecap="round" opacity="0.55"/>`;
+  }
+  return o;
+}
+
+// --- SCÈNE 12 : INTELLIGENCE ARTIFICIELLE ---
+// Pour : IA, algorithme, ML, GPT, neural, tech
+function sceneIA(id, C, seed) {
+  const s = k => (hashStr(seed+k)%10000)/10000;
+  let o = filters(id, C.dark);
+  o += `<rect width="800" height="450" fill="${C.bg}"/>`;
+
+  // Grille code matrix
+  for (let x=0;x<800;x+=22) for (let y=0;y<450;y+=18) {
+    if (s('m'+x+y) > 0.72) {
+      const bit=Math.floor(s('mb'+x+y)*10);
+      o += `<text x="${x}" y="${y}" font-family="JetBrains Mono,monospace" font-size="10" fill="${C.acc}" opacity="${(0.06+s('mo'+x+y)*0.09).toFixed(2)}">${bit}</text>`;
+    }
+  }
+
+  // Réseau neuronal central (5 couches denses)
+  const layers=[4,7,9,7,4], lw=320, lh=280, lcx=400, lcy=225;
+  let nodes=[];
+  layers.forEach((n,li) => {
+    const lx=lcx-lw/2+li*(lw/(layers.length-1));
+    nodes[li]=[];
+    for (let ni=0;ni<n;ni++) {
+      const ny=lcy-lh/2+(ni+0.5)*(lh/n);
+      nodes[li].push([lx,ny]);
+    }
+  });
+
   // Connexions
-  for (let li = 0; li < layers.length-1; li++) {
+  for (let li=0;li<layers.length-1;li++) {
     nodes[li].forEach(([ax,ay]) => nodes[li+1].forEach(([bx,by]) => {
-      if (sR(seed+ax+ay+bx+by) > .35) {
-        const op = (.1 + sR(seed+'op'+ax+by)*.25).toFixed(2);
-        const dur = (2+sR(seed+'nd'+ax+by)*3).toFixed(1);
-        const path = `M${ax.toFixed(1)},${ay.toFixed(1)} L${bx.toFixed(1)},${by.toFixed(1)}`;
-        o += `<path d="${path}" fill="none" stroke="${P.gold}" stroke-width="1.2" opacity="${op}"/>`;
-        if (sR(seed+'sig'+ax+by) > .6) {
-          o += `<circle r="3" fill="${P.accent}" opacity="0.8" filter="url(#${id}softglow)">
-            <animateMotion path="${path}" dur="${dur}s" begin="${(sR(seed+'del'+ax+by)*dur).toFixed(1)}s" repeatCount="indefinite"/>
+      const w=s(ax+''+ay+''+bx+''+by);
+      if (w>0.3) {
+        const sw=(w*2.2).toFixed(1), op=(w*0.32).toFixed(2);
+        const path=`M${ax.toFixed(1)},${ay.toFixed(1)} L${bx.toFixed(1)},${by.toFixed(1)}`;
+        o += `<path d="${path}" fill="none" stroke="${w>0.65?C.acc:C.gold}" stroke-width="${sw}" opacity="${op}"/>`;
+        // Signaux animés
+        if (w>0.6) {
+          const dur=(1+s('nd'+ax+by)*2.2).toFixed(1);
+          const del=(s('del'+ax+by)*parseFloat(dur)).toFixed(1);
+          o += `<circle r="${(2.5+w*3).toFixed(1)}" fill="${C.light}" opacity="0.9" filter="url(#${id}g2)">
+          <animateMotion path="${path}" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
           </circle>`;
         }
       }
     }));
   }
+
   // Nœuds
-  nodes.forEach((layer, li) => layer.forEach(([nx,ny], ni) => {
-    const isA = sR(seed+'act'+nx+ny) > .45;
-    const dur = (1.5+sR(seed+'dur'+nx+ny)*2.5).toFixed(1);
-    const delay = (sR(seed+'del'+nx+ny)*parseFloat(dur)).toFixed(1);
-    o += `<circle cx="${nx.toFixed(1)}" cy="${ny.toFixed(1)}" r="9" fill="${isA?P.accent:'none'}" stroke="${P.accent}" stroke-width="${isA?0:1.5}" opacity="${isA?.9:.5}" filter="url(#${id}softglow)">
-      <animate attributeName="opacity" values="${isA?.9:.5};${isA?.4:.2};${isA?.9:.5}" dur="${dur}s" begin="${delay}s" repeatCount="indefinite"/>
-      ${isA?`<animate attributeName="r" values="9;12;9" dur="${dur}s" begin="${delay}s" repeatCount="indefinite"/>`:''}
+  nodes.forEach((layer,li) => layer.forEach(([nx,ny]) => {
+    const act=s('act'+nx+ny), isA=act>0.42;
+    const r=isA?12:8;
+    const dur=(1.2+s('dur'+nx+ny)*2.5).toFixed(1);
+    const del=(s('del'+nx+ny)*parseFloat(dur)).toFixed(1);
+    if (isA) o += `<circle cx="${nx.toFixed(1)}" cy="${ny.toFixed(1)}" r="${r+14}" fill="${C.acc}" opacity="0.1" filter="url(#${id}bl)">
+    <animate attributeName="r" values="${r+14};${r+24};${r+14}" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/></circle>`;
+    o += `<circle cx="${nx.toFixed(1)}" cy="${ny.toFixed(1)}" r="${r}" fill="${isA?C.acc:'none'}" stroke="${C.acc}" stroke-width="${isA?0:1.8}" opacity="${isA?0.92:0.52}" filter="url(#${id}g2)">
+    <animate attributeName="r" values="${r};${r+(isA?4:2)};${r}" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="${isA?0.92:0.52};${isA?0.42:0.2};${isA?0.92:0.52}" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
     </circle>`;
+    o += `<text x="${nx.toFixed(1)}" y="${(ny+3.5).toFixed(1)}" font-family="JetBrains Mono,monospace" font-size="7" fill="${C.light}" text-anchor="middle" opacity="${isA?0.65:0.28}">${act.toFixed(2)}</text>`;
   }));
-  return o;
-}
 
-function motifCircuit(P, id, seed) {
-  const cols=9, rows=5, cw=800/cols, ch=450/rows;
-  let o='';
-  for (let r=0;r<rows;r++) for (let cc=0;cc<cols;cc++) {
-    if (sR(seed+'cn'+r+cc) > .42) {
-      const nx=cc*cw+cw/2, ny=r*ch+ch/2, isHub=sR(seed+'ch'+r+cc)>.82;
-      const dur = (1.5+sR(seed+'dur'+r+cc)*2.5).toFixed(1);
-      const delay = (sR(seed+'del'+r+cc)*parseFloat(dur)).toFixed(1);
-      o += `<circle cx="${nx.toFixed(1)}" cy="${ny.toFixed(1)}" r="${isHub?8:4}" fill="${isHub?P.accent:P.gold}" opacity="${isHub?.9:.6}" filter="url(#${id}${isHub?'glow':'softglow'})">
-        ${isHub?`<animate attributeName="r" values="8;11;8" dur="${dur}s" begin="${delay}s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0.9;0.4;0.9" dur="${dur}s" begin="${delay}s" repeatCount="indefinite"/>`:''}
-      </circle>`;
-      if (cc<cols-1 && sR(seed+'ht'+r+cc)>.38) {
-        const path=`M${nx.toFixed(1)},${ny.toFixed(1)} L${(cc+1)*cw+cw/2},${ny.toFixed(1)}`;
-        o += `<path d="${path}" stroke="${P.mid}" stroke-width="2" opacity="0.3"/>`;
-        if (sR(seed+'sig'+r+cc)>.65) o += `<circle r="3" fill="${P.accent}" opacity="0.8" filter="url(#${id}softglow)">
-          <animateMotion path="${path}" dur="${(1+sR(seed+'spd'+r+cc)*2).toFixed(1)}s" begin="${delay}s" repeatCount="indefinite"/>
-        </circle>`;
-      }
-      if (r<rows-1 && sR(seed+'vt'+r+cc)>.48) {
-        const vpath=`M${nx.toFixed(1)},${ny.toFixed(1)} L${nx.toFixed(1)},${(r+1)*ch+ch/2}`;
-        o += `<path d="${vpath}" stroke="${P.mid}" stroke-width="2" opacity="0.3"/>`;
-        if (sR(seed+'vsig'+r+cc)>.7) o += `<circle r="3" fill="${P.gold}" opacity="0.8" filter="url(#${id}softglow)">
-          <animateMotion path="${vpath}" dur="${(1+sR(seed+'vspd'+r+cc)*2).toFixed(1)}s" begin="${(parseFloat(delay)+.5).toFixed(1)}s" repeatCount="indefinite"/>
-        </circle>`;
-      }
-    }
-  }
-  return o;
-}
-
-// ——— ÉCONOMIE ———
-function motifCandles(P, id, seed) {
-  const n=12, bw=42; let o='', prev=110;
-  const pairs = Array.from({length:n},(_,i)=>{
-    const up=sR(seed+'cu'+i)>.45;
-    const bh=20+sR(seed+'ch'+i)*65;
-    const yO=prev, yC=yO+(up?-bh:bh);
-    prev=yC; return {up, bh, yO, yC, i};
+  // Labels couches
+  ['INPUT','H1','H2','H3','OUTPUT'].forEach((lbl,li) => {
+    const lx=lcx-lw/2+li*(lw/(layers.length-1));
+    o += `<text x="${lx}" y="${lcy+lh/2+24}" font-family="JetBrains Mono,monospace" font-size="9" fill="${C.gold}" text-anchor="middle" opacity="0.45">${lbl}</text>`;
   });
-  // Trend line derrière
-  let tpath='M';
-  pairs.forEach(({yO,yC,i})=> tpath+=(i===0?'':' L')+`${80+i*56+28},${((yO+yC)/2).toFixed(0)}`);
-  o += `<path d="${tpath}" fill="none" stroke="${P.gold}" stroke-width="2" opacity="0.35" stroke-dasharray="5,3"/>`;
-  pairs.forEach(({up,bh,yO,yC,i})=>{
-    const x0=80+i*56, col=up?P.gold:P.accent;
-    const wHi=Math.min(yO,yC)-15-sR(seed+'cwh'+i)*25;
-    const wLo=Math.max(yO,yC)+15+sR(seed+'cwl'+i)*20;
-    const dur=(0.8+sR(seed+'cdr'+i)*1.5).toFixed(2);
-    o += `<line x1="${x0+bw/2}" y1="${wHi.toFixed(0)}" x2="${x0+bw/2}" y2="${wLo.toFixed(0)}" stroke="${col}" stroke-width="2" opacity="0.65"/>`;
-    o += `<rect x="${x0}" y="${Math.min(yO,yC).toFixed(0)}" width="${bw}" height="${(Math.abs(yC-yO)||3).toFixed(0)}" fill="${col}" opacity="0.88" rx="3" filter="url(#${id}softglow)">
-      <animate attributeName="opacity" values="0.88;0.6;0.88" dur="${dur}s" begin="${(i*.12).toFixed(2)}s" repeatCount="indefinite"/>
-    </rect>`;
+
+  // Terminal de code
+  o += `<rect x="0" y="0" width="800" height="65" fill="${C.dark}" opacity="0.75"/>`;
+  o += `<circle cx="20" cy="20" r="6" fill="#ff5f57" opacity="0.8"/>`;
+  o += `<circle cx="38" cy="20" r="6" fill="#febc2e" opacity="0.8"/>`;
+  o += `<circle cx="56" cy="20" r="6" fill="#28c840" opacity="0.8"/>`;
+  const code = [`&gt; model.train(epochs=1000, lr=0.001)`, `  ▶ Epoch 847/1000 — loss: 0.0234`, `  ▶ accuracy: 98.7% — val_accuracy: 97.2%`];
+  code.forEach((line,i) => {
+    o += `<text x="25" y="${34+i*13}" font-family="JetBrains Mono,monospace" font-size="10" fill="${i===0?C.acc:i===1?C.gold:C.light}" opacity="${0.7-i*0.1}">${line}</text>`;
   });
-  // Flèche tendance animée
-  const finalY = pairs[n-1].yC;
-  const dir = finalY < 200;
-  o += `<line x1="100" y1="${dir?380:100}" x2="720" y2="${dir?100:380}" stroke="${dir?P.gold:P.accent}" stroke-width="2.5" opacity="0.4" stroke-dasharray="8,4">
-    <animate attributeName="stroke-dashoffset" from="120" to="0" dur="3s" repeatCount="indefinite"/>
-  </line>`;
+  // Curseur clignotant
+  o += `<rect x="542" y="34" width="7" height="12" fill="${C.acc}" opacity="0.9">
+  <animate attributeName="opacity" values="0.9;0;0.9" dur="1s" repeatCount="indefinite"/>
+  </rect>`;
   return o;
 }
-
-// ——— POLITIQUE ———
-function motifColumns(P, id) {
-  let o='';
-  const cols=5, w=580, x0=110;
-  const heights=[280,320,260,300,270];
-  cols === heights.length && heights.forEach((h,i)=>{
-    const cw=55, cx=x0+i*(w/(cols-1))-cw/2, cy=390-h;
-    o+=`<rect x="${cx}" y="${cy}" width="${cw}" height="${h}" fill="${P.accent}" opacity="${.55+i*.06}" rx="4" filter="url(#${id}shadow)">
-      <animate attributeName="opacity" values="${.55+i*.06};${.35+i*.06};${.55+i*.06}" dur="${(3+i*.4).toFixed(1)}s" repeatCount="indefinite"/>
-    </rect>`;
-    o+=`<rect x="${cx-6}" y="${cy}" width="${cw+12}" height="16" fill="${P.gold}" opacity="0.85" rx="3"/>`;
-    o+=`<rect x="${cx-8}" y="382" width="${cw+16}" height="12" fill="${P.gold}" opacity="0.85" rx="2"/>`;
-    // Cannelures
-    for (let j=0;j<3;j++) o+=`<line x1="${cx+8+j*14}" y1="${cy+18}" x2="${cx+8+j*14}" y2="382" stroke="${P.light}" stroke-width="1.5" opacity="0.12"/>`;
-  });
-  o+=`<rect x="${x0-20}" y="60" width="${w+40}" height="18" fill="${P.gold}" opacity="0.8" rx="4" filter="url(#${id}shadow)"/>`;
-  o+=`<rect x="${x0-30}" y="50" width="${w+60}" height="14" fill="${P.accent}" opacity="0.6" rx="3"/>`;
-  return o;
-}
-
-function motifGlobe(cx, cy, P, id) {
-  const r=130;
-  let o=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${P.accent}" opacity="0.18" filter="url(#${id}glow)"/>
-  <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${P.accent}" stroke-width="2.5" opacity="0.7"/>`;
-  // Méridiens qui tournent
-  [0,45,90,135].forEach((a,i)=>{
-    const dur=(20+i*5).toFixed(0);
-    o+=`<ellipse cx="${cx}" cy="${cy}" rx="${r}" ry="${r}" fill="none" stroke="${P.gold}" stroke-width="1.2" opacity="0.35">
-      <animateTransform attributeName="transform" type="rotate" from="${a} ${cx} ${cy}" to="${a+360} ${cx} ${cy}" dur="${dur}s" repeatCount="indefinite"/>
-    </ellipse>`;
-  });
-  // Parallèles
-  [-55,-28,0,28,55].forEach(deg=>{
-    const ry=r*Math.cos(deg*Math.PI/180), ya=cy+r*Math.sin(deg*Math.PI/180);
-    if (ry>0) o+=`<ellipse cx="${cx}" cy="${ya.toFixed(0)}" rx="${ry.toFixed(0)}" ry="${r*.15}" fill="none" stroke="${P.gold}" stroke-width="1" opacity="0.3"/>`;
-  });
-  // Équateur
-  o+=`<ellipse cx="${cx}" cy="${cy}" rx="${r}" ry="${r*.15}" fill="none" stroke="${P.accent}" stroke-width="2" opacity="0.5"/>`;
-  // Point lumineux qui fait le tour
-  o+=`<circle r="6" fill="${P.light}" opacity="0.9" filter="url(#${id}glow)">
-    <animateMotion path="M ${cx+r} ${cy} A ${r} ${r} 0 1 1 ${cx+r-0.01} ${cy}" dur="15s" repeatCount="indefinite"/>
-  </circle>`;
-  return o;
-}
-
-// ——— CULTURE ———
-function motifFilmStrip(P, id, seed) {
-  const y=235;
-  let o=`<rect x="0" y="${y-38}" width="800" height="100" fill="${P.accentD}" opacity="0.9" rx="6" filter="url(#${id}shadow)"/>`;
-  // Frames
-  for (let i=0;i<7;i++) {
-    const x=18+i*114;
-    o+=`<rect x="${x}" y="${y-30}" width="108" height="84" fill="${P.bg2}" opacity="0.7" rx="4"/>`;
-    o+=`<rect x="${x+8}" y="${y-21}" width="92" height="66" fill="${P.dark}" opacity="0.7" rx="2"/>`;
-    // Scène stylisée
-    if (i%3===0) o+=`<circle cx="${x+54}" cy="${y+12}" r="18" fill="${P.accent}" opacity="0.5"/>`;
-    else if (i%3===1) { o+=`<rect x="${x+18}" y="${y}" width="72" height="28" fill="${P.gold}" opacity="0.3" rx="3"/>`; o+=`<rect x="${x+32}" y="${y-12}" width="44" height="42" fill="${P.mid}" opacity="0.25" rx="2"/>`; }
-    else o+=`<polygon points="${x+54},${y-14} ${x+28},${y+24} ${x+80},${y+24}" fill="${P.accent}" opacity="0.35"/>`;
-  }
-  // Perforations
-  for (let i=0;i<16;i++) {
-    const x=12+i*49;
-    o+=`<rect x="${x}" y="${y-36}" width="12" height="8" fill="${P.dark}" opacity="0.6" rx="2"/>`;
-    o+=`<rect x="${x}" y="${y+52}" width="12" height="8" fill="${P.dark}" opacity="0.6" rx="2"/>`;
-  }
-  // Film qui défile
-  o+=`<rect x="0" y="${y-38}" width="800" height="100" fill="none" stroke="${P.gold}" stroke-width="2" opacity="0.4" rx="6"/>`;
-  // Effet de défilement
-  o+=`<g opacity="0.15">
-    <rect x="-800" y="${y-38}" width="800" height="100" fill="${P.accent}" rx="6">
-      <animateTransform attributeName="transform" type="translate" from="0,0" to="800,0" dur="8s" repeatCount="indefinite"/>
-    </rect>
-  </g>`;
-  return o;
-}
-
-function motifMusicalStaff(P, id, seed) {
-  let o='';
-  for (let i=0;i<5;i++) o+=`<line x1="50" y1="${145+i*18}" x2="750" y2="${145+i*18}" stroke="${P.gold}" stroke-width="1.8" opacity="0.55"/>`;
-  o+=`<text x="68" y="208" font-family="serif" font-size="72" fill="${P.accent}" opacity="0.75" filter="url(#${id}softglow)">𝄞</text>`;
-  const noteXs=[165,240,315,390,465,540,615,695];
-  const noteYs=noteXs.map((_,i)=>155+sR(seed+'ny'+i)*50);
-  noteXs.forEach((nx,i)=>{
-    const ny=noteYs[i];
-    const dur=(0.8+sR(seed+'nd'+i)*1.5).toFixed(1);
-    const delay=(i*.18).toFixed(2);
-    o+=`<ellipse cx="${nx}" cy="${ny.toFixed(0)}" rx="11" ry="8" fill="${i%2===0?P.accent:P.gold}" opacity="0.85" transform="rotate(-22,${nx},${ny.toFixed(0)})" filter="url(#${id}softglow)">
-      <animate attributeName="opacity" values="0.85;0.4;0.85" dur="${dur}s" begin="${delay}s" repeatCount="indefinite"/>
-    </ellipse>
-    <line x1="${nx+10}" y1="${ny.toFixed(0)}" x2="${nx+10}" y2="${(ny-42).toFixed(0)}" stroke="${i%2===0?P.accent:P.gold}" stroke-width="2.2" opacity="0.8"/>`;
-    if (i<noteXs.length-1) {
-      const nx2=noteXs[i+1], ny2=noteYs[i+1];
-      o+=`<path d="M${nx+10},${(ny-42).toFixed(0)} Q${(nx+nx2)/2},${((ny+ny2)/2-60).toFixed(0)} ${nx2+10},${(ny2-42).toFixed(0)}" fill="${P.accent}" opacity="0.3"/>`;
-    }
-  });
-  // Note qui voyage
-  o+=`<circle r="6" fill="${P.light}" opacity="0.8" filter="url(#${id}glow)">
-    <animateMotion path="M165,185 L240,175 L315,195 L390,168 L465,188 L540,172 L615,182 L695,165" dur="4s" repeatCount="indefinite"/>
-  </circle>`;
-  return o;
-}
-
-function motifBrushStrokes(P, id, seed) {
-  let o='';
-  const strokes=[
-    [80, 120, 420, 180, 55],
-    [200, 280, 620, 240, 38],
-    [50, 340, 380, 290, 45],
-    [350, 180, 700, 320, 35],
-    [150, 400, 600, 360, 42],
-  ];
-  strokes.forEach(([x1,y1,x2,y2,sw],i)=>{
-    const col=i%2===0?P.accent:P.gold;
-    const dur=(2+sR(seed+'bd'+i)*2).toFixed(1);
-    const dashLen=Math.sqrt((x2-x1)**2+(y2-y1)**2)+50;
-    o+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${sw}" stroke-linecap="round" opacity="${.35+sR(seed+'bo'+i)*.3}" filter="url(#${id}softglow)"
-      stroke-dasharray="${dashLen}" stroke-dashoffset="${dashLen}">
-      <animate attributeName="stroke-dashoffset" from="${dashLen}" to="0" dur="${dur}s" begin="${(i*.4).toFixed(1)}s" fill="freeze"/>
-      <animate attributeName="opacity" values="${.35+sR(seed+'bo'+i)*.3};${.15+sR(seed+'bo'+i)*.1};${.35+sR(seed+'bo'+i)*.3}" dur="${(parseFloat(dur)*2).toFixed(1)}s" begin="${(i*.4+parseFloat(dur)).toFixed(1)}s" repeatCount="indefinite"/>
-    </line>`;
-  });
-  return o;
-}
-
-// ——— SOCIÉTÉ ———
-function motifCity(P,id,seed){
-  let o=`<defs><linearGradient id="${id}skyG" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="0%" stop-color="${P.bg}"/>
-  <stop offset="72%" stop-color="${P.bg2}"/>
-  <stop offset="100%" stop-color="${P.accent}" stop-opacity="0.18"/>
-  </linearGradient></defs><rect x="0" y="0" width="800" height="392" fill="url(#${id}skyG)"/>`;
-  const buildings=[
-    {x:8,w:58,h:195,floors:10},{x:68,w:44,h:275,floors:14},{x:114,w:34,h:175,floors:9},
-    {x:150,w:54,h:235,floors:12},{x:206,w:38,h:305,floors:16},{x:246,w:29,h:155,floors:8},
-    {x:277,w:68,h:255,floors:13},{x:347,w:44,h:335,floors:17},{x:393,w:34,h:195,floors:10},
-    {x:429,w:58,h:275,floors:14},{x:489,w:38,h:175,floors:9},{x:529,w:48,h:305,floors:16},
-    {x:579,w:34,h:215,floors:11},{x:615,w:63,h:255,floors:13},{x:680,w:38,h:185,floors:10},
-    {x:720,w:52,h:235,floors:12},{x:774,w:30,h:155,floors:8},
-  ];
-  buildings.forEach(({x,w,h,floors},bi)=>{
-    const by=388-h, col=bi%4===0?P.accent:bi%4===1?P.gold:bi%4===2?P.mid:P.midL;
-    o+=`<rect x="${x}" y="${by}" width="${w}" height="${h}" fill="${col}" opacity="${(.33+sR(seed+'bo'+bi)*.28).toFixed(2)}" rx="2" filter="url(#${id}sh)"/>`;
-    // Reflet façade
-    o+=`<rect x="${x+2}" y="${by+3}" width="${w*.24}" height="${h-6}" fill="${P.light}" opacity="0.07" rx="1"/>`;
-    // Antenne
-    if(bi%5===0){ o+=`<line x1="${x+w/2}" y1="${by}" x2="${x+w/2}" y2="${by-22}" stroke="${P.gold}" stroke-width="2" opacity="0.6"/>`; o+=`<circle cx="${x+w/2}" cy="${by-24}" r="2.5" fill="${P.accent}" opacity="0.9"><animate attributeName="opacity" values="0.9;0.1;0.9" dur="${(1+bi*.18).toFixed(1)}s" repeatCount="indefinite"/></circle>`; }
-    // Corniche
-    else o+=`<rect x="${x-3}" y="${by}" width="${w+6}" height="6" fill="${col}" opacity="0.45" rx="1"/>`;
-    // Fenêtres
-    const wcols=Math.max(2,Math.floor(w/12)), wrows=floors;
-    for(let r=0;r<wrows;r++) for(let c=0;c<wcols;c++){
-      const wx=x+3+c*(w-6)/wcols, wy=by+7+r*(h-14)/wrows, ww=Math.max(3,(w-6)/wcols-2.5), wh=Math.max(3,(h-14)/wrows-2.5);
-      if(sR(seed+'wl'+bi+r+c)>.38){
-        const dur=(1.5+sR(seed+'wd'+bi+r+c)*3).toFixed(1);
-        o+=`<rect x="${wx.toFixed(0)}" y="${wy.toFixed(0)}" width="${ww.toFixed(0)}" height="${wh.toFixed(0)}" fill="rgba(255,238,140,0.82)" rx="1"><animate attributeName="opacity" values="0.82;0.18;0.82" dur="${dur}s" begin="${(sR(seed+'wde'+bi+r+c)*6).toFixed(1)}s" repeatCount="indefinite"/></rect>`;
-      }
-    }
-  });
-  // Sol et route
-  o+=`<rect x="0" y="386" width="800" height="64" fill="${P.dark}" opacity="0.52"/>`;
-  // Reflets dans le sol
-  buildings.forEach(({x,w,h},bi)=>{ o+=`<rect x="${x+3}" y="388" width="${w-6}" height="${h*.22}" fill="${bi%3===0?P.accent:P.gold}" opacity="${(.03+sR(seed+'ref'+bi)*.04).toFixed(3)}" rx="0"/>`;});
-  o+=`<line x1="0" y1="388" x2="800" y2="388" stroke="${P.gold}" stroke-width="2" opacity="0.4"/>`;
-  // Lampadaires
-  [110,265,420,575,710].forEach(x=>{ o+=`<line x1="${x}" y1="376" x2="${x}" y2="406" stroke="${P.midL}" stroke-width="3" opacity="0.5"/>`;o+=`<circle cx="${x}" cy="374" r="5" fill="${P.gold}" opacity="0.65" filter="url(#${id}glow2)"/>`;o+=`<ellipse cx="${x}" cy="374" rx="18" ry="7" fill="${P.gold}" opacity="0.2" filter="url(#${id}blur)"/>`;});
-  // Lune
-  o+=`<circle cx="680" cy="62" r="34" fill="${P.light}" opacity="0.62" filter="url(#${id}glow)"><animate attributeName="opacity" values="0.62;0.48;0.62" dur="6s" repeatCount="indefinite"/></circle>`;
-  o+=`<circle cx="694" cy="56" r="27" fill="${P.bg2}" opacity="0.72"/>`;
-  return o;
-}
-
-
-
-
 
 // ================================================================
-//  CLASSIFICATEUR
+//  CLASSIFICATEUR — choisit la bonne scène selon le contenu
 // ================================================================
-const KEYWORD_MAP = [
-  {w:['exoplanète','planète','étoile','galaxie','espace','astro','cosmos','univers','nasa','esa','télescope','kepler','webb','hubble','solaire','lunaire'],m:'space'},
-  {w:['comète','météore','astéroïde','trou noir','singularité'],m:'blackhole'},
-  {w:['fusée','lancement','ariane','spacex','vaisseau','navette','iss','décollage'],m:'rocket'},
-  {w:['satellite','orbite','starlink','gps'],m:'satellite'},
-  {w:['adn','génétique','génome','biologie','molécule','mutation','évolution','crispr'],m:'dna'},
-  {w:['atome','particule','quantique','nucléaire','cern'],m:'atom'},
-  {w:['virus','épidémie','pandémie','pathogène','infectieux'],m:'virus'},
-  {w:['cœur','cardio','cardiaque','battement','ecg','infarctus'],m:'heartbeat'},
-  {w:['santé','hôpital','médecin','cancer','traitement','chirurgie'],m:'heartbeat'},
-  {w:['cerveau','neuroscience','neurone','cognition','alzheimer','psychiatrie'],m:'brain'},
-  {w:['ia','intelligence artificielle','algorithme','modèle','llm','gpt','claude','deep learning'],m:'neural'},
-  {w:['robot','automatisation','robotique'],m:'neural'},
-  {w:['circuit','puce','semi-conducteur','processeur','nvidia','chip','code','logiciel','hack'],m:'circuit'},
-  {w:['bourse','action','marché','indice','cac','taux','inflation','trading','bitcoin','crypto','monnaie'],m:'candles'},
-  {w:['parlement','sénat','assemblée','élection','vote','gouvernement','loi','réforme','justice','tribunal'],m:'columns'},
-  {w:['diplomatie','traité','sommet','onu','europe','bruxelles','international','accord'],m:'globe'},
-  {w:['cinéma','film','festival','cannes','oscar','acteur','série','netflix'],m:'film'},
-  {w:['musique','concert','album','artiste','chanson','orchestre','jazz','rap'],m:'music'},
-  {w:['exposition','musée','art','peinture','sculpture','galerie','biennale','venise'],m:'brush'},
-  {w:['livre','roman','auteur','littérature','poésie'],m:'brush'},
-  {w:['théâtre','photographie','podcast','radio','médias','journalisme'],m:'camera'},
-  {w:['mémoire','commémoration','8 mai','11 novembre','anniversaire','guerre','bataille','résistance'],m:'memorial'},
-  {w:['architecture','bâtiment','patrimoine','cathédrale','monument','château'],m:'architecture'},
-  {w:['ville','urbain','métropole','urbanisme','quartier','avion','train'],m:'city'},
-  {w:['océan','mer','vague','lac','rivière','côte','plage','forêt'],m:'wave'},
-  {w:['montagne','alpinisme','glacier','sommet','alpes','ski','cyclisme','vélo'],m:'mountain'},
-  {w:['incendie','feu','flamme','sécheresse'],m:'fire'},
-  {w:['éolienne','solaire','panneau solaire','énergie renouvelable','agriculture','blé'],m:'solarpanel'},
-  {w:['tennis','roland','wimbledon','atp','wta'],m:'tennis'},
-  {w:['football','foot','ligue','champions','fifa','but'],m:'football'},
-  {w:['médaille','champion','victoire','olympique','jeux','podium'],m:'podium'},
-  {w:['philosophie','idée','éthique','innovation','invention','startup'],m:'bulb'},
-  {w:['industrie','entreprise','emploi','travail'],m:'circuit'},
+const SCENE_MAP = [
+  {w:['exoplanète','planète','étoile','galaxie','espace','astro','cosmos','univers','nasa','esa','télescope','kepler','webb','hubble','solaire','lunaire','comète','astéroïde','trou noir','fusée','satellite','orbite','lancement','iss'],m:'space'},
+  {w:['ville','urbain','métropole','urbanisme','quartier','immigration','banlieue','logement','immobilier','avion','train','sncf','transport','circulation','réseau'],m:'city'},
+  {w:['parlement','sénat','assemblée','élection','vote','gouvernement','loi','réforme','décret','constitution','politique','diplomatique','traité','sommet','onu','europe','bruxelles'],m:'parlement'},
+  {w:['justice','tribunal','droit','jugement','procès','cour','avocat','peine','condamnation','balance','loi','état de droit'],m:'tribunal'},
+  {w:['bourse','action','marché','indice','cac','dax','nasdaq','taux','inflation','pib','banque','finance','trading','budget','dette','fiscal','monnaie','bitcoin','crypto'],m:'finance'},
+  {w:['forêt','nature','écologie','biodiversité','arbre','végétation','environnement','planète verte','déforestation','amazonie','sylviculture','montagne','alpes','glacier','sommet','océan','mer','vague','lac','rivière','fleuve','littoral'],m:'foret'},
+  {w:['musique','concert','opéra','orchestre','festival','album','chanson','artiste','musicien','groupe','jazz','classique','rap','pop','tournée','scène'],m:'concert'},
+  {w:['biologie','adn','génétique','génome','molécule','protéine','cellule','bactérie','virus','microscope','labo','recherche','médecine','cancer','traitement','santé','hôpital','chirurgie','vaccin','épidémie'],m:'labo'},
+  {w:['exposition','galerie','art','peinture','sculpture','musée','biennale','venise','anthropocène','culture','artiste','contemporain','oeuvre','commissaire','installation'],m:'galerie'},
+  {w:['ia','intelligence artificielle','algorithme','machine learning','deep learning','réseau neuronal','gpt','claude','llm','modèle','chatbot','automatisation','robotique'],m:'ia'},
+  {w:['football','foot','tennis','sport','stade','match','compétition','championnat','ligue','coupe','médaille','olympique','podium','athlète','joueur'],m:'stade'},
+  {w:['mémoire','commémoration','8 mai','11 novembre','guerre','bataille','résistance','libération','devoir de mémoire','anniversaire','souvenir','hommage','victimes'],m:'memorial'},
 ];
 
 function classifyArticle(article) {
-  const text = ((article.title||'')+' '+(article.tags||[]).join(' ')).toLowerCase()
+  const text = ((article.title||'')+' '+(article.tags||[]).join(' ')+' '+(article.category||'')).toLowerCase()
     .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   const scores = {};
-  KEYWORD_MAP.forEach(({w,m}) => {
+  SCENE_MAP.forEach(({w,m}) => {
     const hits = w.filter(kw => text.includes(kw.normalize('NFD').replace(/[\u0300-\u036f]/g,''))).length;
-    if (hits > 0) scores[m] = (scores[m]||0) + hits;
+    if (hits>0) scores[m]=(scores[m]||0)+hits;
   });
-  const best = Object.entries(scores).sort((a,b) => b[1]-a[1])[0];
-  return best ? best[0] : null;
-}
-
-// ================================================================
-//  FONCTIONS HELPERS MANQUANTES
-// ================================================================
-function motifFire(P, id, seed) {
-  let o = '';
-  for (let i = 0; i < 7; i++) {
-    const fx = 120+i*82+sR(seed+'fx'+i)*30, fh = 95+sR(seed+'fh'+i)*130, fw = 22+sR(seed+'fw'+i)*22;
-    const col = i%2===0 ? P.accent : P.gold;
-    const dur = (0.3+sR(seed+'fd'+i)*0.4).toFixed(2);
-    const d1 = `M${fx},380 Q${fx-fw},${380-fh*.4} ${fx},${380-fh} Q${fx+fw*.5},${380-fh*.7} ${fx+fw},${380-fh*.3} Q${fx+fw*1.3},${380-fh*.1} ${fx},380Z`;
-    const d2 = `M${fx+5},380 Q${fx-fw+8},${380-fh*.45} ${fx+3},${380-fh*1.1} Q${fx+fw*.6},${380-fh*.75} ${fx+fw+5},${380-fh*.35} Q${fx+fw*1.4},${380-fh*.08} ${fx+5},380Z`;
-    o += `<path d="${d1}" fill="${col}" opacity="${.6+sR(seed+'fo'+i)*.3}" filter="url(#${id}glow)">
-    <animate attributeName="d" values="${d1};${d2};${d1}" dur="${dur}s" repeatCount="indefinite"/></path>`;
-  }
-  o += `<rect x="0" y="370" width="800" height="80" fill="${P.dark}" opacity="0.4"/>`;
-  return o;
-}
-
-function motifMountain(P, id, seed) {
-  const peaks = [[180,95],[390,55],[580,85],[100,175],[520,140],[720,115]];
-  let o = '';
-  peaks.forEach(([px,py],i) => {
-    const w = 110+sR(seed+'mw'+i)*100;
-    o += `<polygon points="${px},${py} ${px-w},390 ${px+w},390" fill="${i%2===0?P.accent:P.mid}" opacity="${.38+sR(seed+'mo'+i)*.3}"/>`;
-    o += `<polygon points="${px},${py} ${px-22},${py+55} ${px+22},${py+55}" fill="${P.light}" opacity="0.7"/>`;
-  });
-  o += `<circle cx="680" cy="85" r="38" fill="${P.gold}" opacity="0.7" filter="url(#${id}glow)">
-  <animate attributeName="opacity" values="0.7;0.5;0.7" dur="5s" repeatCount="indefinite"/></circle>`;
-  return o;
-}
-
-function motifWave(P, id, seed) {
-  let o = '';
-  for (let j = 0; j < 6; j++) {
-    let d = `M -80 ${140+j*30}`;
-    for (let x = -80; x <= 880; x += 20) {
-      d += ` L ${x} ${(140+j*30+Math.sin((x/800)*Math.PI*(4+j)+sR(seed+'wp'+j)*3)*42).toFixed(0)}`;
-    }
-    o += `<path d="${d} L 880 450 L -80 450 Z" fill="${j%2===0?P.accent:P.gold}" opacity="${(.14-j*.015).toFixed(3)}">
-    <animateTransform attributeName="transform" type="translate" from="0,0" to="-80,0" dur="${(4+j*1.2).toFixed(1)}s" repeatCount="indefinite"/>
-    </path>`;
-    o += `<path d="${d}" fill="none" stroke="${j%2===0?P.accent:P.gold}" stroke-width="${2.2-j*.2}" opacity="${.5-j*.06}" filter="url(#${id}glow2)">
-    <animateTransform attributeName="transform" type="translate" from="0,0" to="-80,0" dur="${(4+j*1.2).toFixed(1)}s" repeatCount="indefinite"/>
-    </path>`;
-  }
-  return o;
-}
-
-function motifSolarPanel(P, id, seed) {
-  const cols=5, rows=3, pw=64, ph=42, gap=6;
-  const ox=400-cols*(pw+gap)/2, oy=225-rows*(ph+gap)/2;
-  let o = '';
-  for (let r = 0; r < rows; r++) for (let cc = 0; cc < cols; cc++) {
-    const x=ox+cc*(pw+gap), y=oy+r*(ph+gap);
-    o += `<rect x="${x.toFixed(0)}" y="${y.toFixed(0)}" width="${pw}" height="${ph}" fill="${P.accent}" opacity="0.72" rx="4">
-    <animate attributeName="opacity" values="0.72;0.45;0.72" dur="${(3+r+cc*.2).toFixed(1)}s" begin="${(r*cols+cc)*.08}s" repeatCount="indefinite"/>
-    </rect>`;
-    o += `<line x1="${(x+pw/3).toFixed(0)}" y1="${y.toFixed(0)}" x2="${(x+pw/3).toFixed(0)}" y2="${(y+ph).toFixed(0)}" stroke="${P.gold}" stroke-width="1.5" opacity="0.45"/>`;
-    o += `<line x1="${x.toFixed(0)}" y1="${(y+ph/2).toFixed(0)}" x2="${(x+pw).toFixed(0)}" y2="${(y+ph/2).toFixed(0)}" stroke="${P.gold}" stroke-width="1.5" opacity="0.45"/>`;
-  }
-  o += `<circle cx="680" cy="80" r="44" fill="${P.gold}" opacity="0.75" filter="url(#${id}glow)">
-  <animate attributeName="r" values="44;50;44" dur="4s" repeatCount="indefinite"/></circle>`;
-  for (let i = 0; i < 10; i++) {
-    const a = i/10*Math.PI*2;
-    o += `<line x1="${(680+Math.cos(a)*52).toFixed(0)}" y1="${(80+Math.sin(a)*52).toFixed(0)}" x2="${(680+Math.cos(a)*70).toFixed(0)}" y2="${(80+Math.sin(a)*70).toFixed(0)}" stroke="${P.gold}" stroke-width="3" opacity="0.6"/>`;
-  }
-  return o;
-}
-
-function motifTennisCourt(P, id) {
-  let o = `<rect x="90" y="55" width="620" height="340" fill="${P.accent}" opacity="0.18" rx="5"/>`;
-  [[90,55,710,55],[90,395,710,395],[90,55,90,395],[710,55,710,395],[90,225,710,225],[400,55,400,395],[90,130,710,130],[90,320,710,320]].forEach(([x1,y1,x2,y2]) => {
-    o += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${P.gold}" stroke-width="2.5" opacity="0.65"/>`;
-  });
-  o += `<line x1="90" y1="225" x2="710" y2="225" stroke="${P.light}" stroke-width="4" opacity="0.75"/>`;
-  o += `<circle r="11" fill="${P.gold}" opacity="0.95" filter="url(#${id}glow)">
-  <animateMotion path="M160,160 Q400,65 600,310 Q670,360 550,200" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1"/>
-  </circle>`;
-  return o;
-}
-
-function motifFootballPitch(P, id) {
-  let o = `<rect x="75" y="48" width="650" height="354" fill="${P.accent}" opacity="0.14" rx="8"/>
-  <rect x="75" y="48" width="650" height="354" fill="none" stroke="${P.gold}" stroke-width="2.5" opacity="0.6" rx="8"/>
-  <circle cx="400" cy="225" r="75" fill="none" stroke="${P.gold}" stroke-width="2.5" opacity="0.5"/>
-  <circle cx="400" cy="225" r="6" fill="${P.gold}" opacity="0.75"/>
-  <line x1="400" y1="48" x2="400" y2="402" stroke="${P.gold}" stroke-width="2" opacity="0.5"/>
-  <rect x="75" y="160" width="52" height="130" fill="none" stroke="${P.gold}" stroke-width="2" opacity="0.6"/>
-  <rect x="673" y="160" width="52" height="130" fill="none" stroke="${P.gold}" stroke-width="2" opacity="0.6"/>
-  <rect x="75" y="126" width="135" height="198" fill="none" stroke="${P.gold}" stroke-width="1.5" opacity="0.4"/>
-  <rect x="590" y="126" width="135" height="198" fill="none" stroke="${P.gold}" stroke-width="1.5" opacity="0.4"/>`;
-  o += `<circle r="18" fill="${P.light}" opacity="0.9" filter="url(#${id}glow)">
-  <animateMotion path="M220,165 Q350,85 550,205 Q640,265 510,345 Q380,395 225,310 Q110,258 220,165" dur="9s" repeatCount="indefinite"/>
-  </circle>`;
-  return o;
-}
-
-function motifPodium(cx, cy, P, id) {
-  let o = '';
-  [[cx-115,155,P.mid,.55,'🥈'],[cx,215,P.accent,.9,'🥇'],[cx+115,118,P.mid,.5,'🥉']].forEach(([x,h,col,op,em],i) => {
-    const by = cy+88-h;
-    o += `<rect x="${x-52}" y="${by}" width="104" height="${h}" fill="${col}" opacity="${op}" rx="4" filter="url(#${id}sh)">
-    <animate attributeName="opacity" values="${op};${op*.65};${op}" dur="${3+i*.6}s" repeatCount="indefinite"/></rect>`;
-    o += `<text x="${x}" y="${by-14}" font-family="serif" font-size="28" text-anchor="middle">${em}</text>`;
-    if (i===1) for (let j=0; j<8; j++) {
-      const sx=x-45+j*12, sy=by-52;
-      o += `<circle cx="${sx}" cy="${sy}" r="4" fill="${['#e85a60','#d4a858','#5ab8e8','#7be878'][j%4]}" opacity="0.7">
-      <animate attributeName="cy" values="${sy};${sy+60};${sy}" dur="${1+j*.25}s" begin="${j*.18}s" repeatCount="indefinite"/>
-      <animate attributeName="opacity" values="0.7;0;0.7" dur="${1+j*.25}s" begin="${j*.18}s" repeatCount="indefinite"/>
-      </circle>`;
-    }
-  });
-  return o;
-}
-
-function motifLightbulb(cx, cy, P, id) {
-  const r = 72;
-  let o = '';
-  [r*2.2,r*1.55].forEach((hr,i) => {
-    o += `<circle cx="${cx}" cy="${cy-r*.1}" r="${hr}" fill="${P.accent}" opacity="${.06+i*.04}" filter="url(#${id}blur)">
-    <animate attributeName="r" values="${hr};${hr*1.12};${hr}" dur="${4+i*1.5}s" repeatCount="indefinite"/></circle>`;
-  });
-  o += `<path d="M${cx-r},${cy} a${r},${r} 0 1,1 ${r*2},0 L${cx+r*.72},${cy+r*.32} L${cx-r*.72},${cy+r*.32} Z" fill="${P.accent}" opacity="0.8" filter="url(#${id}glow)"/>`;
-  o += `<rect x="${(cx-r*.7).toFixed(0)}" y="${(cy+r*.32).toFixed(0)}" width="${(r*1.4).toFixed(0)}" height="${(r*.08).toFixed(0)}" fill="${P.gold}" opacity="0.7" rx="3"/>`;
-  o += `<rect x="${(cx-r*.7).toFixed(0)}" y="${(cy+r*.42).toFixed(0)}" width="${(r*1.4).toFixed(0)}" height="${(r*.08).toFixed(0)}" fill="${P.gold}" opacity="0.7" rx="3"/>`;
-  o += `<path d="M${cx-r*.28},${cy+r*.06} Q${cx},${cy-r*.42} ${cx+r*.28},${cy+r*.06}" fill="none" stroke="${P.light}" stroke-width="3" opacity="0.85"/>`;
-  [0,45,90,135,180,225,270,315].forEach((a,i) => {
-    const rad=a*Math.PI/180, r1=r+14, r2=r+32+sR('rl'+i)*14;
-    o += `<line x1="${(cx+Math.cos(rad)*r1).toFixed(0)}" y1="${(cy-r*.1+Math.sin(rad)*r1).toFixed(0)}" x2="${(cx+Math.cos(rad)*r2).toFixed(0)}" y2="${(cy-r*.1+Math.sin(rad)*r2).toFixed(0)}" stroke="${P.gold}" stroke-width="2" opacity="${(.4+sR('ro'+i)*.4).toFixed(2)}">
-    <animate attributeName="opacity" values="${(.4+sR('ro'+i)*.4).toFixed(2)};0.05;${(.4+sR('ro'+i)*.4).toFixed(2)}" dur="${(1.5+i*.25).toFixed(1)}s" repeatCount="indefinite"/>
-    </line>`;
-  });
-  return o;
-}
-
-function motifArchitecture(P, id, seed) {
-  let o = '';
-  o += `<polygon points="80,78 400,22 720,78" fill="${P.accent}" opacity="0.55" filter="url(#${id}sh)"/>`;
-  o += `<rect x="78" y="78" width="644" height="22" fill="${P.accent}" opacity="0.65" rx="2"/>`;
-  o += `<rect x="78" y="96" width="644" height="24" fill="${P.gold}" opacity="0.35"/>`;
-  [108,200,292,388,508,600,692].forEach((cx2,ci) => {
-    const cw=48, ch=240;
-    o += `<rect x="${cx2-cw/2}" y="120" width="${cw}" height="${ch}" fill="${P.accent}" opacity="${.5+ci*.02}" rx="2" filter="url(#${id}sh)">
-    <animate attributeName="opacity" values="${.5+ci*.02};${.32+ci*.02};${.5+ci*.02}" dur="${3.5+ci*.4}s" repeatCount="indefinite"/></rect>`;
-    for (let j=0; j<5; j++) { const lx=cx2-cw/2+5+j*8; if(lx<cx2+cw/2-5) o+=`<line x1="${lx}" y1="124" x2="${lx}" y2="${120+ch-4}" stroke="${P.light}" stroke-width="1.5" opacity="0.1"/>`; }
-    o += `<rect x="${cx2-cw/2-6}" y="120" width="${cw+12}" height="16" fill="${P.gold}" opacity="0.7" rx="2"/>`;
-    o += `<rect x="${cx2-cw/2-8}" y="356" width="${cw+16}" height="10" fill="${P.gold}" opacity="0.65" rx="2"/>`;
-    o += `<rect x="${cx2-cw/2-10}" y="366" width="${cw+20}" height="9" fill="${P.gold}" opacity="0.5" rx="2"/>`;
-  });
-  o += `<rect x="78" y="375" width="644" height="75" fill="${P.dark}" opacity="0.3"/>`;
-  return o;
-}
-
-function motifMemorial(P, id, seed) {
-  let o = '';
-  [[130,180],[670,180]].forEach(([cx2,h2]) => {
-    const cw=40;
-    o += `<rect x="${cx2-cw/2}" y="${390-h2}" width="${cw}" height="${h2}" fill="${P.mid}" opacity="0.45" rx="2"/>`;
-    o += `<rect x="${cx2-cw/2-6}" y="${390-h2}" width="${cw+12}" height="12" fill="${P.gold}" opacity="0.55" rx="2"/>`;
-    o += `<rect x="${cx2-cw/2-8}" y="382" width="${cw+16}" height="10" fill="${P.gold}" opacity="0.5" rx="2"/>`;
-  });
-  [380,370,360].forEach((y,i) => {
-    o += `<rect x="${300-i*10}" y="${y}" width="${200+i*20}" height="12" fill="${P.gold}" opacity="${.5+i*.1}" rx="2"/>`;
-  });
-  o += `<rect x="370" y="160" width="60" height="200" fill="${P.accent}" opacity="0.65" filter="url(#${id}sh)" rx="2"/>`;
-  const fx=400, fh=130, fbase=358;
-  const d1=`M${fx},${fbase} Q${fx-38},${fbase-fh*.4} ${fx},${fbase-fh} Q${fx+32},${fbase-fh*.72} ${fx+36},${fbase-fh*.28} Q${fx+42},${fbase-fh*.08} ${fx},${fbase}Z`;
-  const d2=`M${fx+5},${fbase} Q${fx-30},${fbase-fh*.45} ${fx+4},${fbase-fh*1.1} Q${fx+38},${fbase-fh*.78} ${fx+42},${fbase-fh*.32} Q${fx+48},${fbase-fh*.06} ${fx+5},${fbase}Z`;
-  o += `<path d="${d1}" fill="${P.accent}" opacity="0.88" filter="url(#${id}glow)">
-  <animate attributeName="d" values="${d1};${d2};${d1}" dur="0.55s" repeatCount="indefinite"/></path>`;
-  o += `<circle cx="${fx}" cy="${fbase-fh*.35}" r="65" fill="${P.accent}" opacity="0.07" filter="url(#${id}blur)">
-  <animate attributeName="r" values="65;90;65" dur="3s" repeatCount="indefinite"/></circle>`;
-  [[fx-15,0],[fx+8,.6],[fx-5,1.1],[fx+18,.3]].forEach(([px,del]) => {
-    o += `<circle cx="${px}" cy="${fbase}" r="2.5" fill="${P.gold}" opacity="0.8">
-    <animate attributeName="cy" values="${fbase};${fbase-fh*1.5}" dur="3s" begin="${del}s" repeatCount="indefinite"/>
-    <animate attributeName="opacity" values="0.8;0" dur="3s" begin="${del}s" repeatCount="indefinite"/></circle>`;
-  });
-  o += `<rect x="0" y="388" width="800" height="62" fill="${P.dark}" opacity="0.4"/>`;
-  o += `<line x1="0" y1="388" x2="800" y2="388" stroke="${P.gold}" stroke-width="2" opacity="0.5"/>`;
-  return o;
-}
-
-function motifCamera(cx,cy,P,id) {
-  return `<rect x="${cx-90}" y="${cy-55}" width="180" height="120" fill="${P.accent}" opacity="0.85" rx="12"/>
-  <path d="M${cx-32},${cy-80} L${cx-16},${cy-55} L${cx+16},${cy-55} L${cx+32},${cy-80}Z" fill="${P.accent}" opacity="0.85"/>
-  <circle cx="${cx}" cy="${cy+5}" r="46" fill="${P.bg2}" opacity="0.8"/>
-  <circle cx="${cx}" cy="${cy+5}" r="34" fill="${P.mid}" opacity="0.6"/>
-  <circle cx="${cx}" cy="${cy+5}" r="20" fill="${P.bg}" opacity="0.7"/>
-  <circle cx="${cx}" cy="${cy+5}" r="10" fill="${P.accent}" opacity="0.9">
-  <animate attributeName="r" values="10;13;10" dur="3s" repeatCount="indefinite"/></circle>
-  <circle cx="${cx+58}" cy="${cy-32}" r="10" fill="${P.gold}" opacity="0.85">
-  <animate attributeName="opacity" values="0.85;0.25;0.85" dur="2s" repeatCount="indefinite"/></circle>`;
+  // Fallback par rubrique si aucun mot-clé ne matche
+  const best = Object.entries(scores).sort((a,b)=>b[1]-a[1])[0];
+  if (best) return best[0];
+  const catFallback = {
+    'Science':'space','Tech':'ia','Technologie':'ia','Économie':'finance',
+    'Politique':'parlement','Culture':'galerie','Société':'city','Sport':'stade','Idées':'ia'
+  };
+  return catFallback[article.category] || 'space';
 }
 
 // ================================================================
 //  COMPOSITEUR PRINCIPAL
 // ================================================================
 function makeSvgForArticle(article, idx) {
-  const cat = (article&&article.category) || 'Science';
+  const cat   = (article&&article.category) || 'Science';
   const title = (article&&article.title) || '';
-  const tags = (article&&article.tags) ? article.tags.join(' ') : '';
-  const seed = title+tags+cat+idx;
-  const id = 'sv'+idx;
-  const P = getPalette(cat, seed);
-  const motif = classifyArticle(article);
-  const cx = Math.floor(350+sR(seed+'cx')*130);
-  const cy = Math.floor(160+sR(seed+'cy')*100);
+  const tags  = (article&&article.tags) ? article.tags.join(' ') : '';
+  const seed  = title.slice(0,40)+tags.slice(0,20)+cat+idx;
+  const id    = 'sv'+idx;
+  const C     = P(cat, seed);
+  const scene = classifyArticle(article);
 
-  let L = makeFilters(id, P) + grid(P);
+  let content = '';
+  if      (scene==='space')    content = sceneSpace(id, C, seed);
+  else if (scene==='city')     content = sceneCity(id, C, seed);
+  else if (scene==='parlement')content = sceneParlement(id, C, seed);
+  else if (scene==='tribunal') content = sceneTribunal(id, C, seed);
+  else if (scene==='finance')  content = sceneFinance(id, C, seed);
+  else if (scene==='foret')    content = sceneForest(id, C, seed);
+  else if (scene==='concert')  content = sceneConcert(id, C, seed);
+  else if (scene==='labo')     content = sceneLab(id, C, seed);
+  else if (scene==='galerie')  content = sceneGalerie(id, C, seed);
+  else if (scene==='ia')       content = sceneIA(id, C, seed);
+  else if (scene==='stade')    content = sceneStade(id, C, seed);
+  else if (scene==='memorial') content = sceneMemorial(id, C, seed);
+  else                         content = sceneSpace(id, C, seed);
 
-  if      (motif==='space')   { L+=motifStars(90,P,seed); L+=motifPlanet(cx,cy,P,id,seed); }
-  else if (motif==='blackhole'){ L+=motifStars(75,P,seed); L+=motifBlackHole(cx,cy,P,id,seed); }
-  else if (motif==='rocket')  { L+=motifStars(55,P,seed); L+=motifRocket(cx,cy,P,id,seed); }
-  else if (motif==='satellite'){ L+=motifStars(60,P,seed); L+=motifSatellite(cx,cy,P,id); }
-  else if (motif==='dna')     { L+=motifDNA(cx,cy,P,id,seed); }
-  else if (motif==='atom')    { L+=motifStars(35,P,seed); L+=motifAtom(cx,cy,P,id); }
-  else if (motif==='virus')   { L+=motifVirus(cx,cy,P,id,seed); }
-  else if (motif==='heartbeat'){ L+=motifHeartbeat(P,id); }
-  else if (motif==='brain')   { L+=motifBrain(cx,cy,P,id); }
-  else if (motif==='neural')  { L+=motifNeural(cx,cy,P,id,seed); }
-  else if (motif==='circuit') { L+=motifCircuit(P,id,seed); }
-  else if (motif==='candles') { L+=motifCandles(P,id,seed); }
-  else if (motif==='columns') { L+=motifColumns(P,id); }
-  else if (motif==='globe')   { L+=motifStars(20,P,seed); L+=motifGlobe(cx,cy,P,id); }
-  else if (motif==='film')    { L+=motifBrushStrokes(P,id,seed); L+=motifFilmStrip(cx,cy,P,id,seed); }
-  else if (motif==='music')   { L+=motifBrushStrokes(P,id,seed); L+=motifMusicalStaff(P,id,seed); }
-  else if (motif==='brush')   { L+=motifBrushStrokes(P,id,seed); }
-  else if (motif==='camera')  { L+=motifBrushStrokes(P,id,seed); L+=motifCamera(cx,cy,P,id); }
-  else if (motif==='memorial'){ L+=motifMemorial(P,id,seed); }
-  else if (motif==='architecture'){ L+=motifArchitecture(P,id,seed); }
-  else if (motif==='city')    { L+=motifStars(18,P,seed); L+=motifCity(P,id,seed); }
-  else if (motif==='wave')    { L+=motifWave(P,id,seed); }
-  else if (motif==='mountain'){ L+=motifMountain(P,id,seed); }
-  else if (motif==='fire')    { L+=motifFire(P,id,seed); }
-  else if (motif==='solarpanel'){ L+=motifSolarPanel(P,id,seed); }
-  else if (motif==='tennis')  { L+=motifTennisCourt(P,id); }
-  else if (motif==='football'){ L+=motifFootballPitch(P,id); }
-  else if (motif==='podium')  { L+=motifStars(22,P,seed); L+=motifPodium(cx,cy,P,id); }
-  else if (motif==='bulb')    { L+=motifStars(16,P,seed); L+=motifLightbulb(cx,cy,P,id); }
-  else {
-    if      (cat==='Science')  { L+=motifStars(80,P,seed); L+=motifPlanet(cx,cy,P,id,seed); }
-    else if (cat==='Tech'||cat==='Technologie') { L+=motifNeural(cx,cy,P,id,seed); }
-    else if (cat==='Économie') { L+=motifCandles(P,id,seed); }
-    else if (cat==='Politique'){ L+=motifColumns(P,id); }
-    else if (cat==='Culture')  { L+=motifBrushStrokes(P,id,seed); }
-    else if (cat==='Société')  { L+=motifCity(P,id,seed); }
-    else if (cat==='Sport')    { L+=motifPodium(cx,cy,P,id); }
-    else if (cat==='Idées')    { L+=motifLightbulb(cx,cy,P,id); }
-    else                       { L+=motifStars(60,P,seed); L+=motifPlanet(cx,cy,P,id,seed); }
-  }
-
-  // Bandeau titre
+  // Bandeau titre en bas
   const safe = (title.length>58?title.slice(0,55)+'…':title)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  L += `<rect x="0" y="368" width="800" height="82" fill="${P.dark}" opacity="0.82"/>
-  <line x1="0" y1="368" x2="800" y2="368" stroke="${P.gold}" stroke-width="1.5" opacity="0.4"/>
-  <circle cx="12" cy="389" r="3" fill="${P.accent}" opacity="0.8"/>
-  <text x="22" y="393" font-family="Bricolage Grotesque,sans-serif" font-size="10" fill="${P.gold}" opacity="0.88" letter-spacing="3.5">${cat.toUpperCase()}</text>
-  <text x="22" y="415" font-family="Fraunces,serif" font-size="16.5" fill="${P.light}" opacity="0.95" font-style="italic">${safe}</text>`;
-  return L;
+
+  return `${content}
+  <rect x="0" y="368" width="800" height="82" fill="${C.dark}" opacity="0.85"/>
+  <line x1="0" y1="368" x2="800" y2="368" stroke="${C.gold}" stroke-width="1.5" opacity="0.45"/>
+  <circle cx="12" cy="389" r="3" fill="${C.acc}" opacity="0.85"/>
+  <text x="22" y="393" font-family="Bricolage Grotesque,sans-serif" font-size="10" fill="${C.gold}" opacity="0.9" letter-spacing="3.5">${cat.toUpperCase()}</text>
+  <text x="22" y="416" font-family="Fraunces,serif" font-size="17" fill="${C.light}" opacity="0.96" font-style="italic">${safe}</text>`;
 }
 
 function makeSvgForCategory(cat, idx) {
