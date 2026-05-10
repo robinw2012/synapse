@@ -903,6 +903,324 @@ function motifCity(P,id,seed){
 
 
 
+
+// ================================================================
+//  CLASSIFICATEUR
+// ================================================================
+const KEYWORD_MAP = [
+  {w:['exoplanète','planète','étoile','galaxie','espace','astro','cosmos','univers','nasa','esa','télescope','kepler','webb','hubble','solaire','lunaire'],m:'space'},
+  {w:['comète','météore','astéroïde','trou noir','singularité'],m:'blackhole'},
+  {w:['fusée','lancement','ariane','spacex','vaisseau','navette','iss','décollage'],m:'rocket'},
+  {w:['satellite','orbite','starlink','gps'],m:'satellite'},
+  {w:['adn','génétique','génome','biologie','molécule','mutation','évolution','crispr'],m:'dna'},
+  {w:['atome','particule','quantique','nucléaire','cern'],m:'atom'},
+  {w:['virus','épidémie','pandémie','pathogène','infectieux'],m:'virus'},
+  {w:['cœur','cardio','cardiaque','battement','ecg','infarctus'],m:'heartbeat'},
+  {w:['santé','hôpital','médecin','cancer','traitement','chirurgie'],m:'heartbeat'},
+  {w:['cerveau','neuroscience','neurone','cognition','alzheimer','psychiatrie'],m:'brain'},
+  {w:['ia','intelligence artificielle','algorithme','modèle','llm','gpt','claude','deep learning'],m:'neural'},
+  {w:['robot','automatisation','robotique'],m:'neural'},
+  {w:['circuit','puce','semi-conducteur','processeur','nvidia','chip','code','logiciel','hack'],m:'circuit'},
+  {w:['bourse','action','marché','indice','cac','taux','inflation','trading','bitcoin','crypto','monnaie'],m:'candles'},
+  {w:['parlement','sénat','assemblée','élection','vote','gouvernement','loi','réforme','justice','tribunal'],m:'columns'},
+  {w:['diplomatie','traité','sommet','onu','europe','bruxelles','international','accord'],m:'globe'},
+  {w:['cinéma','film','festival','cannes','oscar','acteur','série','netflix'],m:'film'},
+  {w:['musique','concert','album','artiste','chanson','orchestre','jazz','rap'],m:'music'},
+  {w:['exposition','musée','art','peinture','sculpture','galerie','biennale','venise'],m:'brush'},
+  {w:['livre','roman','auteur','littérature','poésie'],m:'brush'},
+  {w:['théâtre','photographie','podcast','radio','médias','journalisme'],m:'camera'},
+  {w:['mémoire','commémoration','8 mai','11 novembre','anniversaire','guerre','bataille','résistance'],m:'memorial'},
+  {w:['architecture','bâtiment','patrimoine','cathédrale','monument','château'],m:'architecture'},
+  {w:['ville','urbain','métropole','urbanisme','quartier','avion','train'],m:'city'},
+  {w:['océan','mer','vague','lac','rivière','côte','plage','forêt'],m:'wave'},
+  {w:['montagne','alpinisme','glacier','sommet','alpes','ski','cyclisme','vélo'],m:'mountain'},
+  {w:['incendie','feu','flamme','sécheresse'],m:'fire'},
+  {w:['éolienne','solaire','panneau solaire','énergie renouvelable','agriculture','blé'],m:'solarpanel'},
+  {w:['tennis','roland','wimbledon','atp','wta'],m:'tennis'},
+  {w:['football','foot','ligue','champions','fifa','but'],m:'football'},
+  {w:['médaille','champion','victoire','olympique','jeux','podium'],m:'podium'},
+  {w:['philosophie','idée','éthique','innovation','invention','startup'],m:'bulb'},
+  {w:['industrie','entreprise','emploi','travail'],m:'circuit'},
+];
+
+function classifyArticle(article) {
+  const text = ((article.title||'')+' '+(article.tags||[]).join(' ')).toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const scores = {};
+  KEYWORD_MAP.forEach(({w,m}) => {
+    const hits = w.filter(kw => text.includes(kw.normalize('NFD').replace(/[\u0300-\u036f]/g,''))).length;
+    if (hits > 0) scores[m] = (scores[m]||0) + hits;
+  });
+  const best = Object.entries(scores).sort((a,b) => b[1]-a[1])[0];
+  return best ? best[0] : null;
+}
+
+// ================================================================
+//  FONCTIONS HELPERS MANQUANTES
+// ================================================================
+function motifFire(P, id, seed) {
+  let o = '';
+  for (let i = 0; i < 7; i++) {
+    const fx = 120+i*82+sR(seed+'fx'+i)*30, fh = 95+sR(seed+'fh'+i)*130, fw = 22+sR(seed+'fw'+i)*22;
+    const col = i%2===0 ? P.accent : P.gold;
+    const dur = (0.3+sR(seed+'fd'+i)*0.4).toFixed(2);
+    const d1 = `M${fx},380 Q${fx-fw},${380-fh*.4} ${fx},${380-fh} Q${fx+fw*.5},${380-fh*.7} ${fx+fw},${380-fh*.3} Q${fx+fw*1.3},${380-fh*.1} ${fx},380Z`;
+    const d2 = `M${fx+5},380 Q${fx-fw+8},${380-fh*.45} ${fx+3},${380-fh*1.1} Q${fx+fw*.6},${380-fh*.75} ${fx+fw+5},${380-fh*.35} Q${fx+fw*1.4},${380-fh*.08} ${fx+5},380Z`;
+    o += `<path d="${d1}" fill="${col}" opacity="${.6+sR(seed+'fo'+i)*.3}" filter="url(#${id}glow)">
+    <animate attributeName="d" values="${d1};${d2};${d1}" dur="${dur}s" repeatCount="indefinite"/></path>`;
+  }
+  o += `<rect x="0" y="370" width="800" height="80" fill="${P.dark}" opacity="0.4"/>`;
+  return o;
+}
+
+function motifMountain(P, id, seed) {
+  const peaks = [[180,95],[390,55],[580,85],[100,175],[520,140],[720,115]];
+  let o = '';
+  peaks.forEach(([px,py],i) => {
+    const w = 110+sR(seed+'mw'+i)*100;
+    o += `<polygon points="${px},${py} ${px-w},390 ${px+w},390" fill="${i%2===0?P.accent:P.mid}" opacity="${.38+sR(seed+'mo'+i)*.3}"/>`;
+    o += `<polygon points="${px},${py} ${px-22},${py+55} ${px+22},${py+55}" fill="${P.light}" opacity="0.7"/>`;
+  });
+  o += `<circle cx="680" cy="85" r="38" fill="${P.gold}" opacity="0.7" filter="url(#${id}glow)">
+  <animate attributeName="opacity" values="0.7;0.5;0.7" dur="5s" repeatCount="indefinite"/></circle>`;
+  return o;
+}
+
+function motifWave(P, id, seed) {
+  let o = '';
+  for (let j = 0; j < 6; j++) {
+    let d = `M -80 ${140+j*30}`;
+    for (let x = -80; x <= 880; x += 20) {
+      d += ` L ${x} ${(140+j*30+Math.sin((x/800)*Math.PI*(4+j)+sR(seed+'wp'+j)*3)*42).toFixed(0)}`;
+    }
+    o += `<path d="${d} L 880 450 L -80 450 Z" fill="${j%2===0?P.accent:P.gold}" opacity="${(.14-j*.015).toFixed(3)}">
+    <animateTransform attributeName="transform" type="translate" from="0,0" to="-80,0" dur="${(4+j*1.2).toFixed(1)}s" repeatCount="indefinite"/>
+    </path>`;
+    o += `<path d="${d}" fill="none" stroke="${j%2===0?P.accent:P.gold}" stroke-width="${2.2-j*.2}" opacity="${.5-j*.06}" filter="url(#${id}glow2)">
+    <animateTransform attributeName="transform" type="translate" from="0,0" to="-80,0" dur="${(4+j*1.2).toFixed(1)}s" repeatCount="indefinite"/>
+    </path>`;
+  }
+  return o;
+}
+
+function motifSolarPanel(P, id, seed) {
+  const cols=5, rows=3, pw=64, ph=42, gap=6;
+  const ox=400-cols*(pw+gap)/2, oy=225-rows*(ph+gap)/2;
+  let o = '';
+  for (let r = 0; r < rows; r++) for (let cc = 0; cc < cols; cc++) {
+    const x=ox+cc*(pw+gap), y=oy+r*(ph+gap);
+    o += `<rect x="${x.toFixed(0)}" y="${y.toFixed(0)}" width="${pw}" height="${ph}" fill="${P.accent}" opacity="0.72" rx="4">
+    <animate attributeName="opacity" values="0.72;0.45;0.72" dur="${(3+r+cc*.2).toFixed(1)}s" begin="${(r*cols+cc)*.08}s" repeatCount="indefinite"/>
+    </rect>`;
+    o += `<line x1="${(x+pw/3).toFixed(0)}" y1="${y.toFixed(0)}" x2="${(x+pw/3).toFixed(0)}" y2="${(y+ph).toFixed(0)}" stroke="${P.gold}" stroke-width="1.5" opacity="0.45"/>`;
+    o += `<line x1="${x.toFixed(0)}" y1="${(y+ph/2).toFixed(0)}" x2="${(x+pw).toFixed(0)}" y2="${(y+ph/2).toFixed(0)}" stroke="${P.gold}" stroke-width="1.5" opacity="0.45"/>`;
+  }
+  o += `<circle cx="680" cy="80" r="44" fill="${P.gold}" opacity="0.75" filter="url(#${id}glow)">
+  <animate attributeName="r" values="44;50;44" dur="4s" repeatCount="indefinite"/></circle>`;
+  for (let i = 0; i < 10; i++) {
+    const a = i/10*Math.PI*2;
+    o += `<line x1="${(680+Math.cos(a)*52).toFixed(0)}" y1="${(80+Math.sin(a)*52).toFixed(0)}" x2="${(680+Math.cos(a)*70).toFixed(0)}" y2="${(80+Math.sin(a)*70).toFixed(0)}" stroke="${P.gold}" stroke-width="3" opacity="0.6"/>`;
+  }
+  return o;
+}
+
+function motifTennisCourt(P, id) {
+  let o = `<rect x="90" y="55" width="620" height="340" fill="${P.accent}" opacity="0.18" rx="5"/>`;
+  [[90,55,710,55],[90,395,710,395],[90,55,90,395],[710,55,710,395],[90,225,710,225],[400,55,400,395],[90,130,710,130],[90,320,710,320]].forEach(([x1,y1,x2,y2]) => {
+    o += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${P.gold}" stroke-width="2.5" opacity="0.65"/>`;
+  });
+  o += `<line x1="90" y1="225" x2="710" y2="225" stroke="${P.light}" stroke-width="4" opacity="0.75"/>`;
+  o += `<circle r="11" fill="${P.gold}" opacity="0.95" filter="url(#${id}glow)">
+  <animateMotion path="M160,160 Q400,65 600,310 Q670,360 550,200" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1"/>
+  </circle>`;
+  return o;
+}
+
+function motifFootballPitch(P, id) {
+  let o = `<rect x="75" y="48" width="650" height="354" fill="${P.accent}" opacity="0.14" rx="8"/>
+  <rect x="75" y="48" width="650" height="354" fill="none" stroke="${P.gold}" stroke-width="2.5" opacity="0.6" rx="8"/>
+  <circle cx="400" cy="225" r="75" fill="none" stroke="${P.gold}" stroke-width="2.5" opacity="0.5"/>
+  <circle cx="400" cy="225" r="6" fill="${P.gold}" opacity="0.75"/>
+  <line x1="400" y1="48" x2="400" y2="402" stroke="${P.gold}" stroke-width="2" opacity="0.5"/>
+  <rect x="75" y="160" width="52" height="130" fill="none" stroke="${P.gold}" stroke-width="2" opacity="0.6"/>
+  <rect x="673" y="160" width="52" height="130" fill="none" stroke="${P.gold}" stroke-width="2" opacity="0.6"/>
+  <rect x="75" y="126" width="135" height="198" fill="none" stroke="${P.gold}" stroke-width="1.5" opacity="0.4"/>
+  <rect x="590" y="126" width="135" height="198" fill="none" stroke="${P.gold}" stroke-width="1.5" opacity="0.4"/>`;
+  o += `<circle r="18" fill="${P.light}" opacity="0.9" filter="url(#${id}glow)">
+  <animateMotion path="M220,165 Q350,85 550,205 Q640,265 510,345 Q380,395 225,310 Q110,258 220,165" dur="9s" repeatCount="indefinite"/>
+  </circle>`;
+  return o;
+}
+
+function motifPodium(cx, cy, P, id) {
+  let o = '';
+  [[cx-115,155,P.mid,.55,'🥈'],[cx,215,P.accent,.9,'🥇'],[cx+115,118,P.mid,.5,'🥉']].forEach(([x,h,col,op,em],i) => {
+    const by = cy+88-h;
+    o += `<rect x="${x-52}" y="${by}" width="104" height="${h}" fill="${col}" opacity="${op}" rx="4" filter="url(#${id}sh)">
+    <animate attributeName="opacity" values="${op};${op*.65};${op}" dur="${3+i*.6}s" repeatCount="indefinite"/></rect>`;
+    o += `<text x="${x}" y="${by-14}" font-family="serif" font-size="28" text-anchor="middle">${em}</text>`;
+    if (i===1) for (let j=0; j<8; j++) {
+      const sx=x-45+j*12, sy=by-52;
+      o += `<circle cx="${sx}" cy="${sy}" r="4" fill="${['#e85a60','#d4a858','#5ab8e8','#7be878'][j%4]}" opacity="0.7">
+      <animate attributeName="cy" values="${sy};${sy+60};${sy}" dur="${1+j*.25}s" begin="${j*.18}s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.7;0;0.7" dur="${1+j*.25}s" begin="${j*.18}s" repeatCount="indefinite"/>
+      </circle>`;
+    }
+  });
+  return o;
+}
+
+function motifLightbulb(cx, cy, P, id) {
+  const r = 72;
+  let o = '';
+  [r*2.2,r*1.55].forEach((hr,i) => {
+    o += `<circle cx="${cx}" cy="${cy-r*.1}" r="${hr}" fill="${P.accent}" opacity="${.06+i*.04}" filter="url(#${id}blur)">
+    <animate attributeName="r" values="${hr};${hr*1.12};${hr}" dur="${4+i*1.5}s" repeatCount="indefinite"/></circle>`;
+  });
+  o += `<path d="M${cx-r},${cy} a${r},${r} 0 1,1 ${r*2},0 L${cx+r*.72},${cy+r*.32} L${cx-r*.72},${cy+r*.32} Z" fill="${P.accent}" opacity="0.8" filter="url(#${id}glow)"/>`;
+  o += `<rect x="${(cx-r*.7).toFixed(0)}" y="${(cy+r*.32).toFixed(0)}" width="${(r*1.4).toFixed(0)}" height="${(r*.08).toFixed(0)}" fill="${P.gold}" opacity="0.7" rx="3"/>`;
+  o += `<rect x="${(cx-r*.7).toFixed(0)}" y="${(cy+r*.42).toFixed(0)}" width="${(r*1.4).toFixed(0)}" height="${(r*.08).toFixed(0)}" fill="${P.gold}" opacity="0.7" rx="3"/>`;
+  o += `<path d="M${cx-r*.28},${cy+r*.06} Q${cx},${cy-r*.42} ${cx+r*.28},${cy+r*.06}" fill="none" stroke="${P.light}" stroke-width="3" opacity="0.85"/>`;
+  [0,45,90,135,180,225,270,315].forEach((a,i) => {
+    const rad=a*Math.PI/180, r1=r+14, r2=r+32+sR('rl'+i)*14;
+    o += `<line x1="${(cx+Math.cos(rad)*r1).toFixed(0)}" y1="${(cy-r*.1+Math.sin(rad)*r1).toFixed(0)}" x2="${(cx+Math.cos(rad)*r2).toFixed(0)}" y2="${(cy-r*.1+Math.sin(rad)*r2).toFixed(0)}" stroke="${P.gold}" stroke-width="2" opacity="${(.4+sR('ro'+i)*.4).toFixed(2)}">
+    <animate attributeName="opacity" values="${(.4+sR('ro'+i)*.4).toFixed(2)};0.05;${(.4+sR('ro'+i)*.4).toFixed(2)}" dur="${(1.5+i*.25).toFixed(1)}s" repeatCount="indefinite"/>
+    </line>`;
+  });
+  return o;
+}
+
+function motifArchitecture(P, id, seed) {
+  let o = '';
+  o += `<polygon points="80,78 400,22 720,78" fill="${P.accent}" opacity="0.55" filter="url(#${id}sh)"/>`;
+  o += `<rect x="78" y="78" width="644" height="22" fill="${P.accent}" opacity="0.65" rx="2"/>`;
+  o += `<rect x="78" y="96" width="644" height="24" fill="${P.gold}" opacity="0.35"/>`;
+  [108,200,292,388,508,600,692].forEach((cx2,ci) => {
+    const cw=48, ch=240;
+    o += `<rect x="${cx2-cw/2}" y="120" width="${cw}" height="${ch}" fill="${P.accent}" opacity="${.5+ci*.02}" rx="2" filter="url(#${id}sh)">
+    <animate attributeName="opacity" values="${.5+ci*.02};${.32+ci*.02};${.5+ci*.02}" dur="${3.5+ci*.4}s" repeatCount="indefinite"/></rect>`;
+    for (let j=0; j<5; j++) { const lx=cx2-cw/2+5+j*8; if(lx<cx2+cw/2-5) o+=`<line x1="${lx}" y1="124" x2="${lx}" y2="${120+ch-4}" stroke="${P.light}" stroke-width="1.5" opacity="0.1"/>`; }
+    o += `<rect x="${cx2-cw/2-6}" y="120" width="${cw+12}" height="16" fill="${P.gold}" opacity="0.7" rx="2"/>`;
+    o += `<rect x="${cx2-cw/2-8}" y="356" width="${cw+16}" height="10" fill="${P.gold}" opacity="0.65" rx="2"/>`;
+    o += `<rect x="${cx2-cw/2-10}" y="366" width="${cw+20}" height="9" fill="${P.gold}" opacity="0.5" rx="2"/>`;
+  });
+  o += `<rect x="78" y="375" width="644" height="75" fill="${P.dark}" opacity="0.3"/>`;
+  return o;
+}
+
+function motifMemorial(P, id, seed) {
+  let o = '';
+  [[130,180],[670,180]].forEach(([cx2,h2]) => {
+    const cw=40;
+    o += `<rect x="${cx2-cw/2}" y="${390-h2}" width="${cw}" height="${h2}" fill="${P.mid}" opacity="0.45" rx="2"/>`;
+    o += `<rect x="${cx2-cw/2-6}" y="${390-h2}" width="${cw+12}" height="12" fill="${P.gold}" opacity="0.55" rx="2"/>`;
+    o += `<rect x="${cx2-cw/2-8}" y="382" width="${cw+16}" height="10" fill="${P.gold}" opacity="0.5" rx="2"/>`;
+  });
+  [380,370,360].forEach((y,i) => {
+    o += `<rect x="${300-i*10}" y="${y}" width="${200+i*20}" height="12" fill="${P.gold}" opacity="${.5+i*.1}" rx="2"/>`;
+  });
+  o += `<rect x="370" y="160" width="60" height="200" fill="${P.accent}" opacity="0.65" filter="url(#${id}sh)" rx="2"/>`;
+  const fx=400, fh=130, fbase=358;
+  const d1=`M${fx},${fbase} Q${fx-38},${fbase-fh*.4} ${fx},${fbase-fh} Q${fx+32},${fbase-fh*.72} ${fx+36},${fbase-fh*.28} Q${fx+42},${fbase-fh*.08} ${fx},${fbase}Z`;
+  const d2=`M${fx+5},${fbase} Q${fx-30},${fbase-fh*.45} ${fx+4},${fbase-fh*1.1} Q${fx+38},${fbase-fh*.78} ${fx+42},${fbase-fh*.32} Q${fx+48},${fbase-fh*.06} ${fx+5},${fbase}Z`;
+  o += `<path d="${d1}" fill="${P.accent}" opacity="0.88" filter="url(#${id}glow)">
+  <animate attributeName="d" values="${d1};${d2};${d1}" dur="0.55s" repeatCount="indefinite"/></path>`;
+  o += `<circle cx="${fx}" cy="${fbase-fh*.35}" r="65" fill="${P.accent}" opacity="0.07" filter="url(#${id}blur)">
+  <animate attributeName="r" values="65;90;65" dur="3s" repeatCount="indefinite"/></circle>`;
+  [[fx-15,0],[fx+8,.6],[fx-5,1.1],[fx+18,.3]].forEach(([px,del]) => {
+    o += `<circle cx="${px}" cy="${fbase}" r="2.5" fill="${P.gold}" opacity="0.8">
+    <animate attributeName="cy" values="${fbase};${fbase-fh*1.5}" dur="3s" begin="${del}s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0" dur="3s" begin="${del}s" repeatCount="indefinite"/></circle>`;
+  });
+  o += `<rect x="0" y="388" width="800" height="62" fill="${P.dark}" opacity="0.4"/>`;
+  o += `<line x1="0" y1="388" x2="800" y2="388" stroke="${P.gold}" stroke-width="2" opacity="0.5"/>`;
+  return o;
+}
+
+function motifCamera(cx,cy,P,id) {
+  return `<rect x="${cx-90}" y="${cy-55}" width="180" height="120" fill="${P.accent}" opacity="0.85" rx="12"/>
+  <path d="M${cx-32},${cy-80} L${cx-16},${cy-55} L${cx+16},${cy-55} L${cx+32},${cy-80}Z" fill="${P.accent}" opacity="0.85"/>
+  <circle cx="${cx}" cy="${cy+5}" r="46" fill="${P.bg2}" opacity="0.8"/>
+  <circle cx="${cx}" cy="${cy+5}" r="34" fill="${P.mid}" opacity="0.6"/>
+  <circle cx="${cx}" cy="${cy+5}" r="20" fill="${P.bg}" opacity="0.7"/>
+  <circle cx="${cx}" cy="${cy+5}" r="10" fill="${P.accent}" opacity="0.9">
+  <animate attributeName="r" values="10;13;10" dur="3s" repeatCount="indefinite"/></circle>
+  <circle cx="${cx+58}" cy="${cy-32}" r="10" fill="${P.gold}" opacity="0.85">
+  <animate attributeName="opacity" values="0.85;0.25;0.85" dur="2s" repeatCount="indefinite"/></circle>`;
+}
+
+// ================================================================
+//  COMPOSITEUR PRINCIPAL
+// ================================================================
+function makeSvgForArticle(article, idx) {
+  const cat = (article&&article.category) || 'Science';
+  const title = (article&&article.title) || '';
+  const tags = (article&&article.tags) ? article.tags.join(' ') : '';
+  const seed = title+tags+cat+idx;
+  const id = 'sv'+idx;
+  const P = getPalette(cat, seed);
+  const motif = classifyArticle(article);
+  const cx = Math.floor(350+sR(seed+'cx')*130);
+  const cy = Math.floor(160+sR(seed+'cy')*100);
+
+  let L = makeFilters(id, P) + grid(P);
+
+  if      (motif==='space')   { L+=motifStars(90,P,seed); L+=motifPlanet(cx,cy,P,id,seed); }
+  else if (motif==='blackhole'){ L+=motifStars(75,P,seed); L+=motifBlackHole(cx,cy,P,id,seed); }
+  else if (motif==='rocket')  { L+=motifStars(55,P,seed); L+=motifRocket(cx,cy,P,id,seed); }
+  else if (motif==='satellite'){ L+=motifStars(60,P,seed); L+=motifSatellite(cx,cy,P,id); }
+  else if (motif==='dna')     { L+=motifDNA(cx,cy,P,id,seed); }
+  else if (motif==='atom')    { L+=motifStars(35,P,seed); L+=motifAtom(cx,cy,P,id); }
+  else if (motif==='virus')   { L+=motifVirus(cx,cy,P,id,seed); }
+  else if (motif==='heartbeat'){ L+=motifHeartbeat(P,id); }
+  else if (motif==='brain')   { L+=motifBrain(cx,cy,P,id); }
+  else if (motif==='neural')  { L+=motifNeural(cx,cy,P,id,seed); }
+  else if (motif==='circuit') { L+=motifCircuit(P,id,seed); }
+  else if (motif==='candles') { L+=motifCandles(P,id,seed); }
+  else if (motif==='columns') { L+=motifColumns(P,id); }
+  else if (motif==='globe')   { L+=motifStars(20,P,seed); L+=motifGlobe(cx,cy,P,id); }
+  else if (motif==='film')    { L+=motifBrushStrokes(P,id,seed); L+=motifFilmStrip(cx,cy,P,id,seed); }
+  else if (motif==='music')   { L+=motifBrushStrokes(P,id,seed); L+=motifMusicalStaff(P,id,seed); }
+  else if (motif==='brush')   { L+=motifBrushStrokes(P,id,seed); }
+  else if (motif==='camera')  { L+=motifBrushStrokes(P,id,seed); L+=motifCamera(cx,cy,P,id); }
+  else if (motif==='memorial'){ L+=motifMemorial(P,id,seed); }
+  else if (motif==='architecture'){ L+=motifArchitecture(P,id,seed); }
+  else if (motif==='city')    { L+=motifStars(18,P,seed); L+=motifCity(P,id,seed); }
+  else if (motif==='wave')    { L+=motifWave(P,id,seed); }
+  else if (motif==='mountain'){ L+=motifMountain(P,id,seed); }
+  else if (motif==='fire')    { L+=motifFire(P,id,seed); }
+  else if (motif==='solarpanel'){ L+=motifSolarPanel(P,id,seed); }
+  else if (motif==='tennis')  { L+=motifTennisCourt(P,id); }
+  else if (motif==='football'){ L+=motifFootballPitch(P,id); }
+  else if (motif==='podium')  { L+=motifStars(22,P,seed); L+=motifPodium(cx,cy,P,id); }
+  else if (motif==='bulb')    { L+=motifStars(16,P,seed); L+=motifLightbulb(cx,cy,P,id); }
+  else {
+    if      (cat==='Science')  { L+=motifStars(80,P,seed); L+=motifPlanet(cx,cy,P,id,seed); }
+    else if (cat==='Tech'||cat==='Technologie') { L+=motifNeural(cx,cy,P,id,seed); }
+    else if (cat==='Économie') { L+=motifCandles(P,id,seed); }
+    else if (cat==='Politique'){ L+=motifColumns(P,id); }
+    else if (cat==='Culture')  { L+=motifBrushStrokes(P,id,seed); }
+    else if (cat==='Société')  { L+=motifCity(P,id,seed); }
+    else if (cat==='Sport')    { L+=motifPodium(cx,cy,P,id); }
+    else if (cat==='Idées')    { L+=motifLightbulb(cx,cy,P,id); }
+    else                       { L+=motifStars(60,P,seed); L+=motifPlanet(cx,cy,P,id,seed); }
+  }
+
+  // Bandeau titre
+  const safe = (title.length>58?title.slice(0,55)+'…':title)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  L += `<rect x="0" y="368" width="800" height="82" fill="${P.dark}" opacity="0.82"/>
+  <line x1="0" y1="368" x2="800" y2="368" stroke="${P.gold}" stroke-width="1.5" opacity="0.4"/>
+  <circle cx="12" cy="389" r="3" fill="${P.accent}" opacity="0.8"/>
+  <text x="22" y="393" font-family="Bricolage Grotesque,sans-serif" font-size="10" fill="${P.gold}" opacity="0.88" letter-spacing="3.5">${cat.toUpperCase()}</text>
+  <text x="22" y="415" font-family="Fraunces,serif" font-size="16.5" fill="${P.light}" opacity="0.95" font-style="italic">${safe}</text>`;
+  return L;
+}
+
+function makeSvgForCategory(cat, idx) {
+  return makeSvgForArticle({category:cat, title:'', tags:[]}, idx);
+}
+
 function escapeHtml(e){return String(e||"").replace(/[&<>"']/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[e]))}async function loadTodaysEdition(){try{const s=await fetch("edition.json",{cache:"no-cache"});if(!s.ok)return;const e=await s.json();if(!e.articles||!Array.isArray(e.articles)||e.articles.length===0)return;if(e.editionNumber){const t=document.getElementById("edition");t&&(t.textContent=e.editionNumber)}const o={Politique:"politique","Économie":"economie",Tech:"tech",Science:"science",Culture:"culture","Société":"societe",Sport:"sport","Idées":"opinion"},i=articles.length;e.articles.forEach(e=>articles.push(e));const a=document.getElementById("todays-edition");a.style.display="block",a.dataset.hasEdition="true",document.getElementById("todays-edition-date").textContent=e.editionDate||"",document.getElementById("todays-edition-meta").textContent=`Généré par ${e.model||"Claude"} · ${e.articles.length} article${e.articles.length>1?"s":""}`;const t=e.articles[0],n=i,c=makeSvgForArticle(t,n),r=document.getElementById("todays-hero-wrap");r.innerHTML=`
         <article class="hero-article" data-article="${n}" data-cat="${o[t.category]||"une"}" style="cursor: pointer;">
           <div class="hero-image">
