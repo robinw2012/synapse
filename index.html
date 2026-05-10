@@ -242,6 +242,12 @@ Faut-il y voir un simple effet de mode ? Peut-être. Mais il est aussi possible 
 //  animations SMIL fluides par motif, particules, glows.
 // ================================================================
 
+// ================================================================
+//  SYNAPSE DAILY — MOTEUR D'ILLUSTRATION ANIMÉ v3
+//  Qualité éditoriale : filtres SVG, dégradés multicouches,
+//  animations SMIL fluides par motif, particules, glows.
+// ================================================================
+
 function hashStr(str) {
   let h = 0x811c9dc5;
   for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = (h * 0x01000193) >>> 0; }
@@ -356,33 +362,65 @@ function pulse(cx, cy, r, c, dur = '3s', delay = '0s') {
 // ================================================================
 
 // ——— ESPACE ———
-function motifPlanet(cx, cy, P, id, seed) {
-  const r = 80 + sR(seed+'pr')*35;
-  const tilt = 18 + sR(seed+'pt')*28;
-  const rr = r*2.0, ry = r*0.38;
-  const moon = { x: cx + r*1.7, y: cy - r*0.9, r: r*0.22 };
-  const dur1 = (18+sR(seed+'d1')*10).toFixed(0);
-  const dur2 = (8+sR(seed+'d2')*5).toFixed(0);
-  return `
-  <circle cx="${cx}" cy="${cy}" r="${r*1.6}" fill="${P.accentD}" opacity="0.12" filter="url(#${id}glow)"/>
-  <circle cx="${cx}" cy="${cy}" r="${r}" fill="${P.accent}" opacity="0.95" filter="url(#${id}shadow)">
-    <animate attributeName="opacity" values="0.95;0.88;0.95" dur="6s" repeatCount="indefinite"/>
-  </circle>
-  <ellipse cx="${cx}" cy="${cy}" rx="${r*.75}" ry="${r*.75}" fill="${P.gold}" opacity="0.12"/>
-  <ellipse cx="${cx}" cy="${cy}" rx="${r*.45}" ry="${r*.45}" fill="${P.light}" opacity="0.08"/>
-  <g transform="rotate(${tilt},${cx},${cy})">
-    <ellipse cx="${cx}" cy="${cy}" rx="${rr}" ry="${ry}" fill="none" stroke="${P.gold}" stroke-width="5" opacity="0.7">
-      <animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="${dur1}s" repeatCount="indefinite"/>
-    </ellipse>
-    <ellipse cx="${cx}" cy="${cy}" rx="${rr*.8}" ry="${ry*.8}" fill="none" stroke="${P.gold}" stroke-width="2" opacity="0.35">
-      <animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="${(parseFloat(dur1)*1.3).toFixed(0)}s" repeatCount="indefinite"/>
-    </ellipse>
-  </g>
-  <circle cx="${moon.x}" cy="${moon.y}" r="${moon.r}" fill="${P.light}" opacity="0.75" filter="url(#${id}softglow)">
-    <animateMotion path="M 0 0 A ${r*1.7} ${r*0.5} 0 1 1 0.01 0" dur="${dur2}s" repeatCount="indefinite"/>
-  </circle>`;
+function motifPlanet(cx,cy,P,id,seed){
+  const r=90+sR(seed+'pr')*28;
+  const tilt=16+sR(seed+'pt')*28;
+  const moonR=r*.22, moonOrb=r*2.0;
+  // Nébuleuse derrière
+  let o=`<circle cx="${cx-110}" cy="${cy-75}" r="175" fill="${P.acD}" opacity="0.14" filter="url(#${id}blur)"/>
+  <circle cx="${cx+90}" cy="${cy+55}" r="130" fill="${P.goldD}" opacity="0.1" filter="url(#${id}blur)"/>`;
+  // Dégradé planète
+  o+=`<defs>
+  <radialGradient id="${id}pG" cx="33%" cy="30%" r="65%">
+    <stop offset="0%" stop-color="${P.acL}"/>
+    <stop offset="50%" stop-color="${P.accent}"/>
+    <stop offset="100%" stop-color="${P.acD}"/>
+  </radialGradient>
+  <radialGradient id="${id}atmG" cx="40%" cy="35%" r="60%">
+    <stop offset="70%" stop-color="${P.accent}" stop-opacity="0"/>
+    <stop offset="100%" stop-color="${P.acL}" stop-opacity="0.55"/>
+  </radialGradient>
+  </defs>`;
+  // Ombre
+  o+=`<circle cx="${cx+6}" cy="${cy+6}" r="${r+4}" fill="${P.dark}" opacity="0.8" filter="url(#${id}sh)"/>`;
+  // Corps
+  o+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#${id}pG)" opacity="0.95"/>`;
+  // Bandes atmosphériques
+  for(let i=0;i<6;i++){
+    const by=cy-r+(i+.5)*(r*2/6);
+    const hw=Math.sqrt(Math.max(0,r*r-(by-cy)*(by-cy)));
+    if(hw>5) o+=`<ellipse cx="${cx}" cy="${by.toFixed(0)}" rx="${(hw*.92).toFixed(0)}" ry="${(r/7.5).toFixed(0)}" fill="${i%2===0?P.acL:P.gold}" opacity="${(.06+i*.012).toFixed(3)}"/>`;
+  }
+  // Calotte polaire
+  o+=`<ellipse cx="${cx}" cy="${cy-r*.74}" rx="${r*.36}" ry="${r*.17}" fill="${P.light}" opacity="0.22"/>`;
+  // Atmosphère
+  o+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#${id}atmG)"/>`;
+  // Terminateur
+  o+=`<path d="M${cx},${cy-r} Q${cx-r*.38},${cy} ${cx},${cy+r}" fill="${P.dark}" opacity="0.32"/>`;
+  // Anneaux (3 couches)
+  o+=`<g transform="rotate(${tilt},${cx},${cy})">`;
+  [{rx:r*2.05,ry:r*.41,sw:8,op:.72},{rx:r*1.72,ry:r*.34,sw:5,op:.52},{rx:r*2.38,ry:r*.47,sw:3,op:.32}].forEach(({rx,ry,sw,op})=>{
+    o+=`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="${P.gold}" stroke-width="${sw}" opacity="${op}">
+    <animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="${20+sw*4}s" repeatCount="indefinite"/>
+    </ellipse>`;
+  });
+  // Particules dans les anneaux
+  for(let i=0;i<14;i++){
+    const a=i/14*Math.PI*2, px2=cx+Math.cos(a)*r*2.05*.98, py2=cy+Math.cos(a)*r*.41;
+    o+=`<circle cx="${px2.toFixed(0)}" cy="${py2.toFixed(0)}" r="${1+sR(seed+'rp'+i)*2}" fill="${P.light}" opacity="${(.25+sR(seed+'rpo'+i)*.5).toFixed(2)}"/>`;
+  }
+  o+=`</g>`;
+  // Lune avec cratères
+  let moon=`<circle r="${moonR*1.1}" fill="${P.dark}" opacity="0.5" filter="url(#${id}blur)"/>`;
+  moon+=`<circle r="${moonR}" fill="${P.light}" opacity="0.75"/>`;
+  for(let i=0;i<6;i++){
+    const ca=(sR(seed+'mca'+i)-.5)*moonR*1.5, cb=(sR(seed+'mcb'+i)-.5)*moonR*1.5, cr=moonR*.1+sR(seed+'mcr'+i)*moonR*.2;
+    if(Math.sqrt(ca*ca+cb*cb)+cr<moonR*.88) moon+=`<circle cx="${ca.toFixed(0)}" cy="${cb.toFixed(0)}" r="${cr.toFixed(0)}" fill="${P.mid}" opacity="0.45"/>`;
+  }
+  const moonPath=`M ${cx+moonOrb} ${cy} A ${moonOrb} ${moonOrb*.3} 0 1 1 ${cx+moonOrb-.01} ${cy}`;
+  o+=`<g filter="url(#${id}sh)"><animateMotion path="${moonPath}" dur="${10+sR(seed+'md')*5}s" repeatCount="indefinite"/>${moon}</g>`;
+  return o;
 }
-
 function motifStars(n, P, seed) {
   return particles(n, P, seed, 2.2);
 }
@@ -816,579 +854,53 @@ function motifBrushStrokes(P, id, seed) {
 }
 
 // ——— SOCIÉTÉ ———
-function motifCity(P, id, seed) {
-  let o='';
-  const buildings=15;
-  for (let i=0;i<buildings;i++) {
-    const bw=30+sR(seed+'bw'+i)*55, bh=55+sR(seed+'bh'+i)*280;
-    const bx=800/buildings*i+2, by=390-bh;
-    o+=`<rect x="${bx.toFixed(0)}" y="${by.toFixed(0)}" width="${bw.toFixed(0)}" height="${bh.toFixed(0)}" fill="${i%3===0?P.accent:i%3===1?P.gold:P.mid}" opacity="${(.35+sR(seed+'bo'+i)*.4).toFixed(2)}" rx="2" filter="url(#${id}shadow)"/>`;
-    const wrows=Math.floor(bh/22), wcols=Math.floor(bw/13);
-    for (let wr=0;wr<wrows;wr++) for (let wc=0;wc<wcols;wc++) {
-      if (sR(seed+'wl'+i+wr+wc) > .38) {
-        const dur=(1.5+sR(seed+'wd'+i+wr+wc)*3).toFixed(1);
-        const delay=(sR(seed+'wde'+i+wr+wc)*5).toFixed(1);
-        o+=`<rect x="${(bx+4+wc*13).toFixed(0)}" y="${(by+7+wr*20).toFixed(0)}" width="7" height="9" fill="rgba(255,240,160,0.75)" rx="1">
-          <animate attributeName="opacity" values="0.75;0.1;0.75" dur="${dur}s" begin="${delay}s" repeatCount="indefinite"/>
-        </rect>`;
+function motifCity(P,id,seed){
+  let o=`<defs><linearGradient id="${id}skyG" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="${P.bg}"/>
+  <stop offset="72%" stop-color="${P.bg2}"/>
+  <stop offset="100%" stop-color="${P.accent}" stop-opacity="0.18"/>
+  </linearGradient></defs><rect x="0" y="0" width="800" height="392" fill="url(#${id}skyG)"/>`;
+  const buildings=[
+    {x:8,w:58,h:195,floors:10},{x:68,w:44,h:275,floors:14},{x:114,w:34,h:175,floors:9},
+    {x:150,w:54,h:235,floors:12},{x:206,w:38,h:305,floors:16},{x:246,w:29,h:155,floors:8},
+    {x:277,w:68,h:255,floors:13},{x:347,w:44,h:335,floors:17},{x:393,w:34,h:195,floors:10},
+    {x:429,w:58,h:275,floors:14},{x:489,w:38,h:175,floors:9},{x:529,w:48,h:305,floors:16},
+    {x:579,w:34,h:215,floors:11},{x:615,w:63,h:255,floors:13},{x:680,w:38,h:185,floors:10},
+    {x:720,w:52,h:235,floors:12},{x:774,w:30,h:155,floors:8},
+  ];
+  buildings.forEach(({x,w,h,floors},bi)=>{
+    const by=388-h, col=bi%4===0?P.accent:bi%4===1?P.gold:bi%4===2?P.mid:P.midL;
+    o+=`<rect x="${x}" y="${by}" width="${w}" height="${h}" fill="${col}" opacity="${(.33+sR(seed+'bo'+bi)*.28).toFixed(2)}" rx="2" filter="url(#${id}sh)"/>`;
+    // Reflet façade
+    o+=`<rect x="${x+2}" y="${by+3}" width="${w*.24}" height="${h-6}" fill="${P.light}" opacity="0.07" rx="1"/>`;
+    // Antenne
+    if(bi%5===0){ o+=`<line x1="${x+w/2}" y1="${by}" x2="${x+w/2}" y2="${by-22}" stroke="${P.gold}" stroke-width="2" opacity="0.6"/>`; o+=`<circle cx="${x+w/2}" cy="${by-24}" r="2.5" fill="${P.accent}" opacity="0.9"><animate attributeName="opacity" values="0.9;0.1;0.9" dur="${(1+bi*.18).toFixed(1)}s" repeatCount="indefinite"/></circle>`; }
+    // Corniche
+    else o+=`<rect x="${x-3}" y="${by}" width="${w+6}" height="6" fill="${col}" opacity="0.45" rx="1"/>`;
+    // Fenêtres
+    const wcols=Math.max(2,Math.floor(w/12)), wrows=floors;
+    for(let r=0;r<wrows;r++) for(let c=0;c<wcols;c++){
+      const wx=x+3+c*(w-6)/wcols, wy=by+7+r*(h-14)/wrows, ww=Math.max(3,(w-6)/wcols-2.5), wh=Math.max(3,(h-14)/wrows-2.5);
+      if(sR(seed+'wl'+bi+r+c)>.38){
+        const dur=(1.5+sR(seed+'wd'+bi+r+c)*3).toFixed(1);
+        o+=`<rect x="${wx.toFixed(0)}" y="${wy.toFixed(0)}" width="${ww.toFixed(0)}" height="${wh.toFixed(0)}" fill="rgba(255,238,140,0.82)" rx="1"><animate attributeName="opacity" values="0.82;0.18;0.82" dur="${dur}s" begin="${(sR(seed+'wde'+bi+r+c)*6).toFixed(1)}s" repeatCount="indefinite"/></rect>`;
       }
     }
-  }
-  o+=`<rect x="0" y="388" width="800" height="62" fill="${P.accentD}" opacity="0.3"/>`;
-  return o;
-}
-
-function motifFire(P, id, seed) {
-  let o='';
-  for (let i=0;i<7;i++) {
-    const fx=120+i*82+sR(seed+'fx'+i)*30, fh=95+sR(seed+'fh'+i)*130, fw=22+sR(seed+'fw'+i)*22;
-    const col=i%2===0?P.accent:P.gold;
-    const dur=(0.3+sR(seed+'fd'+i)*0.4).toFixed(2);
-    const delay=(sR(seed+'fde'+i)*.5).toFixed(2);
-    o+=`<path d="M${fx},${390} Q${fx-fw},${390-fh*.45} ${fx},${390-fh} Q${fx+fw*.5},${390-fh*.7} ${fx+fw},${390-fh*.3} Q${fx+fw*1.3},${390-fh*.1} ${fx},${390}Z" fill="${col}" opacity="${.6+sR(seed+'fo'+i)*.3}" filter="url(#${id}glow)">
-      <animate attributeName="d" 
-        values="M${fx},390 Q${fx-fw},${390-fh*.45} ${fx},${390-fh} Q${fx+fw*.5},${390-fh*.7} ${fx+fw},${390-fh*.3} Q${fx+fw*1.3},${390-fh*.1} ${fx},390Z;M${fx+5},390 Q${fx-fw+8},${390-fh*.5} ${fx+3},${390-fh*1.1} Q${fx+fw*.6},${390-fh*.75} ${fx+fw+5},${390-fh*.35} Q${fx+fw*1.4},${390-fh*.08} ${fx+5},390Z;M${fx},390 Q${fx-fw},${390-fh*.45} ${fx},${390-fh} Q${fx+fw*.5},${390-fh*.7} ${fx+fw},${390-fh*.3} Q${fx+fw*1.3},${390-fh*.1} ${fx},390Z"
-        dur="${dur}s" begin="${delay}s" repeatCount="indefinite"/>
-    </path>`;
-  }
-  o+=`<rect x="0" y="370" width="800" height="80" fill="${P.accentD}" opacity="0.4"/>`;
-  return o;
-}
-
-function motifWave(P, id, seed) {
-  let o='';
-  for (let j=0;j<6;j++) {
-    let d=`M 0 ${140+j*28}`;
-    for (let x=20;x<=800;x+=20) {
-      d+=` L ${x} ${(140+j*28+Math.sin(x/800*Math.PI*(4+j)+sR(seed+'wp'+j)*3)*42).toFixed(0)}`;
-    }
-    const col=j%2===0?P.accent:P.gold;
-    const dur=(4+j*1.2).toFixed(1);
-    o+=`<path d="${d} L 800 450 L 0 450 Z" fill="${col}" opacity="${(.14-j*.015).toFixed(3)}"/>`;
-    o+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="${2.2-j*.2}" opacity="${.5-j*.06}" filter="url(#${id}softglow)">
-      <animateTransform attributeName="transform" type="translate" from="0,0" to="-80,0" dur="${dur}s" repeatCount="indefinite"/>
-    </path>`;
-  }
-  // Surfeur / bouée
-  o+=`<circle r="9" fill="${P.light}" opacity="0.85" filter="url(#${id}glow)">
-    <animateMotion path="M 0 175 L 800 175" dur="12s" repeatCount="indefinite"/>
-    <animate attributeName="cy" values="0;-15;0;12;0" dur="2s" repeatCount="indefinite"/>
-  </circle>`;
-  return o;
-}
-
-function motifMountain(P, id, seed) {
-  const peaks=[[180,95],[390,55],[580,85],[100,175],[520,140],[720,115]];
-  let o='';
-  peaks.forEach(([px,py],i)=>{
-    const w=110+sR(seed+'mw'+i)*100;
-    const col=i%2===0?P.accent:P.mid;
-    o+=`<polygon points="${px},${py} ${px-w},390 ${px+w},390" fill="${col}" opacity="${.38+sR(seed+'mo'+i)*.3}" filter="${i<3?`url(#${id}shadow)`:''}"/>`;
-    // Neige
-    o+=`<polygon points="${px},${py} ${px-22},${py+55} ${px+22},${py+55}" fill="${P.light}" opacity="0.7"/>`;
   });
-  // Soleil / lune
-  o+=`<circle cx="680" cy="85" r="38" fill="${P.gold}" opacity="0.7" filter="url(#${id}glow)">
-    <animate attributeName="opacity" values="0.7;0.5;0.7" dur="5s" repeatCount="indefinite"/>
-  </circle>`;
+  // Sol et route
+  o+=`<rect x="0" y="386" width="800" height="64" fill="${P.dark}" opacity="0.52"/>`;
+  // Reflets dans le sol
+  buildings.forEach(({x,w,h},bi)=>{ o+=`<rect x="${x+3}" y="388" width="${w-6}" height="${h*.22}" fill="${bi%3===0?P.accent:P.gold}" opacity="${(.03+sR(seed+'ref'+bi)*.04).toFixed(3)}" rx="0"/>`;});
+  o+=`<line x1="0" y1="388" x2="800" y2="388" stroke="${P.gold}" stroke-width="2" opacity="0.4"/>`;
+  // Lampadaires
+  [110,265,420,575,710].forEach(x=>{ o+=`<line x1="${x}" y1="376" x2="${x}" y2="406" stroke="${P.midL}" stroke-width="3" opacity="0.5"/>`;o+=`<circle cx="${x}" cy="374" r="5" fill="${P.gold}" opacity="0.65" filter="url(#${id}glow2)"/>`;o+=`<ellipse cx="${x}" cy="374" rx="18" ry="7" fill="${P.gold}" opacity="0.2" filter="url(#${id}blur)"/>`;});
+  // Lune
+  o+=`<circle cx="680" cy="62" r="34" fill="${P.light}" opacity="0.62" filter="url(#${id}glow)"><animate attributeName="opacity" values="0.62;0.48;0.62" dur="6s" repeatCount="indefinite"/></circle>`;
+  o+=`<circle cx="694" cy="56" r="27" fill="${P.bg2}" opacity="0.72"/>`;
   return o;
 }
 
-function motifWindTurbine(cx, cy, P, id) {
-  const r=110, dur='8s';
-  return `
-  <g>
-    <circle cx="${cx}" cy="${cy}" r="14" fill="${P.gold}" opacity="0.9" filter="url(#${id}shadow)"/>
-    <g>
-      <animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="${dur}" repeatCount="indefinite"/>
-      ${[0,120,240].map(a=>{
-        const rad=a*Math.PI/180;
-        const bx=cx+Math.cos(rad)*r, by=cy+Math.sin(rad)*r;
-        const tx=cx+Math.cos(rad+Math.PI/2)*18, ty=cy+Math.sin(rad+Math.PI/2)*18;
-        const tx2=cx+Math.cos(rad-Math.PI/2)*18, ty2=cy+Math.sin(rad-Math.PI/2)*18;
-        return `<polygon points="${cx},${cy} ${tx.toFixed(0)},${ty.toFixed(0)} ${bx.toFixed(0)},${by.toFixed(0)} ${tx2.toFixed(0)},${ty2.toFixed(0)}" fill="${P.accent}" opacity="0.8" filter="url(#${id}softglow)"/>`;
-      }).join('')}
-    </g>
-    <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy+210}" stroke="${P.gold}" stroke-width="12" stroke-linecap="round" opacity="0.75"/>
-    <ellipse cx="${cx}" cy="${cy+210}" rx="65" ry="12" fill="${P.mid}" opacity="0.35"/>
-  </g>`;
-}
 
-function motifSolarPanel(P, id, seed) {
-  const cols=5, rows=3, pw=64, ph=42, gap=6;
-  const ox=400-cols*(pw+gap)/2, oy=225-rows*(ph+gap)/2;
-  let o='';
-  for (let r=0;r<rows;r++) for (let cc=0;cc<cols;cc++) {
-    const x=ox+cc*(pw+gap), y=oy+r*(ph+gap);
-    const delay=(r*cols+cc)*.08;
-    o+=`<rect x="${x.toFixed(0)}" y="${y.toFixed(0)}" width="${pw}" height="${ph}" fill="${P.accent}" opacity="0.72" rx="4" filter="url(#${id}softglow)">
-      <animate attributeName="opacity" values="0.72;0.45;0.72" dur="4s" begin="${delay.toFixed(2)}s" repeatCount="indefinite"/>
-    </rect>`;
-    o+=`<line x1="${(x+pw/3).toFixed(0)}" y1="${y.toFixed(0)}" x2="${(x+pw/3).toFixed(0)}" y2="${(y+ph).toFixed(0)}" stroke="${P.gold}" stroke-width="1.5" opacity="0.45"/>`;
-    o+=`<line x1="${(x+pw*2/3).toFixed(0)}" y1="${y.toFixed(0)}" x2="${(x+pw*2/3).toFixed(0)}" y2="${(y+ph).toFixed(0)}" stroke="${P.gold}" stroke-width="1.5" opacity="0.45"/>`;
-    o+=`<line x1="${x.toFixed(0)}" y1="${(y+ph/2).toFixed(0)}" x2="${(x+pw).toFixed(0)}" y2="${(y+ph/2).toFixed(0)}" stroke="${P.gold}" stroke-width="1.5" opacity="0.45"/>`;
-  }
-  // Soleil
-  o+=`<circle cx="680" cy="80" r="44" fill="${P.gold}" opacity="0.75" filter="url(#${id}glow)">
-    <animate attributeName="r" values="44;50;44" dur="4s" repeatCount="indefinite"/>
-  </circle>`;
-  for (let i=0;i<10;i++) {
-    const a=i/10*Math.PI*2;
-    o+=`<line x1="${(680+Math.cos(a)*52).toFixed(0)}" y1="${(80+Math.sin(a)*52).toFixed(0)}" x2="${(680+Math.cos(a)*70).toFixed(0)}" y2="${(80+Math.sin(a)*70).toFixed(0)}" stroke="${P.gold}" stroke-width="3" opacity="0.6"/>`;
-  }
-  // Rayon animé vers les panneaux
-  o+=`<line x1="680" y1="80" x2="400" y2="225" stroke="${P.gold}" stroke-width="1.5" opacity="0.2" stroke-dasharray="10,6">
-    <animate attributeName="stroke-dashoffset" from="160" to="0" dur="2s" repeatCount="indefinite"/>
-  </line>`;
-  return o;
-}
-
-function motifWheat(P, id, seed) {
-  let o=`<rect x="0" y="350" width="800" height="100" fill="${P.accentD}" opacity="0.25"/>`;
-  for (let i=0;i<13;i++) {
-    const x=55+i*58+sR(seed+'wx'+i)*20, h=120+sR(seed+'wh'+i)*85;
-    const dur=(2+sR(seed+'wd'+i)*2).toFixed(1);
-    o+=`<line x1="${x}" y1="380" x2="${x}" y2="${380-h}" stroke="${P.gold}" stroke-width="2.5" opacity="0.7">
-      <animateTransform attributeName="transform" type="rotate" from="-3 ${x} 380" to="3 ${x} 380" dur="${dur}s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1"/>
-    </line>`;
-    for (let g=0;g<7;g++) {
-      const gy=380-h+g*14, side=g%2===0?1:-1, delay=(g*.08).toFixed(2);
-      o+=`<ellipse cx="${x+side*13}" cy="${gy}" rx="9" ry="6" fill="${P.accent}" opacity="0.75" transform="rotate(${side*25},${x+side*13},${gy})" filter="url(#${id}softglow)">
-        <animate attributeName="opacity" values="0.75;0.45;0.75" dur="${dur}s" begin="${delay}s" repeatCount="indefinite"/>
-      </ellipse>`;
-    }
-  }
-  // Soleil
-  o+=`<circle cx="680" cy="75" r="38" fill="${P.gold}" opacity="0.65" filter="url(#${id}glow)">
-    <animate attributeName="opacity" values="0.65;0.5;0.65" dur="4s" repeatCount="indefinite"/>
-  </circle>`;
-  return o;
-}
-
-function motifTennisCourt(P, id) {
-  return `<rect x="90" y="55" width="620" height="340" fill="${P.accent}" opacity="0.18" rx="5" filter="url(#${id}shadow)"/>
-  ${[[90,55,710,55],[90,395,710,395],[90,55,90,395],[710,55,710,395],[90,225,710,225],[400,55,400,395],[90,130,710,130],[90,320,710,320]]
-    .map(([x1,y1,x2,y2])=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${P.gold}" stroke-width="2.5" opacity="0.65"/>`)
-    .join('')}
-  <line x1="90" y1="225" x2="710" y2="225" stroke="${P.light}" stroke-width="4" opacity="0.75"/>
-  <!-- Balle qui rebondit -->
-  <circle r="10" fill="${P.gold}" opacity="0.9" filter="url(#${id}glow)">
-    <animateMotion path="M150,150 L650,310 L350,140 L550,350 L150,150" dur="6s" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1"/>
-  </circle>`;
-}
-
-function motifFootball(P, id) {
-  return `<rect x="75" y="48" width="650" height="354" fill="${P.accent}" opacity="0.14" rx="8"/>
-  <rect x="75" y="48" width="650" height="354" fill="none" stroke="${P.gold}" stroke-width="2.5" opacity="0.6" rx="8"/>
-  <circle cx="400" cy="225" r="75" fill="none" stroke="${P.gold}" stroke-width="2.5" opacity="0.5"/>
-  <circle cx="400" cy="225" r="6" fill="${P.gold}" opacity="0.75"/>
-  <line x1="400" y1="48" x2="400" y2="402" stroke="${P.gold}" stroke-width="2" opacity="0.5"/>
-  <rect x="75" y="160" width="52" height="130" fill="none" stroke="${P.gold}" stroke-width="2" opacity="0.6"/>
-  <rect x="673" y="160" width="52" height="130" fill="none" stroke="${P.gold}" stroke-width="2" opacity="0.6"/>
-  <rect x="75" y="126" width="135" height="198" fill="none" stroke="${P.gold}" stroke-width="1.5" opacity="0.4"/>
-  <rect x="590" y="126" width="135" height="198" fill="none" stroke="${P.gold}" stroke-width="1.5" opacity="0.4"/>
-  <!-- Ballon animé -->
-  <g filter="url(#__idglow__)">
-    <animateMotion path="M250,180 Q400,100 550,180 Q680,250 550,320 Q400,380 250,300 Q130,250 250,180" dur="8s" repeatCount="indefinite"/>
-    <circle r="18" fill="${P.light}" opacity="0.9"/>
-    <path d="M-10,-5 L0,-18 L10,-5 L5,10 L-5,10Z" fill="${P.dark}" opacity="0.6"/>
-  </g>`;
-}
-
-function motifPodium(cx, cy, P, id) {
-  const defs=[[cx-115,155,P.mid,.55,0,'🥈'],[cx,215,P.accent,.9,1,'🥇'],[cx+115,118,P.mid,.5,2,'🥉']];
-  let o='';
-  defs.forEach(([x,h,col,op,rank,em])=>{
-    const by=cy+88-h;
-    o+=`<rect x="${x-52}" y="${by}" width="104" height="${h}" fill="${col}" opacity="${op}" rx="4" filter="url(#${id}shadow)">
-      <animate attributeName="opacity" values="${op};${op*.6};${op}" dur="${3+rank*.5}s" repeatCount="indefinite"/>
-    </rect>`;
-    o+=`<text x="${x}" y="${by-14}" font-family="serif" font-size="28" text-anchor="middle">${em}</text>`;
-    // Étoiles au dessus du vainqueur
-    if (rank===1) for (let i=0;i<5;i++) {
-      const sx=x-55+i*28, sy=by-52;
-      o+=`<circle cx="${sx}" cy="${sy}" r="4" fill="${P.gold}" opacity="0.7" filter="url(#${id}softglow)">
-        <animate attributeName="opacity" values="0.7;0.1;0.7" dur="${1+i*.3}s" begin="${i*.18}s" repeatCount="indefinite"/>
-      </circle>`;
-    }
-  });
-  return o;
-}
-
-function motifBicycle(cx, cy, P, id) {
-  return `
-  <g filter="url(#${id}shadow)">
-    <circle cx="${cx-82}" cy="${cy+32}" r="68" fill="none" stroke="${P.accent}" stroke-width="5" opacity="0.8">
-      <animateTransform attributeName="transform" type="rotate" from="0 ${cx-82} ${cy+32}" to="360 ${cx-82} ${cy+32}" dur="3s" repeatCount="indefinite"/>
-    </circle>
-    <circle cx="${cx+82}" cy="${cy+32}" r="68" fill="none" stroke="${P.accent}" stroke-width="5" opacity="0.8">
-      <animateTransform attributeName="transform" type="rotate" from="0 ${cx+82} ${cy+32}" to="360 ${cx+82} ${cy+32}" dur="3s" repeatCount="indefinite"/>
-    </circle>
-    <!-- Rayons -->
-    ${[0,60,120,180,240,300].map(a=>`<line x1="${(cx-82+Math.cos(a*Math.PI/180)*68).toFixed(0)}" y1="${(cy+32+Math.sin(a*Math.PI/180)*68).toFixed(0)}" x2="${cx-82}" y2="${cy+32}" stroke="${P.gold}" stroke-width="1.5" opacity="0.4">
-      <animateTransform attributeName="transform" type="rotate" from="0 ${cx-82} ${cy+32}" to="360 ${cx-82} ${cy+32}" dur="3s" repeatCount="indefinite"/>
-    </line>`).join('')}
-    <circle cx="${cx-82}" cy="${cy+32}" r="9" fill="${P.gold}" opacity="0.9"/>
-    <circle cx="${cx+82}" cy="${cy+32}" r="9" fill="${P.gold}" opacity="0.9"/>
-    <line x1="${cx-82}" y1="${cy+32}" x2="${cx}" y2="${cy-32}" stroke="${P.accent}" stroke-width="5" opacity="0.85" stroke-linecap="round"/>
-    <line x1="${cx}" y1="${cy-32}" x2="${cx+82}" y2="${cy+32}" stroke="${P.accent}" stroke-width="5" opacity="0.85" stroke-linecap="round"/>
-    <line x1="${cx}" y1="${cy-32}" x2="${cx-10}" y2="${cy-75}" stroke="${P.accent}" stroke-width="4" opacity="0.8" stroke-linecap="round"/>
-    <line x1="${cx-10}" y1="${cy-75}" x2="${cx-32}" y2="${cy-72}" stroke="${P.gold}" stroke-width="5" opacity="0.75" stroke-linecap="round"/>
-    <line x1="${cx-10}" y1="${cy-75}" x2="${cx+12}" y2="${cy-72}" stroke="${P.gold}" stroke-width="5" opacity="0.75" stroke-linecap="round"/>
-    <circle cx="${cx-6}" cy="${cy-80}" r="14" fill="${P.accent}" opacity="0.75"/>
-  </g>`;
-}
-
-function motifLightbulb(cx, cy, P, id) {
-  const r=72;
-  return `
-  <circle cx="${cx}" cy="${cy-r*.1}" r="${r*2.2}" fill="${P.accent}" opacity="0.06" filter="url(#${id}glow)">
-    <animate attributeName="r" values="${r*2.2};${r*2.6};${r*2.2}" dur="3s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="${cx}" cy="${cy-r*.1}" r="${r*1.55}" fill="${P.gold}" opacity="0.1">
-    <animate attributeName="opacity" values="0.1;0.2;0.1" dur="3s" repeatCount="indefinite"/>
-  </circle>
-  <path d="M${cx-r},${cy} a${r},${r} 0 1,1 ${r*2},0 L${cx+r*.72},${cy+r*.32} L${cx-r*.72},${cy+r*.32} Z" fill="${P.accent}" opacity="0.8" filter="url(#${id}softglow)"/>
-  <rect x="${(cx-r*.7).toFixed(0)}" y="${(cy+r*.32).toFixed(0)}" width="${(r*1.4).toFixed(0)}" height="${(r*.08).toFixed(0)}" fill="${P.gold}" opacity="0.7" rx="3"/>
-  <rect x="${(cx-r*.7).toFixed(0)}" y="${(cy+r*.42).toFixed(0)}" width="${(r*1.4).toFixed(0)}" height="${(r*.08).toFixed(0)}" fill="${P.gold}" opacity="0.7" rx="3"/>
-  <rect x="${(cx-r*.55).toFixed(0)}" y="${(cy+r*.52).toFixed(0)}" width="${(r*1.1).toFixed(0)}" height="${(r*.08).toFixed(0)}" fill="${P.gold}" opacity="0.5" rx="3"/>
-  <path d="M${cx-r*.28},${cy+r*.06} Q${cx},${cy-r*.42} ${cx+r*.28},${cy+r*.06}" fill="none" stroke="${P.light}" stroke-width="3" opacity="0.85"/>
-  <!-- Rayons animés -->
-  ${[0,45,90,135,180,225,270,315].map((a,i)=>{
-    const rad=a*Math.PI/180;
-    const x1=cx+Math.cos(rad)*(r+15), y1=cy-r*.1+Math.sin(rad)*(r+15);
-    const x2=cx+Math.cos(rad)*(r+35), y2=cy-r*.1+Math.sin(rad)*(r+35);
-    return `<line x1="${x1.toFixed(0)}" y1="${y1.toFixed(0)}" x2="${x2.toFixed(0)}" y2="${y2.toFixed(0)}" stroke="${P.gold}" stroke-width="2.5" opacity="0.55">
-      <animate attributeName="opacity" values="0.55;0.15;0.55" dur="2s" begin="${(i*.25).toFixed(2)}s" repeatCount="indefinite"/>
-    </line>`;
-  }).join('')}`;
-}
-
-function motifGears(P, id, seed) {
-  const gear=(cx,cy,r,n,col,op,dur,dir=1)=>{
-    const th=r*.28; let d='';
-    for (let i=0;i<n*2;i++) {
-      const a=i/(n*2)*Math.PI*2, rr=i%2===0?r+th:r;
-      d+=(i===0?'M':'L')+`${(cx+Math.cos(a)*rr).toFixed(1)},${(cy+Math.sin(a)*rr).toFixed(1)} `;
-    }
-    return `<g filter="url(#${id}shadow)">
-      <path d="${d}Z" fill="${col}" opacity="${op}">
-        <animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="${dir*360} ${cx} ${cy}" dur="${dur}s" repeatCount="indefinite"/>
-      </path>
-      <circle cx="${cx}" cy="${cy}" r="${r*.28}" fill="${col}" opacity="${op}" stroke="${P.dark}" stroke-width="3"/>
-      <circle cx="${cx}" cy="${cy}" r="${r*.14}" fill="${P.dark}" opacity="0.8"/>
-    </g>`;
-  };
-  return gear(240,200,88,10,P.accent,.75,6) +
-         gear(390,197,58,7,P.gold,.7,3.9,-1) +
-         gear(492,256,44,6,P.accent,.65,3,1);
-}
-
-// ——— HELPERS ———
-function motifOpenBook(cx, cy, P, id) {
-  return `
-  <path d="M${cx},${cy-65} Q${cx-85},${cy-88} ${cx-165},${cy-52} L${cx-165},${cy+85} Q${cx-85},${cy+54} ${cx},${cy+74}Z" fill="${P.accent}" opacity="0.78" filter="url(#${id}shadow)"/>
-  <path d="M${cx},${cy-65} Q${cx+85},${cy-88} ${cx+165},${cy-52} L${cx+165},${cy+85} Q${cx+85},${cy+54} ${cx},${cy+74}Z" fill="${P.gold}" opacity="0.72" filter="url(#${id}shadow)"/>
-  <path d="M${cx},${cy-65} L${cx},${cy+74}" stroke="${P.mid}" stroke-width="3" opacity="0.5"/>
-  ${[-25,-8,9,26,43].map(y=>`
-    <line x1="${cx-140}" y1="${cy+y}" x2="${cx-35}" y2="${cy+y-4}" stroke="${P.light}" stroke-width="1.8" opacity="0.45"/>
-    <line x1="${cx+35}" y1="${cy+y-4}" x2="${cx+140}" y2="${cy+y}" stroke="${P.dark}" stroke-width="1.8" opacity="0.35"/>
-  `).join('')}
-  <circle r="6" fill="${P.light}" opacity="0.8" filter="url(#${id}glow)">
-    <animateMotion path="M${cx-140},${cy-22} L${cx-35},${cy-26} L${cx-35},${cy-9} L${cx-140},${cy-5} L${cx-140},${cy-22}" dur="5s" repeatCount="indefinite"/>
-  </circle>`;
-}
-
-function motifMicrophone(cx, cy, P, id) {
-  return `
-  <rect x="${cx-24}" y="${cy-85}" width="48" height="75" fill="${P.accent}" opacity="0.85" rx="24" filter="url(#${id}shadow)"/>
-  <rect x="${cx-15}" y="${cy-85}" width="30" height="75" fill="${P.light}" opacity="0.18" rx="15"/>
-  ${[-55,-38,-21].map(y=>`<line x1="${cx-22}" y1="${cy+y}" x2="${cx+22}" y2="${cy+y}" stroke="${P.gold}" stroke-width="1.5" opacity="0.45"/>`).join('')}
-  <path d="M${cx-48},${cy-10} Q${cx-48},${cy+45} ${cx},${cy+55} Q${cx+48},${cy+45} ${cx+48},${cy-10}" fill="none" stroke="${P.gold}" stroke-width="3.5" opacity="0.75"/>
-  <line x1="${cx}" y1="${cy+55}" x2="${cx}" y2="${cy+95}" stroke="${P.gold}" stroke-width="3.5" opacity="0.7"/>
-  <line x1="${cx-28}" y1="${cy+95}" x2="${cx+28}" y2="${cy+95}" stroke="${P.gold}" stroke-width="3.5" opacity="0.7"/>
-  <!-- Ondes sonores -->
-  ${[60,85,110].map((r,i)=>`<path d="M${cx+48},${cy-10} Q${cx+48+r*.3},${cy+20} ${cx+48},${cy+45}" fill="none" stroke="${P.accent}" stroke-width="${2-i*.4}" opacity="${.5-i*.12}" stroke-dasharray="5,3">
-    <animate attributeName="opacity" values="${.5-i*.12};${.15-i*.04};${.5-i*.12}" dur="${1.5+i*.4}s" begin="${i*.3}s" repeatCount="indefinite"/>
-  </path>`).join('')}`;
-}
-
-function motifCamera(cx, cy, P, id) {
-  return `
-  <rect x="${cx-95}" y="${cy-55}" width="190" height="125" fill="${P.accent}" opacity="0.85" rx="14" filter="url(#${id}shadow)"/>
-  <path d="M${cx-32},${cy-80} L${cx-16},${cy-55} L${cx+16},${cy-55} L${cx+32},${cy-80}Z" fill="${P.accent}" opacity="0.85"/>
-  <circle cx="${cx}" cy="${cy+5}" r="46" fill="${P.bg2}" opacity="0.8"/>
-  <circle cx="${cx}" cy="${cy+5}" r="34" fill="${P.mid}" opacity="0.6"/>
-  <circle cx="${cx}" cy="${cy+5}" r="22" fill="${P.bg}" opacity="0.7"/>
-  <circle cx="${cx}" cy="${cy+5}" r="12" fill="${P.accent}" opacity="0.9">
-    <animate attributeName="r" values="12;14;12" dur="3s" repeatCount="indefinite"/>
-    <animate attributeName="opacity" values="0.9;0.5;0.9" dur="3s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="${cx+58}" cy="${cy-32}" r="11" fill="${P.gold}" opacity="0.85" filter="url(#${id}softglow)">
-    <animate attributeName="opacity" values="0.85;0.3;0.85" dur="2s" repeatCount="indefinite"/>
-  </circle>
-  <rect x="${cx-85}" y="${cy-45}" width="30" height="14" fill="${P.gold}" opacity="0.6" rx="3"/>`;
-}
-
-
-// ——— MÉMOIRE & HISTOIRE ———
-function motifMemorial(P, id, seed) {
-  // Fond solennel + flamme centrale + colonnes latérales + étoiles
-  let o = '';
-  // Colonnes latérales discrètes
-  [[120,180],[680,180]].forEach(([cx2,h2])=>{
-    const cw=45;
-    o+=`<rect x="${cx2-cw/2}" y="${390-h2}" width="${cw}" height="${h2}" fill="${P.mid}" opacity="0.4" rx="3"/>`;
-    o+=`<rect x="${cx2-cw/2-5}" y="${390-h2}" width="${cw+10}" height="12" fill="${P.gold}" opacity="0.55" rx="2"/>`;
-    o+=`<rect x="${cx2-cw/2-7}" y="382" width="${cw+14}" height="10" fill="${P.gold}" opacity="0.5" rx="2"/>`;
-  });
-  // Flamme centrale animée
-  const fx=400, fh=160;
-  o+=`<path d="M${fx},390 Q${fx-45},${390-fh*.4} ${fx},${390-fh} Q${fx+38},${390-fh*.72} ${fx+42},${390-fh*.28} Q${fx+48},${390-fh*.08} ${fx},390Z" fill="${P.accent}" opacity="0.85" filter="url(#${id}glow)">
-    <animate attributeName="d"
-      values="M${fx},390 Q${fx-45},${390-fh*.4} ${fx},${390-fh} Q${fx+38},${390-fh*.72} ${fx+42},${390-fh*.28} Q${fx+48},${390-fh*.08} ${fx},390Z;M${fx+6},390 Q${fx-38},${390-fh*.45} ${fx+4},${390-fh*1.08} Q${fx+44},${390-fh*.78} ${fx+46},${390-fh*.32} Q${fx+50},${390-fh*.06} ${fx+6},390Z;M${fx},390 Q${fx-45},${390-fh*.4} ${fx},${390-fh} Q${fx+38},${390-fh*.72} ${fx+42},${390-fh*.28} Q${fx+48},${390-fh*.08} ${fx},390Z"
-      dur="0.6s" repeatCount="indefinite"/>
-  </path>`;
-  o+=`<path d="M${fx},390 Q${fx-25},${390-fh*.5} ${fx},${390-fh*.85} Q${fx+20},${390-fh*.7} ${fx+22},${390-fh*.35} Q${fx},390 ${fx},390Z" fill="${P.gold}" opacity="0.8">
-    <animate attributeName="d"
-      values="M${fx},390 Q${fx-25},${390-fh*.5} ${fx},${390-fh*.85} Q${fx+20},${390-fh*.7} ${fx+22},${390-fh*.35} Q${fx},390 ${fx},390Z;M${fx+4},390 Q${fx-18},${390-fh*.55} ${fx+3},${390-fh*.9} Q${fx+24},${390-fh*.75} ${fx+25},${390-fh*.32} Q${fx+4},390 ${fx+4},390Z;M${fx},390 Q${fx-25},${390-fh*.5} ${fx},${390-fh*.85} Q${fx+20},${390-fh*.7} ${fx+22},${390-fh*.35} Q${fx},390 ${fx},390Z"
-      dur="0.45s" begin="0.1s" repeatCount="indefinite"/>
-  </path>`;
-  // Halo
-  o+=`<circle cx="${fx}" cy="${390-fh*.4}" r="80" fill="${P.accent}" opacity="0.08" filter="url(#${id}glow)">
-    <animate attributeName="r" values="80;110;80" dur="3s" repeatCount="indefinite"/>
-    <animate attributeName="opacity" values="0.08;0.03;0.08" dur="3s" repeatCount="indefinite"/>
-  </circle>`;
-  // Particules qui montent
-  [fx-20,fx,fx+15,fx-8].forEach((px,i)=>{
-    const delay=(i*.4).toFixed(1);
-    o+=`<circle cx="${px}" cy="390" r="3" fill="${P.gold}" opacity="0.7">
-      <animate attributeName="cy" values="390;${390-fh*1.3}" dur="3s" begin="${delay}s" repeatCount="indefinite"/>
-      <animate attributeName="opacity" values="0.7;0" dur="3s" begin="${delay}s" repeatCount="indefinite"/>
-      <animate attributeName="r" values="3;1" dur="3s" begin="${delay}s" repeatCount="indefinite"/>
-    </circle>`;
-  });
-  // Ligne du sol
-  o+=`<rect x="0" y="388" width="800" height="62" fill="${P.dark}" opacity="0.35"/>`;
-  o+=`<line x1="0" y1="388" x2="800" y2="388" stroke="${P.gold}" stroke-width="2" opacity="0.45"/>`;
-  return o;
-}
-
-// ——— ARCHITECTURE ———
-function motifArchitecture(P, id, seed) {
-  // Perspective architecturale avec fenêtres et arches
-  let o='';
-  // Bâtiment central
-  const bh=280, bw=200, bx=300, by=390-bh;
-  o+=`<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="${P.accent}" opacity="0.6" rx="4" filter="url(#${id}shadow)"/>`;
-  // Façade : fenêtres
-  for (let r=0;r<5;r++) for (let c=0;c<4;c++) {
-    const wx=bx+15+c*48, wy=by+18+r*52;
-    const isLit=sR(seed+'al'+r+c)>.35;
-    o+=`<rect x="${wx}" y="${wy}" width="32" height="38" fill="${isLit?P.gold:P.bg2}" opacity="${isLit?.65:.25}" rx="3">`;
-    if(isLit){ const dur=(1.5+sR(seed+'ald'+r+c)*2.5).toFixed(1);
-      o+=`<animate attributeName="opacity" values=".65;.3;.65" dur="${dur}s" begin="${(r*.3+c*.2).toFixed(1)}s" repeatCount="indefinite"/>`;
-    }
-    o+=`</rect>`;
-  }
-  // Portail arrondi
-  o+=`<path d="M${bx+60},390 L${bx+60},${390-65} A40,40 0 0,1 ${bx+140},${390-65} L${bx+140},390Z" fill="${P.bg2}" opacity="0.6"/>`;
-  // Bâtiments latéraux
-  [[80,150,180],[570,120,160]].forEach(([x2,w2,h2])=>{
-    o+=`<rect x="${x2}" y="${390-h2}" width="${w2}" height="${h2}" fill="${P.gold}" opacity="0.3" rx="3"/>`;
-    for(let r2=0;r2<3;r2++) for(let c2=0;c2<3;c2++){
-      if(sR(seed+'bl'+x2+r2+c2)>.4) o+=`<rect x="${x2+10+c2*52}" y="${390-h2+12+r2*48}" width="36" height="32" fill="${P.gold}" opacity="0.35" rx="2"/>`;
-    }
-  });
-  // Sol
-  o+=`<rect x="0" y="388" width="800" height="62" fill="${P.mid}" opacity="0.2"/>`;
-  // Reflets
-  o+=`<line x1="${bx}" y1="389" x2="${bx+bw}" y2="389" stroke="${P.gold}" stroke-width="1.5" opacity="0.3"/>`;
-  // Étoile/soleil
-  o+=`<circle cx="650" cy="78" r="38" fill="${P.gold}" opacity="0.6" filter="url(#${id}glow)">
-    <animate attributeName="opacity" values=".6;.42;.6" dur="5s" repeatCount="indefinite"/>
-  </circle>`;
-  return o;
-}
-
-// ================================================================
-//  CLASSIFICATEUR
-// ================================================================
-const KEYWORD_MAP = [
-  {w:['exoplanète','planète','étoile','galaxie','espace','astro','orbitale','cosmos','univers','nasa','esa','télescope','kepler','webb','hubble','solaire','lunaire','lune'],m:'planet'},
-  {w:['comète','météore','astéroïde','bolide'],m:'comet'},
-  {w:['trou noir','singularité','relativité','einstein','event horizon'],m:'blackhole'},
-  {w:['fusée','lancement','ariane','spacex','vaisseau','navette','iss','station spatiale','décollage'],m:'rocket'},
-  {w:['satellite','orbite','starlink','télécommunication','gps','géostationnaire'],m:'satellite'},
-  {w:['adn','génétique','génome','biologie','molécule','protéine','mutation','évolution','crispr','séquençage'],m:'dna'},
-  {w:['atome','particule','quantique','nucléaire','proton','électron','cern','fusion','fission','quarks'],m:'atom'},
-  {w:['microscope','bactérie','échantillon'],m:'microscope'},
-  {w:['virus','épidémie','pandémie','pathogène','infectieux','covid','grippe','variole'],m:'virus'},
-  {w:['cœur','cardio','cardiaque','battement','ecg','tension','artère','avc','infarctus','cardiologie'],m:'heartbeat'},
-  {w:['santé','hôpital','médecin','cancer','traitement','chirurgie','urgences','médecine'],m:'heartbeat'},
-  {w:['cerveau','neuroscience','neurone','cognition','alzheimer','mémoire','psychiatrie','neurologie','synapse'],m:'brain'},
-  {w:['ia','intelligence artificielle','algorithme','machine','modèle','llm','gpt','claude','apprentissage','deep learning','transformer','génératif','chatbot'],m:'neural'},
-  {w:['robot','automatisation','robotique','androïde','humanoïde','drone'],m:'neural'},
-  {w:['circuit','puce','semi-conducteur','processeur','nvidia','chip','silicium','transistor'],m:'circuit'},
-  {w:['code','logiciel','développeur','programmation','python','github','binaire'],m:'circuit'},
-  {w:['cybersécurité','hack','ransomware','données','cryptographie'],m:'circuit'},
-  {w:['bourse','action','marché','indice','cac','wall street','bce','taux','inflation','récession','pib','trading'],m:'candles'},
-  {w:['bitcoin','crypto','blockchain','ethereum'],m:'candles'},
-  {w:['euro','dollar','monnaie','devise','forex','banque centrale','lagarde'],m:'candles'},
-  {w:['parlement','sénat','assemblée','constitution','élection','vote','gouvernement','loi','réforme','décret'],m:'columns'},
-  {w:['justice','tribunal','cour','jugement','procès','droit','avocat','peine'],m:'scales'},
-  {w:['diplomatie','traité','sommet','onu','europe','bruxelles','commission','international'],m:'globe'},
-  {w:['accord','pacte','négociation','partenariat','coopération','compromis'],m:'handshake'},
-  {w:['cinéma','film','festival','cannes','oscar','acteur','série','netflix'],m:'film'},
-  {w:['musique','concert','album','artiste','chanson','orchestre','jazz','rap','pop','tournée'],m:'music'},
-  {w:['exposition','musée','art','peinture','sculpture','galerie','biennale'],m:'brush'},
-  {w:['livre','roman','auteur','littérature','prix','écriture','poésie'],m:'openbook'},
-  {w:['théâtre','spectacle','scène','comédien','avignon','pièce'],m:'theaterMasks'},
-  {w:['photographie','photographe','portrait','reportage photo'],m:'camera'},
-  {w:['podcast','radio','émission','animateur','journalisme','micro'],m:'microphone'},
-  {w:['ville','urbain','métropole','quartier','mobilité','urbanisme','gentrification'],m:'city'},
-  {w:['avion','aviation','aéroport','vol','compagnie aérienne','airbus','boeing'],m:'airplane'},
-  {w:['train','sncf','tgv','rail','rer','transports en commun'],m:'train'},
-  {w:['forêt','sylviculture','déforestation','amazonie'],m:'forest'},
-  {w:['océan','mer','marin','corail','tsunami','marée','vague'],m:'wave'},
-  {w:['montagne','alpinisme','glacier','sommet','himalaya','alpes'],m:'mountain'},
-  {w:['incendie','feu','flamme','pompier','sécheresse'],m:'fire'},
-  {w:['éolienne','éolien','énergie renouvelable','parc éolien','vent'],m:'windturbine'},
-  {w:['solaire','panneau solaire','photovoltaïque','énergie verte'],m:'solarpanel'},
-  {w:['agriculture','ferme','paysan','blé','céréales','récolte','champ'],m:'wheat'},
-  {w:['tennis','roland','wimbledon','open','atp','wta','court'],m:'tennis'},
-  {w:['football','foot','ligue','champions','fifa','uefa','but','stade'],m:'football'},
-  {w:['médaille','champion','victoire','olympique','jeux','podium'],m:'podium'},
-  {w:['cyclisme','vélo','tour de france','peloton'],m:'cycling'},
-  {w:['philosophie','pensée','idée','éthique','moral','conscience'],m:'bulb'},
-  {w:['innovation','invention','startup','futur','progrès'],m:'bulb'},
-  {w:['industrie','production','entreprise','usine','travail'],m:'gears'},
-
-  // Culture / Venise / architecture / histoire
-  {w:['venise','biennale','pavilion','pavillon','anthropocene','anthropocène','climat','réchauffement','environnement','écologie'],m:'brush'},
-  {w:['mémoire','commémoration','8 mai','14 juillet','11 novembre','devoir mémoire','souvenir','anniversaire'],m:'memorial'},
-  {w:['guerre','bataille','conflit','armée','soldat','combattant','victoire militaire','résistance','libération'],m:'memorial'},
-  {w:['architecture','bâtiment','patrimoine','cathédrale','monument','château','abbaye','édifice'],m:'architecture'},
-  {w:['mer','lagune','lac','rivière','fleuve','seine','rhône','loire'],m:'wave'},
-  {w:['gastronomie','cuisine','restaurant','chef','michelin','recette','vin'],m:'wheat'},
-  {w:['mode','fashion','luxe','couture','défilé','styliste'],m:'brush'},
-  {w:['psychologie','thérapie','bien-être','burnout','stress','anxiété'],m:'brain'},
-  {w:['immigration','migration','réfugié','exil','diaspora','frontière'],m:'people'},
-  {w:['énergie','pétrole','gaz','charbon','fossile','transition énergétique','nucléaire civil'],m:'solarpanel'},
-  {w:['presse','journalisme','liberté','censure','désinformation','fake news','médias','information'],m:'microphone'},
-  {w:['inégalités','pauvreté','précarité','chômage','rsa','minima sociaux'],m:'people'},
-  {w:['féminisme','égalité','genre','parité','discrimination','droits'],m:'scales'},
-  {w:['jeunesse','génération z','millennials','adolescents','lycéens'],m:'people'},
-  {w:['littoral','côte','plage','île','archipel'],m:'wave'},
-  {w:['finance','financement','budget','déficit','dette','fiscalité','impôt'],m:'candles'},
-  {w:['entrepreneuriat','startup','levée fonds','valorisation','licorne'],m:'bulb'},
-  {w:['espace public','démocratie','citoyenneté','participation','délibération'],m:'columns'},
-  {w:['corruption','scandale','affaire','détournement','fraude'],m:'scales'},
-];
-
-function classifyArticle(article) {
-  const text = ((article.title||'')+' '+(article.tags||[]).join(' ')).toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  const scores = {};
-  KEYWORD_MAP.forEach(({w,m})=>{
-    const hits = w.filter(kw=>text.includes(kw.normalize('NFD').replace(/[\u0300-\u036f]/g,''))).length;
-    if (hits>0) scores[m]=(scores[m]||0)+hits;
-  });
-  const best = Object.entries(scores).sort((a,b)=>b[1]-a[1])[0];
-  return best ? best[0] : null;
-}
-
-// ================================================================
-//  COMPOSITEUR PRINCIPAL
-// ================================================================
-function makeSvgForArticle(article, idx) {
-  const cat  = (article&&article.category)||'Science';
-  const title = (article&&article.title)||'';
-  const tags  = (article&&article.tags) ? article.tags.join(' ') : '';
-  const seed  = title+tags+cat+idx;
-  const id    = 'sv'+idx;
-  const P     = getPalette(cat, seed);
-  const motif = classifyArticle(article);
-
-  const cx = Math.floor(310+sR(seed+'cx')*180);
-  const cy = Math.floor(140+sR(seed+'cy')*130);
-
-  // Helper pour remplacer le placeholder d'id dans pulse()
-  const withId = str => str.replace(/__idglow__/g, id+'glow').replace(/__id__/g, id);
-
-  let L = makeFilters(id, P) + grid(P);
-
-  // Route
-  if(motif==='planet')      { L+=motifStars(80,P,seed);              L+=motifPlanet(cx,cy,P,id,seed); }
-  else if(motif==='comet')  { L+=motifStars(60,P,seed);              L+=motifBlackHole(cx-80,cy+20,P,id,seed); L+=motifRocket(180,150,P,id,seed); }
-  else if(motif==='blackhole'){ L+=motifStars(70,P,seed);            L+=motifBlackHole(cx,cy,P,id,seed); }
-  else if(motif==='rocket') { L+=motifStars(55,P,seed);              L+=motifRocket(cx,cy,P,id,seed); }
-  else if(motif==='satellite'){ L+=motifStars(65,P,seed);            L+=motifSatellite(cx,cy,P,id); L+=motifPlanet(200,320,P,id,seed+'2'); }
-  else if(motif==='dna')    { L+=motifDNA(cx,cy,P,id,seed); }
-  else if(motif==='atom')   { L+=motifStars(38,P,seed);              L+=motifAtom(cx,cy,P,id); }
-  else if(motif==='microscope'){ L+=motifDNA(cx+80,cy,P,id,seed);    L+=motifVirus(200,220,P,id,seed); }
-  else if(motif==='virus')  { L+=motifVirus(cx,cy,P,id,seed);        L+=motifVirus(220,160,P,id,seed+'2'); }
-  else if(motif==='heartbeat'){ L+=motifHeartbeat(P,id); }
-  else if(motif==='brain')  { L+=motifBrain(cx,cy,P,id); }
-  else if(motif==='neural') { L+=particles(20,P,seed,1.5);            L+=motifNeural(cx,cy,P,id,seed); }
-  else if(motif==='circuit'){ L+=motifCircuit(P,id,seed); }
-  else if(motif==='candles'){ L+=motifCandles(P,id,seed); }
-  else if(motif==='columns'){ L+=motifColumns(P,id); }
-  else if(motif==='scales') { L+=motifColumns(P,id); L+=motifGlobe(580,225,P,id); }
-  else if(motif==='globe')  { L+=motifStars(22,P,seed); L+=motifGlobe(cx,cy,P,id); }
-  else if(motif==='handshake'){ L+=motifGlobe(580,225,P,id); }
-  else if(motif==='film')   { L+=motifBrushStrokes(P,id,seed);       L+=motifFilmStrip(P,id,seed); }
-  else if(motif==='music')  { L+=motifBrushStrokes(P,id,seed);       L+=motifMusicalStaff(P,id,seed); }
-  else if(motif==='brush')  { L+=motifBrushStrokes(P,id,seed); }
-  else if(motif==='openbook'){ L+=motifOpenBook(cx,cy,P,id); }
-  else if(motif==='theaterMasks'){ L+=motifBrushStrokes(P,id,seed);  L+=`<text x="250" y="270" font-family="serif" font-size="120" text-anchor="middle" opacity="0.75">🎭</text>`; }
-  else if(motif==='microphone'){ L+=motifMicrophone(cx,cy,P,id); }
-  else if(motif==='camera') { L+=motifCamera(cx,cy,P,id); }
-  else if(motif==='city')   { L+=motifCity(P,id,seed);               L+=motifStars(22,P,seed); }
-  else if(motif==='airplane'){ L+=motifStars(18,P,seed);             L+=`<g><animateTransform attributeName="transform" type="translate" values="-200,0;1000,0" dur="8s" repeatCount="indefinite"/><text y="200" font-size="60" opacity="0.75">✈</text></g>`; }
-  else if(motif==='train')  { L+=motifCity(P,id,seed);               L+=`<g><animateTransform attributeName="transform" type="translate" values="-300,0;900,0" dur="6s" repeatCount="indefinite"/><text y="340" font-size="50" opacity="0.8">🚄</text></g>`; }
-  else if(motif==='forest') { L+=motifMountain(P,id,seed); L+=motifCity(P,id,seed); }
-  else if(motif==='wave')   { L+=motifWave(P,id,seed); }
-  else if(motif==='mountain'){ L+=motifMountain(P,id,seed); }
-  else if(motif==='fire')   { L+=motifFire(P,id,seed); }
-  else if(motif==='windturbine'){ L+=motifMountain(P,id,seed); L+=motifWindTurbine(cx,cy,P,id); }
-  else if(motif==='solarpanel'){ L+=motifSolarPanel(P,id,seed); }
-  else if(motif==='wheat')  { L+=motifWheat(P,id,seed); }
-  else if(motif==='tennis') { L+=motifTennisCourt(P,id); }
-  else if(motif==='football'){ L+=withId(motifFootball(P,id)); }
-  else if(motif==='podium') { L+=motifStars(25,P,seed);              L+=motifPodium(cx,cy,P,id); }
-  else if(motif==='cycling'){ L+=motifMountain(P,id,seed);           L+=motifBicycle(cx,cy,P,id); }
-  else if(motif==='bulb')   { L+=motifLightbulb(cx,cy,P,id);         L+=motifStars(18,P,seed); }
-  else if(motif==='gears')  { L+=motifGears(P,id,seed); }
-    else if(motif==='memorial')   { L+=motifMemorial(P,id,seed); }
-  else if(motif==='architecture'){ L+=motifArchitecture(P,id,seed); }
-  else {
-    // Fallback : basé sur la rubrique pour être plus pertinent
-    if(cat==='Science')         { L+=motifStars(55,P,seed); L+=motifPlanet(cx,cy,P,id,seed); }
-    else if(cat==='Tech'||cat==='Technologie') { L+=motifNeural(cx,cy,P,id,seed); }
-    else if(cat==='Économie')   { L+=motifCandles(P,id,seed); }
-    else if(cat==='Politique')  { L+=motifColumns(P,id); }
-    else if(cat==='Culture')    { L+=motifBrushStrokes(P,id,seed); }
-    else if(cat==='Société')    { L+=motifCity(P,id,seed); }
-    else if(cat==='Sport')      { L+=motifPodium(cx,cy,P,id); }
-    else if(cat==='Idées')      { L+=motifLightbulb(cx,cy,P,id); }
-    else                        { L+=motifGlobe(cx,cy,P,id); }
-  }
-
-  // Bandeau titre (bas)
-  const safe=(title.length>58?title.slice(0,55)+'…':title)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  L+=`<rect x="0" y="368" width="800" height="82" fill="${P.dark}" opacity="0.78"/>
-  <text x="22" y="393" font-family="Bricolage Grotesque,sans-serif" font-size="10" fill="${P.gold}" opacity="0.85" letter-spacing="3.5">${cat.toUpperCase()}</text>
-  <text x="22" y="416" font-family="Fraunces,serif" font-size="17" fill="${P.light}" opacity="0.94" font-style="italic">${safe}</text>`;
-
-  return L;
-}
-
-// Compat
-function makeSvgForCategory(cat, idx) {
-  return makeSvgForArticle({category:cat,title:'',tags:[]}, idx);
-}
 
 
 function escapeHtml(e){return String(e||"").replace(/[&<>"']/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[e]))}async function loadTodaysEdition(){try{const s=await fetch("edition.json",{cache:"no-cache"});if(!s.ok)return;const e=await s.json();if(!e.articles||!Array.isArray(e.articles)||e.articles.length===0)return;if(e.editionNumber){const t=document.getElementById("edition");t&&(t.textContent=e.editionNumber)}const o={Politique:"politique","Économie":"economie",Tech:"tech",Science:"science",Culture:"culture","Société":"societe",Sport:"sport","Idées":"opinion"},i=articles.length;e.articles.forEach(e=>articles.push(e));const a=document.getElementById("todays-edition");a.style.display="block",a.dataset.hasEdition="true",document.getElementById("todays-edition-date").textContent=e.editionDate||"",document.getElementById("todays-edition-meta").textContent=`Généré par ${e.model||"Claude"} · ${e.articles.length} article${e.articles.length>1?"s":""}`;const t=e.articles[0],n=i,c=makeSvgForArticle(t,n),r=document.getElementById("todays-hero-wrap");r.innerHTML=`
