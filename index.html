@@ -31,6 +31,295 @@
     font-size: 1.1rem;
   }
 
+
+  /* === BARRE DE PROGRESSION DE LECTURE === */
+  #read-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--gold));
+    z-index: 9999;
+    transition: width 0.1s linear;
+    border-radius: 0 2px 2px 0;
+  }
+
+  /* === SCROLL TO TOP === */
+  #scroll-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 800;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  #scroll-top.visible { opacity: 1; transform: translateY(0); }
+  #scroll-top:hover { background: var(--accent); border-color: var(--accent); color: white; }
+
+  /* === RECHERCHE === */
+  #search-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 9000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 12vh;
+    backdrop-filter: blur(8px);
+  }
+  #search-bar.open { display: flex; }
+  #search-input {
+    width: min(680px, 90%);
+    padding: 1rem 1.5rem;
+    font-family: 'Fraunces', serif;
+    font-size: 1.6rem;
+    font-style: italic;
+    background: var(--paper);
+    border: none;
+    border-bottom: 2px solid var(--accent);
+    color: var(--ink);
+    outline: none;
+    border-radius: 4px 4px 0 0;
+  }
+  #search-results {
+    width: min(680px, 90%);
+    background: var(--paper);
+    max-height: 55vh;
+    overflow-y: auto;
+    border-radius: 0 0 8px 8px;
+    border: 1px solid var(--border);
+    border-top: none;
+  }
+  .search-result-item {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .search-result-item:hover { background: var(--paper-2); }
+  .search-result-item:last-child { border-bottom: none; }
+  .search-result-cat {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    margin-bottom: 0.25rem;
+  }
+  .search-result-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .search-highlight { background: var(--gold); color: var(--ink); border-radius: 2px; padding: 0 2px; }
+  #search-empty { padding: 2rem; text-align: center; color: var(--muted); font-style: italic; }
+  #search-close {
+    position: absolute;
+    top: 1.5rem; right: 1.5rem;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    opacity: 0.7;
+  }
+  #search-close:hover { opacity: 1; }
+
+  /* === BOUTON RECHERCHE dans nav === */
+  .search-trigger {
+    margin-left: auto;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 0.3rem 0.8rem;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+  }
+  .search-trigger:hover { color: var(--text); border-color: var(--text); }
+
+  /* === STATS ÉDITION === */
+  .edition-stats {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    padding: 1.2rem 1.5rem;
+    background: var(--paper-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin: 2rem 0;
+    font-family: 'Bricolage Grotesque', sans-serif;
+  }
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: 'Fraunces', serif;
+  }
+  .stat-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* === PARTAGE SOCIAL dans le modal === */
+  .share-bar {
+    display: flex;
+    gap: 0.6rem;
+    margin: 1.5rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .share-btn {
+    padding: 0.45rem 1rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: none;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.78rem;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .share-btn:hover { background: var(--paper-2); color: var(--text); }
+  .share-btn.copied { background: var(--accent); color: white; border-color: var(--accent); }
+
+  /* === BARRE DE PROGRESSION LECTURE MODAL === */
+  .modal-read-progress {
+    height: 2px;
+    background: var(--border);
+    margin: 0.8rem 0;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .modal-read-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--gold));
+    transition: width 0.3s;
+    border-radius: 2px;
+  }
+  .modal-read-time {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  /* === ANIMATIONS CARTES === */
+  .article-card {
+    animation: fadeInUp 0.4s ease both;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .grid-3 .article-card:nth-child(1) { animation-delay: 0.05s; }
+  .grid-3 .article-card:nth-child(2) { animation-delay: 0.12s; }
+  .grid-3 .article-card:nth-child(3) { animation-delay: 0.19s; }
+
+  /* === CITATION DU JOUR === */
+  .quote-du-jour {
+    margin: 3rem 0;
+    padding: 2.5rem;
+    border-left: 4px solid var(--gold);
+    background: var(--paper-2);
+    border-radius: 0 8px 8px 0;
+    position: relative;
+  }
+  .quote-du-jour::before {
+    content: '«';
+    position: absolute;
+    top: -0.5rem;
+    left: 1.5rem;
+    font-size: 5rem;
+    color: var(--gold);
+    opacity: 0.2;
+    font-family: 'Fraunces', serif;
+    line-height: 1;
+  }
+  .quote-du-jour blockquote {
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem;
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.7;
+    margin: 0 0 1rem;
+    border: none;
+    padding: 0;
+  }
+  .quote-du-jour cite {
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-style: normal;
+    font-family: 'Bricolage Grotesque', sans-serif;
+  }
+
+  /* === MODE FOCUS modal === */
+  .modal.focus-mode .modal-content-wrap { max-width: 680px; font-size: 1.12rem; line-height: 1.85; }
+  .focus-toggle {
+    padding: 0.35rem 0.8rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: none;
+    font-size: 0.72rem;
+    cursor: pointer;
+    color: var(--muted);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .focus-toggle:hover, .focus-toggle.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  @media (max-width: 640px) {
+    #scroll-top { bottom: 1rem; right: 1rem; }
+    .edition-stats { gap: 1rem; }
+    .search-input { font-size: 1.2rem; }
+  }
+
 </style><div class=topbar><div class=topbar-left><span><span class=pulse></span>EN DIRECT</span>
 <span id="weather-info">📍 Chargement météo…</span>
 <span id=clock>—:—:—</span></div><div class=topbar-right><span id="lang-selector" style="cursor:pointer;display:flex;gap:0.6rem"><span class="lang-btn" data-lang="fr" onclick="setLang('fr')" style="opacity:1;font-weight:700">FR</span><span class="lang-btn" data-lang="en" onclick="setLang('en')" style="opacity:0.5">EN</span><span class="lang-btn" data-lang="de" onclick="setLang('de')" style="opacity:0.5">DE</span><span class="lang-btn" data-lang="es" onclick="setLang('es')" style="opacity:0.5">ES</span></span>
@@ -47,7 +336,8 @@
 <span>L'Assemblée nationale adopte en première lecture la loi sur la souveraineté numérique</span>
 <span>Découverte archéologique majeure en Dordogne : des gravures pariétales de 42 000 ans</span>
 <span>Le conseil municipal de Lyon vote l'extension du réseau cyclable à 320 km d'ici 2028</span>
-<span>Roland-Garros : tirage au sort demain à 18h, Sinner et Alcaraz tête de série</span></div></div><nav class=nav><div class=nav-links><a href=# class=active data-filter=une>À la Une</a>
+<span>Roland-Garros : tirage au sort demain à 18h, Sinner et Alcaraz tête de série</span></div></div><div id="read-progress"></div>
+<nav class=nav><div class=nav-links><a href=# class=active data-filter=une>À la Une</a>
 <a href=# data-filter=politique>Politique</a>
 <a href=# data-filter=economie>Économie</a>
 <a href=# data-filter=tech>Tech</a>
@@ -55,7 +345,7 @@
 <a href=# data-filter=culture>Culture</a>
 <a href=# data-filter=societe>Société</a>
 <a href=# data-filter=sport>Sport</a>
-<a href=# data-filter=opinion>Opinion</a><a href=# data-filter=later style="margin-left:1rem;border-left:1px solid var(--border);padding-left:1rem">🔖 Plus tard</a></div></nav><main><section id=todays-edition style=display:none;margin-bottom:3rem data-section=todays><div style="display:flex;align-items:baseline;gap:1rem;padding:1rem 1.2rem;background:linear-gradient(90deg,var(--accent) 0%,var(--accent-deep) 100%);color:#fff;margin-bottom:2rem;flex-wrap:wrap"><span style="font-family:bricolage grotesque,sans-serif;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;font-weight:700">✦ À la Une — Édition du jour</span>
+<a href=# data-filter=opinion>Opinion</a><button class="search-trigger" onclick="openSearch()">🔍 Rechercher</button><a href=# data-filter=later style="margin-left:1rem;border-left:1px solid var(--border);padding-left:1rem">🔖 Plus tard</a></div></nav><main><section id=todays-edition style=display:none;margin-bottom:3rem data-section=todays><div style="display:flex;align-items:baseline;gap:1rem;padding:1rem 1.2rem;background:linear-gradient(90deg,var(--accent) 0%,var(--accent-deep) 100%);color:#fff;margin-bottom:2rem;flex-wrap:wrap"><span style="font-family:bricolage grotesque,sans-serif;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;font-weight:700">✦ À la Une — Édition du jour</span>
 <span style=font-family:fraunces,serif;font-style:italic;font-size:1.05rem id=todays-edition-date>—</span>
 <span style="margin-left:auto;font-family:jetbrains mono,monospace;font-size:.72rem;opacity:.8" id=todays-edition-meta>—</span></div><div id=todays-hero-wrap></div><div class=grid-3 id=todays-grid style=margin-top:2.5rem></div></section><div id=filter-indicator style="display:none;align-items:center;gap:1rem;padding:1rem 1.2rem;margin-bottom:1.5rem;background:var(--paper-2);border-left:3px solid var(--accent);font-family:bricolage grotesque,sans-serif;font-size:.8rem;letter-spacing:.05em;flex-wrap:wrap"><span style=text-transform:uppercase;letter-spacing:.15em;color:var(--muted);font-size:.7rem>Rubrique filtrée :</span>
 <strong id=filter-label style=font-family:fraunces,serif;font-size:1.05rem;font-weight:600;letter-spacing:-.01em>—</strong>
@@ -1459,6 +1749,190 @@ setTimeout(() => {
   updateLaterCount();
 }, 600);
 
+
+
+// ================================================================
+//  NOUVELLES FONCTIONNALITÉS SYNAPSE DAILY
+// ================================================================
+
+// --- BARRE DE PROGRESSION DE LECTURE ---
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const pct = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight)) * 100;
+  const bar = document.getElementById('read-progress');
+  if (bar) bar.style.width = Math.min(100, pct).toFixed(1) + '%';
+
+  // Scroll to top button
+  const btn = document.getElementById('scroll-top');
+  if (btn) btn.classList.toggle('visible', doc.scrollTop > 400);
+}, { passive: true });
+
+// --- RECHERCHE ---
+function openSearch() {
+  document.getElementById('search-bar').classList.add('open');
+  setTimeout(() => document.getElementById('search-input').focus(), 100);
+}
+function closeSearch() {
+  document.getElementById('search-bar').classList.remove('open');
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-results').innerHTML = '<div id="search-empty">Tapez pour rechercher…</div>';
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'k' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); openSearch(); }
+  if (e.key === 'Escape') closeSearch();
+});
+
+function escapeRegex(str) { return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+function highlightMatch(text, query) {
+  if (!query) return text;
+  const re = new RegExp('(' + escapeRegex(query) + ')', 'gi');
+  return text.replace(re, '<span class="search-highlight">$1</span>');
+}
+
+function runSearch(q) {
+  const box = document.getElementById('search-results');
+  if (!q || q.length < 2) {
+    box.innerHTML = '<div id="search-empty">Tapez pour rechercher…</div>';
+    return;
+  }
+  const qLow = q.toLowerCase();
+  const hits = articles.filter(a =>
+    (a.title || '').toLowerCase().includes(qLow) ||
+    (a.dek || '').toLowerCase().includes(qLow) ||
+    (a.category || '').toLowerCase().includes(qLow) ||
+    (a.tags || []).some(t => t.toLowerCase().includes(qLow))
+  ).slice(0, 8);
+
+  if (hits.length === 0) {
+    box.innerHTML = '<div id="search-empty">Aucun article trouvé pour « ' + q + ' »</div>';
+    return;
+  }
+  box.innerHTML = hits.map(a => {
+    const idx = articles.indexOf(a);
+    return `<div class="search-result-item" onclick="closeSearch();openArticle(${idx})">
+      <div class="search-result-cat">${a.category}</div>
+      <div class="search-result-title">${highlightMatch(a.title || '', q)}</div>
+    </div>`;
+  }).join('');
+}
+
+// --- STATS ÉDITION ---
+function buildEditionStats() {
+  const container = document.getElementById('edition-stats-container');
+  if (!container || !articles.length) return;
+  const wordCount = articles.reduce((acc, a) => {
+    const text = (a.body || '').replace(/<[^>]+>/g, '');
+    return acc + text.split(/\s+/).filter(Boolean).length;
+  }, 0);
+  const authors = [...new Set(articles.map(a => a.author).filter(Boolean))];
+  const categories = [...new Set(articles.map(a => a.category).filter(Boolean))];
+  container.innerHTML = `
+    <div class="edition-stats">
+      <div class="stat-item"><span class="stat-value">${articles.length}</span><span class="stat-label">Articles</span></div>
+      <div class="stat-item"><span class="stat-value">${wordCount.toLocaleString('fr-FR')}</span><span class="stat-label">Mots écrits</span></div>
+      <div class="stat-item"><span class="stat-value">${authors.length}</span><span class="stat-label">Rédacteurs IA</span></div>
+      <div class="stat-item"><span class="stat-value">${categories.length}</span><span class="stat-label">Rubriques</span></div>
+      <div class="stat-item"><span class="stat-value">100%</span><span class="stat-label">Généré par IA</span></div>
+    </div>`;
+}
+
+// --- PARTAGE SOCIAL dans le modal ---
+function buildShareBar(article, idx) {
+  const title = encodeURIComponent(article.title || '');
+  const url = encodeURIComponent(window.location.href.split('?')[0]);
+  return `<div class="share-bar">
+    <span style="font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);font-family:'Bricolage Grotesque',sans-serif;align-self:center">Partager :</span>
+    <button class="share-btn" onclick="window.open('https://twitter.com/intent/tweet?text=${title}&url=${url}','_blank')">𝕏 Twitter</button>
+    <button class="share-btn" onclick="window.open('https://www.linkedin.com/sharing/share-offsite/?url=${url}','_blank')">💼 LinkedIn</button>
+    <button class="share-btn" id="copy-link-btn" onclick="copyArticleLink(this,'${article.title || ''}')">🔗 Copier le lien</button>
+  </div>`;
+}
+function copyArticleLink(btn, title) {
+  const text = window.location.href + ' — ' + title;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copié !';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '🔗 Copier le lien'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// --- BARRE DE PROGRESSION LECTURE MODAL ---
+function setupModalReadProgress() {
+  const modal = document.querySelector('.modal');
+  if (!modal) return;
+  const progressBar = modal.querySelector('.modal-read-progress-bar');
+  if (!progressBar) return;
+  modal.addEventListener('scroll', () => {
+    const pct = (modal.scrollTop / (modal.scrollHeight - modal.clientHeight)) * 100;
+    progressBar.style.width = Math.min(100, pct || 0).toFixed(1) + '%';
+  }, { passive: true });
+}
+
+// --- MODE FOCUS ---
+function toggleFocusMode(btn) {
+  const modal = document.querySelector('.modal');
+  if (!modal) return;
+  modal.classList.toggle('focus-mode');
+  btn.classList.toggle('active');
+  btn.textContent = modal.classList.contains('focus-mode') ? '📖 Quitter focus' : '📖 Mode focus';
+}
+
+// --- CITATION DU JOUR ---
+const CITATIONS = [
+  { quote: "Le journalisme, c'est publier ce que quelqu'un ne voudrait pas voir publié. Tout le reste, c'est des relations publiques.", author: "George Orwell" },
+  { quote: "Une presse libre peut être bonne ou mauvaise, mais une presse sans liberté ne peut qu'être mauvaise.", author: "Albert Camus" },
+  { quote: "L'information est le premier droit de l'homme.", author: "Jean Jaurès" },
+  { quote: "Le devoir de la presse est de dire la vérité, toute la vérité, rien que la vérité.", author: "Émile Zola" },
+  { quote: "Un journaliste est quelqu'un qui sait distinguer ce qui est important de ce qui est intéressant. Un bon journaliste le rend intéressant.", author: "Karl Kraus" },
+  { quote: "Les nouvelles sont ce que quelqu'un, quelque part, veut supprimer. Tout le reste est publicité.", author: "Lord Northcliffe" },
+  { quote: "Donnez-moi vingt-six soldats de plomb et je conquérirai le monde.", author: "Benjamin Franklin" },
+  { quote: "La liberté de la presse ne vaut d'être défendue que si elle est utilisée par ceux qui la détiennent.", author: "Albert Camus" },
+  { quote: "L'intelligence artificielle ne remplacera jamais l'intelligence naturelle de la curiosité humaine.", author: "SYNAPSE DAILY" },
+  { quote: "L'avenir appartient à ceux qui voient les possibilités avant qu'elles ne deviennent évidentes.", author: "John Sculley" },
+];
+function buildQuoteDuJour() {
+  const container = document.getElementById('quote-container');
+  if (!container) return;
+  const today2 = new Date().toDateString();
+  const idx = hashStr(today2) % CITATIONS.length;
+  const { quote, author } = CITATIONS[idx];
+  container.innerHTML = `<div class="quote-du-jour">
+    <blockquote>« ${quote} »</blockquote>
+    <cite>— ${author}</cite>
+  </div>`;
+}
+
+// --- PATCH openArticle pour ajouter partage + focus + progression ---
+const _origOpenArt = window.openArticle;
+window.openArticle = function(idx) {
+  _origOpenArt(idx);
+  const article = articles[idx];
+  if (!article) return;
+  const modalContent = document.getElementById('modal-content');
+  if (!modalContent) return;
+
+  // Ajouter barre de progression + temps de lecture + partage + focus
+  const wordCount2 = (article.body || '').replace(/<[^>]+>/g, '').split(/\s+/).filter(Boolean).length;
+  const readMins = Math.max(1, Math.round(wordCount2 / 200));
+
+  const shareBar = buildShareBar(article, idx);
+  const topBar = `<div class="modal-read-time">
+    <span>⏱ ${readMins} min de lecture</span>
+    <button class="focus-toggle" onclick="toggleFocusMode(this)">📖 Mode focus</button>
+    <button class="bookmark-btn" style="position:static;opacity:1;background:var(--paper-2);width:auto;height:auto;padding:0.35rem 0.8rem;border-radius:20px;border:1px solid var(--border);font-size:0.72rem;font-family:'Bricolage Grotesque',sans-serif;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted)" onclick="toggleBookmark(${idx},this)">${isBookmarked(idx)?'✓ Sauvegardé':'🔖 Lire plus tard'}</button>
+  </div>
+  <div class="modal-read-progress"><div class="modal-read-progress-bar"></div></div>
+  ${shareBar}`;
+
+  modalContent.insertAdjacentHTML('afterbegin', topBar);
+  setTimeout(setupModalReadProgress, 100);
+};
+
+// --- INIT ---
+setTimeout(() => {
+  buildEditionStats();
+  buildQuoteDuJour();
+}, 700);
 
 </script><script data-goatcounter=https://synapse-daily.goatcounter.com/count async src=//gc.zgo.at/count.js></script
 
