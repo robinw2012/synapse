@@ -1953,36 +1953,4 @@ function injectPhotosIntoCards() {
   });
 }
 
-</script><script data-goatcounter=https://synapse-daily.goatcounter.com/count async src=//gc.zgo.at/count.js></script
-
-// ================================================================
-//  PHOTOS — lit photoUrl depuis edition.json (chargé par l'agent IA)
-//  Si absent, affiche le fond CSS par défaut.
-// ================================================================
-function injectPhoto(idx, url) {
-  if (!url) return;
-  document.querySelectorAll(`[data-article="${idx}"]`).forEach(card => {
-    const svgDiv = card.querySelector('.card-image');
-    if (svgDiv) {
-      svgDiv.style.padding = '0';
-      svgDiv.innerHTML = `<img src="${url}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:0;" loading="lazy" onerror="this.parentNode.style.background='var(--paper-2)';this.remove()"/>`;
-    }
-    const heroDiv = card.querySelector('.hero-image');
-    if (heroDiv) {
-      heroDiv.style.padding = '0';
-      heroDiv.innerHTML = `<img src="${url}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentNode.style.background='var(--paper-2)';this.remove()"/>`;
-    }
-  });
-}
-
-// Injecte les photos de tous les articles qui ont un photoUrl
-function loadAllPhotos() {
-  if (!window.articles || !articles.length) return;
-  setTimeout(() => {
-    articles.forEach((article, idx) => {
-      if (article.photoUrl) injectPhoto(idx, article.photoUrl);
-    });
-  }, 300);
-}
-
->
+</script>
