@@ -845,6 +845,112 @@ footer ul a:hover { color: var(--paper); }
   /* Scroll to top */
   #scroll-top { font-family: var(--sans); font-weight: 300; font-size: 1.1rem; }
 
+
+  /* ===== ARCHIVES ===== */
+  .archive-page { padding: 2rem 0; }
+  .archive-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: 1px solid var(--border);
+  }
+  .archive-day {
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .archive-day-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.2rem 0;
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+  }
+  .archive-day-header:hover { background: var(--paper-2); padding-left: 0.5rem; }
+  .archive-day-header:hover { padding-left: 0; }
+  .archive-day-date {
+    font-family: var(--display);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink);
+    min-width: 180px;
+  }
+  .archive-day-count {
+    font-family: var(--sans);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .archive-day-toggle {
+    margin-left: auto;
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    color: var(--faint);
+    transition: transform 0.2s;
+  }
+  .archive-day.open .archive-day-toggle { transform: rotate(180deg); }
+  .archive-day-articles {
+    display: none;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--border);
+  }
+  .archive-day.open .archive-day-articles { display: grid; }
+  @media (max-width: 900px) { .archive-day-articles { grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 580px) { .archive-day-articles { grid-template-columns: 1fr; } }
+  .archive-card {
+    padding: 1.2rem;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .archive-card:nth-child(4n) { border-right: none; }
+  .archive-card:hover { background: var(--paper-2); }
+  .archive-card-img {
+    width: 100%;
+    aspect-ratio: 3/2;
+    object-fit: cover;
+    display: block;
+    margin-bottom: 0.7rem;
+    background: var(--paper-3);
+  }
+  .archive-card-cat {
+    font-family: var(--sans);
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.3rem;
+  }
+  .archive-card-title {
+    font-family: var(--display);
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  .archive-card:hover .archive-card-title { color: var(--accent); }
+  .archive-loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--muted);
+    font-family: var(--body);
+    font-style: italic;
+  }
+  .archive-empty {
+    text-align: center;
+    padding: 3rem;
+    color: var(--muted);
+    font-family: var(--body);
+    font-style: italic;
+    border: 1px solid var(--border);
+    margin: 2rem 0;
+  }
+
 </style>
 
 
@@ -913,7 +1019,7 @@ footer ul a:hover { color: var(--paper); }
       <a href=# data-filter=societe id="nav-societe">Société</a>
       <a href=# data-filter=sport id="nav-sport">Sport</a>
       <a href=# data-filter=opinion id="nav-opinion">Idées</a>
-      <a href=# data-filter=later style="border-left:1px solid var(--border);margin-left:0.5rem;padding-left:1.2rem" id="nav-later">◈ Plus tard</a>
+      <a href=# data-filter=later style="border-left:1px solid var(--border);margin-left:0.5rem;padding-left:1.2rem" id="nav-later">◈ Plus tard</a><a href=# data-filter=archives style="margin-left:0.5rem" id="nav-archives">Archives</a>
     </div>
     <button class=search-trigger onclick="openSearch()"><span style="font-weight:300;font-size:1rem;line-height:1">⌕</span> <span id="search-label">Rechercher</span></button>
   </div>
@@ -2667,6 +2773,151 @@ setTimeout(() => {
 // ================================================================
 
 
+
+
+// ================================================================
+//  ARCHIVES — 30 dernières éditions
+// ================================================================
+const _archiveCache = {};  // date → articles[]
+
+// Récupère la liste des fichiers d'archives disponibles
+async function listArchives() {
+  // On connaît le dossier archives/ mais pas le listing direct (GitHub Pages)
+  // On génère les dates des 30 derniers jours et on essaie de les charger
+  const dates = [];
+  const today = new Date();
+  for (let i = 1; i <= 30; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    dates.push(d.toISOString().slice(0, 10));
+  }
+  return dates;
+}
+
+// Charge une édition archivée
+async function loadArchiveDay(date) {
+  if (_archiveCache[date]) return _archiveCache[date];
+  try {
+    const r = await fetch('archives/' + date + '.json', { cache: 'no-cache' });
+    if (!r.ok) return null;
+    const d = await r.json();
+    _archiveCache[date] = d;
+    return d;
+  } catch(_) { return null; }
+}
+
+// Formate une date ISO en français
+function formatDateFr(iso) {
+  const d = new Date(iso + 'T12:00:00');
+  return d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+// Affiche la page des archives
+async function showArchivesPage() {
+  // Masquer les autres sections
+  const ed = document.getElementById('todays-edition');
+  if (ed) ed.style.display = 'none';
+  document.querySelectorAll('[data-rubrique]').forEach(el => el.style.display = 'none');
+  const fi = document.getElementById('filter-indicator');
+  if (fi) fi.style.display = 'none';
+  const ls = document.getElementById('later-section');
+  if (ls) ls.style.display = 'none';
+  const stats = document.getElementById('edition-stats-container');
+  if (stats) stats.style.display = 'none';
+  const quote = document.getElementById('quote-container');
+  if (quote) quote.style.display = 'none';
+
+  // Préparer la section archives
+  let section = document.getElementById('archive-section');
+  if (!section) {
+    section = document.createElement('div');
+    section.id = 'archive-section';
+    section.className = 'archive-page';
+    const rub = document.getElementById('rubrique-articles');
+    rub.parentNode.insertBefore(section, rub);
+  }
+  section.style.display = 'block';
+  section.innerHTML = '<div class="section-heading"><h2>Archives</h2><span class="sec-subtitle">— 30 dernières éditions</span></div><div class="archive-list" id="archive-list"><div class="archive-loading">Chargement des archives…</div></div>';
+
+  // Mettre à jour la nav
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.toggle('active', a.dataset.filter === 'archives'));
+
+  // Charger les archives en parallèle
+  const dates = await listArchives();
+  const list = document.getElementById('archive-list');
+  if (!list) return;
+  list.innerHTML = '';
+
+  let found = 0;
+  // Charger par batch de 5 pour éviter de surcharger
+  for (let i = 0; i < dates.length; i += 5) {
+    const batch = dates.slice(i, i + 5);
+    const results = await Promise.all(batch.map(d => loadArchiveDay(d)));
+    results.forEach((data, bi) => {
+      if (!data || !data.articles || !data.articles.length) return;
+      found++;
+      const date = batch[bi];
+      const dateLabel = data.editionDate || formatDateFr(date);
+      const el = document.createElement('div');
+      el.className = 'archive-day';
+      el.innerHTML = '<div class="archive-day-header" onclick="toggleArchiveDay(this.parentNode)">' +
+        '<div class="archive-day-date">' + dateLabel + '</div>' +
+        '<div class="archive-day-count">' + data.articles.length + ' articles · N° ' + (data.editionNumber || '—') + '</div>' +
+        '<div class="archive-day-toggle">▼</div>' +
+        '</div>' +
+        '<div class="archive-day-articles">' +
+        data.articles.map(function(a) {
+          return '<div class="archive-card" onclick="openArchiveArticle(' + JSON.stringify(a).replace(/"/g, '&quot;') + ')">' +
+            (a.photoUrl ? '<img class="archive-card-img" src="' + a.photoUrl + '" alt="" loading="lazy"/>' : '') +
+            '<div class="archive-card-cat">' + (a.category || '') + '</div>' +
+            '<div class="archive-card-title">' + (a.title || '') + '</div>' +
+            '</div>';
+        }).join('') +
+        '</div>';
+      list.appendChild(el);
+    });
+  }
+
+  if (found === 0) {
+    list.innerHTML = '<div class="archive-empty">Aucune archive disponible pour les 30 derniers jours.</div>';
+  }
+}
+
+function toggleArchiveDay(el) {
+  el.classList.toggle('open');
+}
+
+function openArchiveArticle(article) {
+  // Ajouter l'article temporairement aux articles pour openArticle
+  const tempIdx = articles.length;
+  articles.push(article);
+  openArticle(tempIdx);
+  // Retirer après ouverture
+  setTimeout(() => articles.splice(tempIdx, 1), 100);
+}
+
+function hideArchivesPage() {
+  const section = document.getElementById('archive-section');
+  if (section) section.style.display = 'none';
+  const stats = document.getElementById('edition-stats-container');
+  if (stats) stats.style.display = '';
+  const quote = document.getElementById('quote-container');
+  if (quote) quote.style.display = '';
+}
+
+// Intercepter le filtre "archives" dans filterByCategory
+const _origFilterFn = window.filterByCategory;
+window.filterByCategory = function(cat) {
+  const archiveSec = document.getElementById('archive-section');
+  if (cat === 'archives') {
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.toggle('active', a.dataset.filter === 'archives'));
+    showArchivesPage();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+  if (archiveSec) archiveSec.style.display = 'none';
+  if (_origFilterFn) _origFilterFn(cat);
+};
 
 </script>
 <script data-goatcounter="https://synapse-daily.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
