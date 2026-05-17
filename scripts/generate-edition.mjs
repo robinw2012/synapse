@@ -3,6 +3,19 @@ import fs from "node:fs";
 import path from "node:path";
 import https from "node:https";
 
+// Photos de secours par catégorie (si Unsplash échoue)
+const FALLBACK_PHOTOS = {
+  'Politique':  'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=800&h=450&fit=crop&q=80',
+  'Économie':   'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=450&fit=crop&q=80',
+  'Tech':       'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=450&fit=crop&q=80',
+  'Science':    'https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=800&h=450&fit=crop&q=80',
+  'Culture':    'https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=800&h=450&fit=crop&q=80',
+  'Société':    'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&h=450&fit=crop&q=80',
+  'Sport':      'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800&h=450&fit=crop&q=80',
+  'Idées':      'https://images.unsplash.com/photo-1456324504439-367cee3b3c32?w=800&h=450&fit=crop&q=80',
+};
+
+
 const client = new Anthropic();
 const MODEL = process.env.MODEL || "claude-sonnet-4-6";
 const UNSPLASH_KEY = "Pj_KWKgIJzzVOEW7wRH37o1_ThDiLQqssoxwdjKxCdg";
