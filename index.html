@@ -1059,6 +1059,7 @@ footer ul a:hover { color: var(--paper); }
   <div id=quote-container></div>
   <div id=rubrique-articles></div>
   <div id=later-section style="display:none"></div>
+  <div id="home-archives"></div>
 
   <!-- DATA WIDGET -->
   <div style="margin:2.5rem 0" data-section=data>
@@ -2001,7 +2002,7 @@ const l=document.getElementById("todays-grid"),d=e.articles.slice(5);d.forEach((
             <span>${escapeHtml(e.author)}</span>
             <span>${e.readTime}</span>
           </div>
-        `,n.addEventListener("click",()=>openArticle(s));l.appendChild(n)})}catch(e){console.log("[SYNAPSE] Pas d'édition dynamique :",e.message)}}const CAT_LABELS_FULL={science:{name:"Science",subtitle:"découvertes et recherche"},economie:{name:"Économie",subtitle:"marchés et analyses"},tech:{name:"Technologie",subtitle:"innovation et numérique"},culture:{name:"Culture",subtitle:"arts et critiques"},societe:{name:"Société",subtitle:"enquêtes et tendances"},politique:{name:"Politique",subtitle:"institutions et débats"},sport:{name:"Sport",subtitle:"compétitions et décryptages"},opinion:{name:"Idées",subtitle:"chroniques et essais"}};function buildRubriqueSections(){const n=document.getElementById("rubrique-articles");if(!n)return;const t={};articles.forEach((e,n)=>{const o=e.category||"",s={Science:"science",Technologie:"tech",Tech:"tech","Économie":"economie",Culture:"culture","Société":"societe",Politique:"politique",Sport:"sport","Idées":"opinion","Grand Reportage":"societe",Gastronomie:"culture","Science · Exclusif":"science"}[o]||o.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");t[s]||(t[s]=[]),t[s].push({article:e,index:n})});const s=["politique","economie","tech","science","culture","societe","sport","opinion"];let e="",o=1;for(const n of s){const i=t[n];if(!i||i.length===0)continue;const a=CAT_LABELS_FULL[n]||{name:n,subtitle:""};e+='<div class="section-heading" data-rubrique="'+n+'">',e+="<h2>"+a.name+"</h2>",e+='<span class="sec-subtitle">— '+a.subtitle+"</span>",e+='<span class="sec-num">'+i.length+" article"+(i.length>1?"s":"")+"</span>",e+="</div>",e+='<section class="grid-3" data-rubrique="'+n+'">';for(const s of i){const t=s.article,o=s.index,r=typeof makeSvgForCategory=="function"?makeSvgForArticle(t,o):'<rect width="800" height="450" fill="#2a3a4a"/>';e+='<article class="article-card" data-article="'+o+'" data-cat="'+n+'">',e+=cardImg(t,r),e+='<span class="category-tag">'+(t.category||a.name)+"</span>",e+='<h3 class="card-title">'+(t.title||"")+"</h3>",e+='<p class="card-excerpt">'+(t.dek||"")+"</p>",e+='<div class="card-meta"><span>'+(t.author||"")+"</span><span>"+(t.readTime||"")+"</span></div>",e+="</article>"}e+="</section>",o++}n.innerHTML=e,n.querySelectorAll("[data-article]").forEach(e=>{e.addEventListener("click",()=>openArticle(parseInt(e.dataset.article)))})}async function initPage(){await loadTodaysEdition();buildRubriqueSections();}initPage();const MARKET_BASE={cac:{value:7820,vol:.012},brent:{value:73.5,vol:.018}},sessionDrift=e=>(Math.random()-.5)*2*e;function formatPrice(e,t=2,n=""){return e.toLocaleString("fr-FR",{minimumFractionDigits:t,maximumFractionDigits:t})+n}function setChange(e,t,n=" %"){if(!e)return;const s=t>=0?"▲ +":"▼ ",o=t>=0?"up":"down";e.className="data-change "+o,e.textContent=s+formatPrice(t<0?-t:t,2)+n}async function fetchMarketData(){const e=MARKET_BASE.cac.value*(1+sessionDrift(MARKET_BASE.cac.vol)),i=(e/MARKET_BASE.cac.value-1)*100,t=document.getElementById("px-cac");t&&(t.textContent=formatPrice(e,2)),setChange(document.getElementById("ch-cac"),i);const n=MARKET_BASE.brent.value*(1+sessionDrift(MARKET_BASE.brent.vol)),a=(n/MARKET_BASE.brent.value-1)*100,s=document.getElementById("px-brent");s&&(s.textContent=formatPrice(n,2)+" $"),setChange(document.getElementById("ch-brent"),a);try{const e=await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true",{cache:"no-store"});if(e.ok){const t=await e.json(),n=t.bitcoin?.usd,s=t.bitcoin?.usd_24h_change;if(n){const e=document.getElementById("px-btc");e&&(e.textContent=formatPrice(n,0)+" $"),s!==0[0]&&setChange(document.getElementById("ch-btc"),s)}}}catch{const e=document.getElementById("px-btc");e&&e.textContent==="—"&&(e.textContent="— $");const t=document.getElementById("ch-btc");t&&(t.textContent="hors ligne")}try{const e=await fetch("https://api.frankfurter.app/latest?from=EUR&to=USD",{cache:"no-store"});if(e.ok){const n=await e.json(),t=n.rates?.USD;if(t){const e=document.getElementById("px-eur");e&&(e.textContent=formatPrice(t,4));try{const n=new Date(Date.now()-864e5).toISOString().slice(0,10),e=await fetch(`https://api.frankfurter.app/${n}?from=EUR&to=USD`,{cache:"no-store"});if(e.ok){const s=await e.json(),n=s.rates?.USD;if(n){const e=(t/n-1)*100;setChange(document.getElementById("ch-eur"),e)}}}catch{}}}}catch{const e=document.getElementById("px-eur");e&&e.textContent==="—"&&(e.textContent="—");const t=document.getElementById("ch-eur");t&&(t.textContent="hors ligne")}const o=document.getElementById("px-updated");if(o){const e=new Date,t=String(e.getHours()).padStart(2,"0"),n=String(e.getMinutes()).padStart(2,"0");o.textContent=`Mise à jour : ${t}:${n} · BTC & EUR/USD en temps réel · CAC 40 & Brent indicatifs`}}fetchMarketData(),setInterval(fetchMarketData,6e4);
+        `,n.addEventListener("click",()=>openArticle(s));l.appendChild(n)})}catch(e){console.log("[SYNAPSE] Pas d'édition dynamique :",e.message)}}const CAT_LABELS_FULL={science:{name:"Science",subtitle:"découvertes et recherche"},economie:{name:"Économie",subtitle:"marchés et analyses"},tech:{name:"Technologie",subtitle:"innovation et numérique"},culture:{name:"Culture",subtitle:"arts et critiques"},societe:{name:"Société",subtitle:"enquêtes et tendances"},politique:{name:"Politique",subtitle:"institutions et débats"},sport:{name:"Sport",subtitle:"compétitions et décryptages"},opinion:{name:"Idées",subtitle:"chroniques et essais"}};function buildRubriqueSections(){const n=document.getElementById("rubrique-articles");if(!n)return;const t={};articles.forEach((e,n)=>{const o=e.category||"",s={Science:"science",Technologie:"tech",Tech:"tech","Économie":"economie",Culture:"culture","Société":"societe",Politique:"politique",Sport:"sport","Idées":"opinion","Grand Reportage":"societe",Gastronomie:"culture","Science · Exclusif":"science"}[o]||o.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");t[s]||(t[s]=[]),t[s].push({article:e,index:n})});const s=["politique","economie","tech","science","culture","societe","sport","opinion"];let e="",o=1;for(const n of s){const i=t[n];if(!i||i.length===0)continue;const a=CAT_LABELS_FULL[n]||{name:n,subtitle:""};e+='<div class="section-heading" data-rubrique="'+n+'">',e+="<h2>"+a.name+"</h2>",e+='<span class="sec-subtitle">— '+a.subtitle+"</span>",e+='<span class="sec-num">'+i.length+" article"+(i.length>1?"s":"")+"</span>",e+="</div>",e+='<section class="grid-3" data-rubrique="'+n+'">';for(const s of i){const t=s.article,o=s.index,r=typeof makeSvgForCategory=="function"?makeSvgForArticle(t,o):'<rect width="800" height="450" fill="#2a3a4a"/>';e+='<article class="article-card" data-article="'+o+'" data-cat="'+n+'">',e+=cardImg(t,r),e+='<span class="category-tag">'+(t.category||a.name)+"</span>",e+='<h3 class="card-title">'+(t.title||"")+"</h3>",e+='<p class="card-excerpt">'+(t.dek||"")+"</p>",e+='<div class="card-meta"><span>'+(t.author||"")+"</span><span>"+(t.readTime||"")+"</span></div>",e+="</article>"}e+="</section>",o++}n.innerHTML=e,n.querySelectorAll("[data-article]").forEach(e=>{e.addEventListener("click",()=>openArticle(parseInt(e.dataset.article)))})}async function initPage(){await loadTodaysEdition();buildRubriqueSections();loadArchivesOnHome();}initPage();const MARKET_BASE={cac:{value:7820,vol:.012},brent:{value:73.5,vol:.018}},sessionDrift=e=>(Math.random()-.5)*2*e;function formatPrice(e,t=2,n=""){return e.toLocaleString("fr-FR",{minimumFractionDigits:t,maximumFractionDigits:t})+n}function setChange(e,t,n=" %"){if(!e)return;const s=t>=0?"▲ +":"▼ ",o=t>=0?"up":"down";e.className="data-change "+o,e.textContent=s+formatPrice(t<0?-t:t,2)+n}async function fetchMarketData(){const e=MARKET_BASE.cac.value*(1+sessionDrift(MARKET_BASE.cac.vol)),i=(e/MARKET_BASE.cac.value-1)*100,t=document.getElementById("px-cac");t&&(t.textContent=formatPrice(e,2)),setChange(document.getElementById("ch-cac"),i);const n=MARKET_BASE.brent.value*(1+sessionDrift(MARKET_BASE.brent.vol)),a=(n/MARKET_BASE.brent.value-1)*100,s=document.getElementById("px-brent");s&&(s.textContent=formatPrice(n,2)+" $"),setChange(document.getElementById("ch-brent"),a);try{const e=await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true",{cache:"no-store"});if(e.ok){const t=await e.json(),n=t.bitcoin?.usd,s=t.bitcoin?.usd_24h_change;if(n){const e=document.getElementById("px-btc");e&&(e.textContent=formatPrice(n,0)+" $"),s!==0[0]&&setChange(document.getElementById("ch-btc"),s)}}}catch{const e=document.getElementById("px-btc");e&&e.textContent==="—"&&(e.textContent="— $");const t=document.getElementById("ch-btc");t&&(t.textContent="hors ligne")}try{const e=await fetch("https://api.frankfurter.app/latest?from=EUR&to=USD",{cache:"no-store"});if(e.ok){const n=await e.json(),t=n.rates?.USD;if(t){const e=document.getElementById("px-eur");e&&(e.textContent=formatPrice(t,4));try{const n=new Date(Date.now()-864e5).toISOString().slice(0,10),e=await fetch(`https://api.frankfurter.app/${n}?from=EUR&to=USD`,{cache:"no-store"});if(e.ok){const s=await e.json(),n=s.rates?.USD;if(n){const e=(t/n-1)*100;setChange(document.getElementById("ch-eur"),e)}}}catch{}}}}catch{const e=document.getElementById("px-eur");e&&e.textContent==="—"&&(e.textContent="—");const t=document.getElementById("ch-eur");t&&(t.textContent="hors ligne")}const o=document.getElementById("px-updated");if(o){const e=new Date,t=String(e.getHours()).padStart(2,"0"),n=String(e.getMinutes()).padStart(2,"0");o.textContent=`Mise à jour : ${t}:${n} · BTC & EUR/USD en temps réel · CAC 40 & Brent indicatifs`}}fetchMarketData(),setInterval(fetchMarketData,6e4);
 
 // ============== MÉTÉO EN DIRECT ==============
 // Open-Meteo API (gratuit, sans clé, CORS ouvert)
@@ -2918,6 +2919,72 @@ window.filterByCategory = function(cat) {
   if (archiveSec) archiveSec.style.display = 'none';
   if (_origFilterFn) _origFilterFn(cat);
 };
+
+
+// ================================================================
+//  ARCHIVES SUR LA PAGE D'ACCUEIL — affiche les éditions passées
+//  en dessous de l'édition du jour, section par section
+// ================================================================
+async function loadArchivesOnHome() {
+  const container = document.getElementById('home-archives');
+  if (!container) return;
+
+  const today = new Date().toISOString().slice(0, 10);
+  const dates = [];
+  for (let i = 1; i <= 30; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const iso = d.toISOString().slice(0, 10);
+    if (iso !== today) dates.push(iso);
+  }
+
+  let firstFound = true;
+  for (const date of dates) {
+    try {
+      const r = await fetch('archives/' + date + '.json', { cache: 'no-cache' });
+      if (!r.ok) continue;
+      const data = await r.json();
+      if (!data.articles || !data.articles.length) continue;
+
+      const dateLabel = data.editionDate || date;
+      const section = document.createElement('div');
+      section.className = 'archive-home-section';
+      section.style.marginBottom = '3rem';
+
+      // En-tête de section
+      section.innerHTML = '<div class="section-heading" style="cursor:pointer" onclick="toggleArchiveHomeSection(this.parentNode)">' +
+        '<h2 style="font-size:0.9rem">' + dateLabel + '</h2>' +
+        '<span class="sec-subtitle">— ' + data.articles.length + ' articles · N° ' + (data.editionNumber || '—') + '</span>' +
+        '<span class="sec-num" style="font-size:0.75rem">▼</span>' +
+        '</div>' +
+        '<div class="archive-home-grid grid-3" style="' + (firstFound ? '' : 'display:none') + '">' +
+        data.articles.map(function(a, idx) {
+          const svgContent = typeof makeSvgForArticle === 'function' ? makeSvgForArticle(a, idx) : '';
+          const imgHtml = cardImg(a, svgContent);
+          return '<article class="article-card" onclick="openArchiveArticle(' + JSON.stringify(a).replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') + ')">' +
+            imgHtml +
+            '<span class="category-tag">' + (a.category || '') + '</span>' +
+            '<h3 class="card-title">' + (a.title || '') + '</h3>' +
+            '<p class="card-excerpt">' + (a.dek || '') + '</p>' +
+            '<div class="card-meta"><span>' + (a.author || '') + '</span><span>' + (a.readTime || '') + '</span></div>' +
+            '</article>';
+        }).join('') +
+        '</div>';
+
+      container.appendChild(section);
+      firstFound = false;
+    } catch(_) {}
+  }
+}
+
+function toggleArchiveHomeSection(section) {
+  const grid = section.querySelector('.archive-home-grid');
+  const arrow = section.querySelector('.sec-num');
+  if (!grid) return;
+  const isOpen = grid.style.display !== 'none';
+  grid.style.display = isOpen ? 'none' : 'grid';
+  if (arrow) arrow.textContent = isOpen ? '▼' : '▲';
+}
 
 </script>
 <script data-goatcounter="https://synapse-daily.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
