@@ -1238,7 +1238,7 @@ footer ul a:hover { color: var(--paper); }
     box-shadow: 0 1px 0 var(--border);
   }
   .nav-rubriques .nav-links { max-width: var(--max); margin: 0 auto; padding: 0 2rem; }
-  .nav-inner { display: none; } /* plus utilisé */
+  
 
   /* Search button dans la barre sombre */
   .nav-services .search-trigger {
@@ -1427,6 +1427,18 @@ footer ul a:hover { color: var(--paper); }
   }
   .modal-ai-stat span { color: var(--accent); font-weight: 600; }
 
+
+
+  /* Skeleton loading */
+  .card-image.loading {
+    background: linear-gradient(90deg, var(--paper-2) 25%, var(--paper-3) 50%, var(--paper-2) 75%);
+    background-size: 200% 100%;
+    animation: skeleton 1.5s ease-in-out infinite;
+  }
+  @keyframes skeleton {
+    from { background-position: 200% 0; }
+    to   { background-position: -200% 0; }
+  }
 
 </style>
 
@@ -1642,19 +1654,7 @@ footer ul a:hover { color: var(--paper); }
 <!-- RECHERCHE -->
 <div id="search-bar">
   <button id="search-close" onclick="closeSearch()">×</button>
-  <input id="search-input" type="text" placeholder="Chercher un article…" autocomplete="off" oninput="runSearch(this.value)"/>
-  <div id="search-results"><div id="search-empty">Tapez pour rechercher…</div></div>
-</div>
-
-<!-- MODAL -->
-<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">×</button>
-    <div id="modal-content"></div>
-  </div>
-</div>
-
-<script>
+  <input id="search-input" type="text" placeholder="Chercher un article…" autocomplete="off" oninput="runS<script>
 
 // ================================================================
 //  HELPER PHOTO — retourne <img> ou SVG selon photoUrl
@@ -2929,21 +2929,6 @@ function showLaterSection() {
 }
 
 // Intercepter le filtre "later" dans filterByCategory
-const _origFilter = typeof filterByCategory === 'function' ? filterByCategory : null;
-window.filterByCategory = function(cat) {
-  // Cacher la section plus tard si on change de filtre
-  const laterSec = document.getElementById('later-section');
-  if (laterSec) laterSec.style.display = 'none';
-
-  if (cat === 'later') {
-    document.querySelectorAll('.nav-links a').forEach(a => a.classList.toggle('active', a.dataset.filter === 'later'));
-    showLaterSection();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    return;
-  }
-  if (_origFilter) _origFilter(cat);
-};
-
 // Ajouter les boutons après chaque rebuild
 const _origBuildRubriques = typeof buildRubriqueSections === 'function' ? buildRubriqueSections : null;
 window.buildRubriqueSections = function() {
@@ -2955,7 +2940,8 @@ window.buildRubriqueSections = function() {
 setTimeout(() => {
   addBookmarkButtons();
   updateLaterCount();
-}, 600);
+  buildLiveCounter();
+}, 800);
 
 
 
@@ -2978,12 +2964,12 @@ window.addEventListener('scroll', () => {
 // --- RECHERCHE ---
 function openSearch() {
   document.getElementById('search-bar').classList.add('open');
-  setTimeout(() => document.getElementById('search-input').focus(), 100);
+  setTimeout(() => { const el = document.getElementById('search-input'); if(el) el.focus(); }, 100);
 }
 function closeSearch() {
   document.getElementById('search-bar').classList.remove('open');
   document.getElementById('search-input').value = '';
-  document.getElementById('search-results').innerHTML = '<div id="search-empty">Tapez pour rechercher…</div>';
+  document.getElementById('search-results').innerHTML = '<div id="search-empty" style="padding:2rem;text-align:center;font-family:var(--body);font-style:italic;color:var(--muted)">Tapez pour chercher parmi les articles…</div>';
 }
 document.addEventListener('keydown', e => {
   if (e.key === 'k' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); openSearch(); }
@@ -3000,7 +2986,7 @@ function highlightMatch(text, query) {
 function runSearch(q) {
   const box = document.getElementById('search-results');
   if (!q || q.length < 2) {
-    box.innerHTML = '<div id="search-empty">Tapez pour rechercher…</div>';
+    box.innerHTML = '<div id="search-empty" style="padding:2rem;text-align:center;font-family:var(--body);font-style:italic;color:var(--muted)">Tapez pour chercher parmi les articles…</div>';
     return;
   }
   const qLow = q.toLowerCase();
@@ -3012,7 +2998,7 @@ function runSearch(q) {
   ).slice(0, 8);
 
   if (hits.length === 0) {
-    box.innerHTML = '<div id="search-empty">Aucun article trouvé pour « ' + q + ' »</div>';
+    box.innerHTML = '<div id="search-empty" style="padding:2rem;text-align:center;font-family:var(--body);font-style:italic;color:var(--muted)">Aucun résultat pour « ' + q + ' »</div>';
     return;
   }
   box.innerHTML = hits.map(a => {
@@ -3282,20 +3268,6 @@ function hideArchivesPage() {
 }
 
 // Intercepter le filtre "archives" dans filterByCategory
-const _origFilterFn = window.filterByCategory;
-window.filterByCategory = function(cat) {
-  const archiveSec = document.getElementById('archive-section');
-  if (cat === 'archives') {
-    document.querySelectorAll('.nav-links a').forEach(a => a.classList.toggle('active', a.dataset.filter === 'archives'));
-    showArchivesPage();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    return;
-  }
-  if (archiveSec) archiveSec.style.display = 'none';
-  if (_origFilterFn) _origFilterFn(cat);
-};
-
-
 // ================================================================
 //  ARCHIVES SUR LA PAGE D'ACCUEIL — affiche les éditions passées
 //  en dessous de l'édition du jour, section par section
@@ -3348,6 +3320,8 @@ async function loadArchivesOnHome() {
 
       container.appendChild(section);
       firstFound = false;
+      // Auto-ouvrir la première édition
+      if (found === 1) el.classList.add('open');
     } catch(_) {}
   }
 }
@@ -3684,32 +3658,6 @@ function loadMatieres() {
 // ================================================================
 //  INTERCEPTION FILTRE — météo et bourse
 // ================================================================
-const _origFilterAll = window.filterByCategory;
-window.filterByCategory = function(cat) {
-  // Cacher pages spéciales
-  const meteorPage = document.getElementById('meteo-page');
-  const boursePage = document.getElementById('bourse-page');
-
-  if (cat === 'meteo') {
-    document.querySelectorAll('.nav-links a').forEach(a => a.classList.toggle('active', a.dataset.filter==='meteo'));
-    hideAllMainSections();
-    if (meteorPage) { meteorPage.style.display = 'block'; buildMeteoPage(); }
-    window.scrollTo({top:0,behavior:'smooth'});
-    return;
-  }
-  if (cat === 'bourse') {
-    document.querySelectorAll('.nav-links a').forEach(a => a.classList.toggle('active', a.dataset.filter==='bourse'));
-    hideAllMainSections();
-    if (boursePage) { boursePage.style.display = 'block'; buildBoursePage(); }
-    window.scrollTo({top:0,behavior:'smooth'});
-    return;
-  }
-
-  if (meteorPage) meteorPage.style.display = 'none';
-  if (boursePage) boursePage.style.display = 'none';
-  if (_origFilterAll) _origFilterAll(cat);
-};
-
 function hideAllMainSections() {
   const ids = ['todays-edition','filter-indicator','edition-stats-container','quote-container','rubrique-articles','home-archives','later-section','archive-section','meteo-page','bourse-page'];
   ids.forEach(id => { const el = document.getElementById(id); if (el) el.style.display='none'; });
@@ -3722,7 +3670,7 @@ function hideAllMainSections() {
 // ================================================================
 window.filterByCategory = function(cat) {
   // Cacher les pages spéciales
-  ['meteo-page','bourse-page','archive-section','later-section'].forEach(id => {
+  ['meteo-page','bourse-page','archive-section','later-section','coulisses-page'].forEach(id => {
     const el = document.getElementById(id); if (el) el.style.display = 'none';
   });
 
@@ -3960,6 +3908,15 @@ window.filterByCategory = function(cat) {
   if (pg) pg.style.display = 'none';
   if (_origFilterDistinct) _origFilterDistinct(cat);
 };
+
+// --- Init ---
+setTimeout(() => {
+  buildLiveCounter();
+  // Stocker generatedAt pour les coulisses
+  if (window._editionData) window._editionGeneratedAt = window._editionData.generatedAt;
+}, 800);
+
+
 
 // --- Init ---
 setTimeout(() => {
