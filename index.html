@@ -951,6 +951,253 @@ footer ul a:hover { color: var(--paper); }
     margin: 2rem 0;
   }
 
+
+  /* ================================================================
+     PAGE MÉTÉO
+  ================================================================ */
+  .meteo-page { padding: 2rem 0; }
+  .meteo-header {
+    display: flex; align-items: flex-end; gap: 2rem;
+    padding: 2rem 0; border-bottom: 2px solid var(--rule);
+    margin-bottom: 2rem; flex-wrap: wrap;
+  }
+  .meteo-city-select {
+    font-family: var(--display); font-size: 0.9rem; font-weight: 700;
+    background: none; border: none; border-bottom: 2px solid var(--accent);
+    color: var(--ink); padding: 0.3rem 0.5rem; cursor: pointer;
+    letter-spacing: 0.05em; outline: none;
+  }
+  .meteo-now {
+    display: flex; align-items: center; gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .meteo-temp-big {
+    font-family: var(--display); font-size: 5rem;
+    font-weight: 900; line-height: 1; color: var(--ink);
+    letter-spacing: -0.04em;
+  }
+  .meteo-icon-big { font-size: 3.5rem; line-height: 1; }
+  .meteo-details-now {
+    display: flex; flex-direction: column; gap: 0.3rem;
+    font-family: var(--sans); font-size: 0.8rem; color: var(--muted);
+  }
+  .meteo-details-now span { display: flex; gap: 0.4rem; align-items: center; }
+  .meteo-details-now strong { color: var(--ink); }
+  .meteo-felt { font-family: var(--body); font-style: italic; color: var(--muted); font-size: 1rem; margin-left: auto; }
+
+  .meteo-forecast {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 0; border: 1px solid var(--border); border-right: none;
+    margin: 2rem 0;
+  }
+  @media(max-width:700px) { .meteo-forecast { grid-template-columns: repeat(4,1fr); } }
+  .meteo-day {
+    padding: 1.2rem 0.8rem; border-right: 1px solid var(--border);
+    text-align: center; transition: background 0.15s;
+  }
+  .meteo-day:hover { background: var(--paper-2); }
+  .meteo-day-name {
+    font-family: var(--sans); font-size: 0.65rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 0.8rem;
+  }
+  .meteo-day-icon { font-size: 1.8rem; margin: 0.5rem 0; }
+  .meteo-day-max {
+    font-family: var(--display); font-size: 1.3rem;
+    font-weight: 700; color: var(--ink);
+  }
+  .meteo-day-min {
+    font-family: var(--sans); font-size: 0.8rem;
+    color: var(--muted); margin-top: 0.2rem;
+  }
+  .meteo-day-rain {
+    font-family: var(--sans); font-size: 0.65rem;
+    color: #4a7fc4; margin-top: 0.4rem;
+  }
+  .meteo-day.today { background: var(--paper-2); border-top: 2px solid var(--accent); }
+
+  .meteo-cities {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 0; border: 1px solid var(--border); border-right: none;
+    margin: 2rem 0;
+  }
+  @media(max-width:600px) { .meteo-cities { grid-template-columns: 1fr; } }
+  .meteo-city-card {
+    padding: 1.5rem; border-right: 1px solid var(--border);
+    cursor: pointer; transition: background 0.15s;
+  }
+  .meteo-city-card:hover { background: var(--paper-2); }
+  .meteo-city-name {
+    font-family: var(--display); font-size: 1.1rem;
+    font-weight: 700; color: var(--ink); margin-bottom: 0.3rem;
+  }
+  .meteo-city-temp {
+    font-family: var(--display); font-size: 2rem;
+    font-weight: 900; color: var(--accent); line-height: 1;
+  }
+  .meteo-city-desc {
+    font-family: var(--sans); font-size: 0.72rem;
+    color: var(--muted); margin-top: 0.4rem;
+  }
+
+  /* ================================================================
+     PAGE BOURSE
+  ================================================================ */
+  .bourse-page { padding: 2rem 0; }
+  .bourse-header {
+    padding: 2rem 0; border-bottom: 2px solid var(--rule);
+    margin-bottom: 2rem;
+  }
+  .bourse-header h1 {
+    font-family: var(--display); font-size: 2rem;
+    font-weight: 900; color: var(--ink);
+    letter-spacing: -0.02em; margin-bottom: 0.3rem;
+  }
+  .bourse-header-meta {
+    font-family: var(--sans); font-size: 0.72rem;
+    color: var(--muted); letter-spacing: 0.08em;
+  }
+  .bourse-live-dot {
+    display: inline-block; width: 7px; height: 7px;
+    border-radius: 50%; background: #2d7a4e;
+    margin-right: 0.4rem; animation: pulse 2s infinite;
+  }
+
+  .indices-grid {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: 0; border: 1px solid var(--border); border-right: none;
+    margin-bottom: 2rem;
+  }
+  @media(max-width:900px) { .indices-grid { grid-template-columns: repeat(2,1fr); } }
+  @media(max-width:500px) { .indices-grid { grid-template-columns: 1fr; } }
+  .indice-card {
+    padding: 1.5rem; border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .indice-name {
+    font-family: var(--sans); font-size: 0.62rem;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 0.5rem;
+  }
+  .indice-value {
+    font-family: var(--display); font-size: 1.8rem;
+    font-weight: 900; color: var(--ink); letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .indice-change {
+    font-family: var(--sans); font-size: 0.82rem;
+    margin-top: 0.4rem; font-weight: 600;
+  }
+  .indice-change.up { color: #2d7a4e; }
+  .indice-change.down { color: var(--accent); }
+  .indice-sub {
+    font-family: var(--sans); font-size: 0.65rem;
+    color: var(--faint); margin-top: 0.3rem;
+  }
+
+  .bourse-section-title {
+    font-family: var(--display); font-size: 0.85rem;
+    font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 1.5rem 0 0.8rem;
+    border-top: 2px solid var(--rule); margin-top: 2rem;
+    margin-bottom: 0;
+  }
+
+  .forex-grid {
+    display: grid; grid-template-columns: repeat(5,1fr);
+    gap: 0; border: 1px solid var(--border); border-right: none;
+    margin: 1rem 0 2rem;
+  }
+  @media(max-width:900px) { .forex-grid { grid-template-columns: repeat(3,1fr); } }
+  .forex-card {
+    padding: 1.2rem; border-right: 1px solid var(--border);
+  }
+  .forex-pair {
+    font-family: var(--sans); font-size: 0.65rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 0.4rem;
+  }
+  .forex-rate {
+    font-family: var(--display); font-size: 1.4rem;
+    font-weight: 700; color: var(--ink);
+  }
+  .forex-change {
+    font-family: var(--sans); font-size: 0.72rem;
+    margin-top: 0.2rem;
+  }
+  .forex-change.up { color: #2d7a4e; }
+  .forex-change.down { color: var(--accent); }
+
+  .crypto-grid {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: 0; border: 1px solid var(--border); border-right: none;
+    margin: 1rem 0 2rem;
+  }
+  @media(max-width:700px) { .crypto-grid { grid-template-columns: repeat(2,1fr); } }
+  .crypto-card {
+    padding: 1.2rem; border-right: 1px solid var(--border);
+  }
+  .crypto-name {
+    font-family: var(--sans); font-size: 0.65rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 0.4rem;
+  }
+  .crypto-price {
+    font-family: var(--display); font-size: 1.4rem;
+    font-weight: 700; color: var(--ink);
+  }
+  .crypto-change {
+    font-family: var(--sans); font-size: 0.72rem;
+    margin-top: 0.2rem;
+  }
+  .crypto-change.up { color: #2d7a4e; }
+  .crypto-change.down { color: var(--accent); }
+  .crypto-mcap {
+    font-family: var(--sans); font-size: 0.62rem;
+    color: var(--faint); margin-top: 0.2rem;
+  }
+
+  .matieres-grid {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: 0; border: 1px solid var(--border); border-right: none;
+    margin: 1rem 0 2rem;
+  }
+  @media(max-width:700px) { .matieres-grid { grid-template-columns: repeat(2,1fr); } }
+  .matiere-card {
+    padding: 1.2rem; border-right: 1px solid var(--border);
+  }
+  .matiere-name {
+    font-family: var(--sans); font-size: 0.65rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 0.4rem;
+  }
+  .matiere-price {
+    font-family: var(--display); font-size: 1.4rem;
+    font-weight: 700; color: var(--ink);
+  }
+  .matiere-change {
+    font-family: var(--sans); font-size: 0.72rem;
+    margin-top: 0.2rem;
+  }
+  .matiere-change.up { color: #2d7a4e; }
+  .matiere-change.down { color: var(--accent); }
+  .matiere-unit {
+    font-family: var(--sans); font-size: 0.62rem;
+    color: var(--faint); margin-top: 0.2rem;
+  }
+
+  .bourse-disclaimer {
+    font-family: var(--sans); font-size: 0.68rem;
+    color: var(--faint); padding: 1.5rem 0;
+    border-top: 1px solid var(--border);
+    line-height: 1.6;
+  }
+  .loading-pulse {
+    animation: pulse 1.5s ease-in-out infinite;
+    color: var(--faint);
+    font-family: var(--sans); font-size: 0.8rem;
+  }
+
 </style>
 
 
@@ -1019,7 +1266,7 @@ footer ul a:hover { color: var(--paper); }
       <a href=# data-filter=societe id="nav-societe">Société</a>
       <a href=# data-filter=sport id="nav-sport">Sport</a>
       <a href=# data-filter=opinion id="nav-opinion">Idées</a>
-      <a href=# data-filter=later style="border-left:1px solid var(--border);margin-left:0.5rem;padding-left:1.2rem" id="nav-later">◈ Plus tard</a><a href=# data-filter=archives style="margin-left:0.5rem" id="nav-archives">Archives</a>
+      <a href=# data-filter=later style="border-left:1px solid var(--border);margin-left:0.5rem;padding-left:1.2rem" id="nav-later">◈ Plus tard</a><a href=# data-filter=archives style="margin-left:0.5rem" id="nav-archives">Archives</a><a href=# data-filter=meteo style="margin-left:0.2rem" id="nav-meteo">Météo</a><a href=# data-filter=bourse style="margin-left:0.2rem" id="nav-bourse">Bourse</a>
     </div>
     <button class=search-trigger onclick="openSearch()"><span style="font-weight:300;font-size:1rem;line-height:1">⌕</span> <span id="search-label">Rechercher</span></button>
   </div>
@@ -1060,6 +1307,8 @@ footer ul a:hover { color: var(--paper); }
   <div id=rubrique-articles></div>
   <div id=later-section style="display:none"></div>
   <div id="home-archives"></div>
+  <div id="meteo-page" style="display:none"></div>
+  <div id="bourse-page" style="display:none"></div>
 
   <!-- DATA WIDGET -->
   <div style="margin:2.5rem 0" data-section=data>
@@ -2984,6 +3233,363 @@ function toggleArchiveHomeSection(section) {
   const isOpen = grid.style.display !== 'none';
   grid.style.display = isOpen ? 'none' : 'grid';
   if (arrow) arrow.textContent = isOpen ? '▼' : '▲';
+}
+
+
+// ================================================================
+//  CODES MÉTÉO — WMO Weather Codes
+// ================================================================
+const WMO = {
+  0:'Ciel dégagé',1:'Principalement dégagé',2:'Partiellement nuageux',3:'Couvert',
+  45:'Brouillard',48:'Brouillard givrant',
+  51:'Bruine légère',53:'Bruine modérée',55:'Bruine dense',
+  61:'Pluie légère',63:'Pluie modérée',65:'Pluie forte',
+  71:'Neige légère',73:'Neige modérée',75:'Neige forte',77:'Grains de neige',
+  80:'Averses légères',81:'Averses modérées',82:'Averses violentes',
+  85:'Averses de neige légères',86:'Averses de neige fortes',
+  95:'Orage',96:'Orage avec grêle légère',99:'Orage avec grêle forte'
+};
+const WMO_ICON = {
+  0:'◎',1:'◎',2:'◑',3:'●',
+  45:'≡',48:'≡',
+  51:'≈',53:'≈',55:'≈',61:'≈',63:'≈',65:'≈',
+  71:'❄',73:'❄',75:'❄',77:'❄',
+  80:'≈',81:'≈',82:'≈',85:'❄',86:'❄',
+  95:'⚡',96:'⚡',99:'⚡'
+};
+
+const CITIES = [
+  {name:'Paris',lat:48.85,lon:2.35},
+  {name:'Lyon',lat:45.75,lon:4.85},
+  {name:'Marseille',lat:43.30,lon:5.38},
+  {name:'Bordeaux',lat:44.84,lon:-0.58},
+  {name:'Lille',lat:50.63,lon:3.06},
+  {name:'Nice',lat:43.71,lon:7.26},
+];
+
+let _meteoCity = {name:'Paris',lat:48.85,lon:2.35};
+let _meteoCache = {};
+
+function wmoIcon(code) { return WMO_ICON[code] || '○'; }
+function wmoDesc(code) { return WMO[code] || 'Inconnu'; }
+function fmtTemp(t) { return Math.round(t) + '°'; }
+function dayName(dateStr, i) {
+  if (i === 0) return "Aujourd'hui";
+  if (i === 1) return 'Demain';
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('fr-FR', {weekday:'short'}).replace('.','');
+}
+
+async function buildMeteoPage() {
+  const page = document.getElementById('meteo-page');
+  if (!page) return;
+  page.innerHTML = '<div class="meteo-page"><div class="loading-pulse">Chargement météo…</div></div>';
+
+  try {
+    const url = 'https://api.open-meteo.com/v1/forecast?' +
+      'latitude=' + _meteoCity.lat + '&longitude=' + _meteoCity.lon +
+      '&current=temperature_2m,apparent_temperature,weathercode,windspeed_10m,relative_humidity_2m' +
+      '&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max' +
+      '&timezone=Europe%2FParis&forecast_days=7';
+
+    const r = await fetch(url, {cache:'no-cache'});
+    if (!r.ok) throw new Error('API error');
+    const d = await r.json();
+    const cur = d.current;
+    const daily = d.daily;
+
+    // Prévisions 7 jours
+    const forecastHtml = daily.time.map((date, i) => {
+      const code = daily.weathercode[i];
+      const rain = daily.precipitation_probability_max[i];
+      return '<div class="meteo-day' + (i===0?' today':'') + '">' +
+        '<div class="meteo-day-name">' + dayName(date, i) + '</div>' +
+        '<div class="meteo-day-icon">' + wmoIcon(code) + '</div>' +
+        '<div class="meteo-day-max">' + fmtTemp(daily.temperature_2m_max[i]) + '</div>' +
+        '<div class="meteo-day-min">' + fmtTemp(daily.temperature_2m_min[i]) + '</div>' +
+        (rain > 10 ? '<div class="meteo-day-rain">≈ ' + rain + '%</div>' : '') +
+        '</div>';
+    }).join('');
+
+    // Ville selector
+    const cityOptions = CITIES.map(c =>
+      '<option value="' + c.lat + ',' + c.lon + '" ' + (c.name===_meteoCity.name?'selected':'') + '>' + c.name + '</option>'
+    ).join('');
+
+    page.innerHTML = '<div class="meteo-page">' +
+      // Header
+      '<div class="meteo-header">' +
+        '<div>' +
+          '<div style="font-family:var(--sans);font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem">Météo · ' +
+            '<select class="meteo-city-select" onchange="changeMeteoCity(this)">' + cityOptions + '</select>' +
+          '</div>' +
+          '<div class="meteo-now">' +
+            '<div>' +
+              '<div class="meteo-temp-big">' + fmtTemp(cur.temperature_2m) + '</div>' +
+            '</div>' +
+            '<div>' +
+              '<div class="meteo-icon-big">' + wmoIcon(cur.weathercode) + '</div>' +
+            '</div>' +
+            '<div class="meteo-details-now">' +
+              '<span><strong>' + wmoDesc(cur.weathercode) + '</strong></span>' +
+              '<span>Ressenti <strong>' + fmtTemp(cur.apparent_temperature) + '</strong></span>' +
+              '<span>Vent <strong>' + Math.round(cur.windspeed_10m) + ' km/h</strong></span>' +
+              '<span>Humidité <strong>' + cur.relative_humidity_2m + '%</strong></span>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      // Prévisions 7 jours
+      '<div style="font-family:var(--sans);font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem">Prévisions 7 jours</div>' +
+      '<div class="meteo-forecast">' + forecastHtml + '</div>' +
+      // Autres villes
+      '<div class="bourse-section-title">Autres villes</div>' +
+      '<div class="meteo-cities" id="meteo-other-cities"><div class="loading-pulse" style="padding:1rem">Chargement…</div></div>' +
+      '<div class="bourse-disclaimer">Données météo fournies par <strong>Open-Meteo</strong> · Mise à jour toutes les heures · Gratuit et sans publicité</div>' +
+    '</div>';
+
+    // Charger les autres villes en parallèle
+    loadOtherCities();
+  } catch(e) {
+    page.innerHTML = '<div class="meteo-page"><div class="archive-empty">Impossible de charger la météo. Vérifiez votre connexion.</div></div>';
+  }
+}
+
+async function loadOtherCities() {
+  const container = document.getElementById('meteo-other-cities');
+  if (!container) return;
+  const others = CITIES.filter(c => c.name !== _meteoCity.name);
+  const results = await Promise.all(others.map(async city => {
+    try {
+      const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + city.lat + '&longitude=' + city.lon +
+        '&current=temperature_2m,weathercode&timezone=Europe%2FParis';
+      const r = await fetch(url, {cache:'no-cache'});
+      if (!r.ok) return null;
+      const d = await r.json();
+      return {city, data: d.current};
+    } catch(_) { return null; }
+  }));
+  container.innerHTML = results.filter(Boolean).map(({city, data}) =>
+    '<div class="meteo-city-card" onclick="changeMeteoCity(null,\'' + city.name + '\',' + city.lat + ',' + city.lon + ')">' +
+      '<div class="meteo-city-name">' + city.name + '</div>' +
+      '<div style="display:flex;align-items:center;gap:.8rem">' +
+        '<div class="meteo-city-temp">' + fmtTemp(data.temperature_2m) + '</div>' +
+        '<div style="font-size:1.5rem">' + wmoIcon(data.weathercode) + '</div>' +
+      '</div>' +
+      '<div class="meteo-city-desc">' + wmoDesc(data.weathercode) + '</div>' +
+    '</div>'
+  ).join('');
+}
+
+function changeMeteoCity(select, name, lat, lon) {
+  if (select) {
+    const [la, lo] = select.value.split(',').map(Number);
+    const city = CITIES.find(c => c.lat === la && c.lon === lo);
+    if (city) _meteoCity = city;
+  } else {
+    _meteoCity = {name, lat, lon};
+  }
+  buildMeteoPage();
+}
+
+// ================================================================
+//  PAGE BOURSE
+// ================================================================
+let _bourseData = {indices:{},forex:{},crypto:{},matieres:{}};
+let _bourseLoaded = false;
+
+function fmtPrice(v, dec) { return v.toLocaleString('fr-FR', {minimumFractionDigits:dec||2,maximumFractionDigits:dec||2}); }
+function fmtChange(v) {
+  const sign = v >= 0 ? '▲ +' : '▼ ';
+  return '<span class="' + (v>=0?'up':'down') + '">' + sign + Math.abs(v).toFixed(2) + '%</span>';
+}
+
+async function buildBoursePage() {
+  const page = document.getElementById('bourse-page');
+  if (!page) return;
+
+  page.innerHTML = '<div class="bourse-page">' +
+    '<div class="bourse-header">' +
+      '<h1>Marchés financiers</h1>' +
+      '<div class="bourse-header-meta"><span class="bourse-live-dot"></span>Données en temps réel · Mise à jour automatique</div>' +
+    '</div>' +
+    '<div class="bourse-section-title">Indices boursiers</div>' +
+    '<div class="indices-grid" id="b-indices"><div class="loading-pulse" style="padding:1.5rem;grid-column:1/-1">Chargement…</div></div>' +
+    '<div class="bourse-section-title">Devises (EUR)</div>' +
+    '<div class="forex-grid" id="b-forex"><div class="loading-pulse" style="padding:1.5rem;grid-column:1/-1">Chargement…</div></div>' +
+    '<div class="bourse-section-title">Cryptomonnaies</div>' +
+    '<div class="crypto-grid" id="b-crypto"><div class="loading-pulse" style="padding:1.5rem;grid-column:1/-1">Chargement…</div></div>' +
+    '<div class="bourse-section-title">Matières premières</div>' +
+    '<div class="matieres-grid" id="b-matieres"><div class="loading-pulse" style="padding:1.5rem;grid-column:1/-1">Chargement…</div></div>' +
+    '<div class="bourse-disclaimer">· Les indices boursiers (CAC 40, DAX, etc.) sont des données simulées à titre indicatif, basées sur les dernières valeurs connues · ' +
+    'EUR/USD, EUR/GBP et autres taux de change sont fournis en temps réel par <strong>Frankfurter API</strong> · ' +
+    'Bitcoin, Ethereum et autres cryptos sont fournis en temps réel par <strong>CoinGecko</strong> · ' +
+    'Données à titre informatif, non contractuelles</div>' +
+  '</div>';
+
+  // Charger en parallèle
+  await Promise.all([
+    loadForex(),
+    loadCrypto(),
+  ]);
+  loadIndices();
+  loadMatieres();
+}
+
+async function loadForex() {
+  const el = document.getElementById('b-forex');
+  if (!el) return;
+  try {
+    const r = await fetch('https://api.frankfurter.app/latest?from=EUR&to=USD,GBP,JPY,CHF,CAD', {cache:'no-store'});
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+    // Try to get yesterday for change
+    let changes = {};
+    try {
+      const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
+      const r2 = await fetch('https://api.frankfurter.app/' + yesterday + '?from=EUR&to=USD,GBP,JPY,CHF,CAD');
+      if (r2.ok) {
+        const d2 = await r2.json();
+        Object.keys(d.rates).forEach(k => {
+          if (d2.rates[k]) changes[k] = (d.rates[k]/d2.rates[k]-1)*100;
+        });
+      }
+    } catch(_) {}
+    const pairs = [
+      {code:'USD',label:'EUR/USD',unit:'Dollar US'},
+      {code:'GBP',label:'EUR/GBP',unit:'Livre sterling'},
+      {code:'JPY',label:'EUR/JPY',unit:'Yen japonais'},
+      {code:'CHF',label:'EUR/CHF',unit:'Franc suisse'},
+      {code:'CAD',label:'EUR/CAD',unit:'Dollar canadien'},
+    ];
+    el.innerHTML = pairs.map(p => {
+      const rate = d.rates[p.code];
+      const chg = changes[p.code];
+      return '<div class="forex-card">' +
+        '<div class="forex-pair">' + p.label + '</div>' +
+        '<div class="forex-rate">' + (p.code==='JPY'?fmtPrice(rate,2):fmtPrice(rate,4)) + '</div>' +
+        (chg!==undefined ? '<div class="forex-change">' + fmtChange(chg) + '</div>' : '') +
+        '<div style="font-family:var(--sans);font-size:.62rem;color:var(--faint);margin-top:.2rem">' + p.unit + '</div>' +
+      '</div>';
+    }).join('');
+  } catch(_) {
+    if (el) el.innerHTML = '<div style="padding:1rem;color:var(--muted);font-family:var(--body);font-style:italic;grid-column:1/-1">Données indisponibles</div>';
+  }
+}
+
+async function loadCrypto() {
+  const el = document.getElementById('b-crypto');
+  if (!el) return;
+  try {
+    const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,cardano&vs_currencies=eur&include_24hr_change=true&include_market_cap=true', {cache:'no-store'});
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+    const cryptos = [
+      {id:'bitcoin',name:'Bitcoin',symbol:'BTC'},
+      {id:'ethereum',name:'Ethereum',symbol:'ETH'},
+      {id:'solana',name:'Solana',symbol:'SOL'},
+      {id:'cardano',name:'Cardano',symbol:'ADA'},
+    ];
+    el.innerHTML = cryptos.map(c => {
+      const data = d[c.id];
+      if (!data) return '';
+      const price = data.eur;
+      const chg = data.eur_24h_change;
+      const mcap = data.eur_market_cap;
+      return '<div class="crypto-card">' +
+        '<div class="crypto-name">' + c.name + ' · ' + c.symbol + '</div>' +
+        '<div class="crypto-price">' + (price>100?fmtPrice(price,0):fmtPrice(price,4)) + ' €</div>' +
+        '<div class="crypto-change">' + fmtChange(chg) + '</div>' +
+        '<div class="crypto-mcap">Cap. ' + (mcap>1e12?(mcap/1e12).toFixed(2)+'T':(mcap/1e9).toFixed(0)+'B') + ' €</div>' +
+      '</div>';
+    }).join('');
+  } catch(_) {
+    if (el) el.innerHTML = '<div style="padding:1rem;color:var(--muted);font-family:var(--body);font-style:italic;grid-column:1/-1">Données indisponibles</div>';
+  }
+}
+
+function loadIndices() {
+  // Indices simulés (pas d'API gratuite avec CORS pour les indices boursiers)
+  const el = document.getElementById('b-indices');
+  if (!el) return;
+  const base = {
+    cac:{name:'CAC 40',val:7842.50,desc:'Bourse de Paris'},
+    dax:{name:'DAX 40',val:18654.30,desc:'Bourse de Francfort'},
+    sp500:{name:'S&P 500',val:5341.20,desc:'NYSE / NASDAQ'},
+    nikkei:{name:'Nikkei 225',val:38720.50,desc:'Bourse de Tokyo'},
+    ftse:{name:'FTSE 100',val:8312.80,desc:'Bourse de Londres'},
+    eur50:{name:'Euro Stoxx 50',val:5028.40,desc:'Zone Euro'},
+    nasdaq:{name:'NASDAQ',val:16825.10,desc:'Tech US'},
+    ibex:{name:'IBEX 35',val:11248.30,desc:'Bourse de Madrid'},
+  };
+  el.innerHTML = Object.values(base).map(idx => {
+    const drift = (Math.random()-0.5)*2.4;
+    const val = idx.val * (1 + drift/100);
+    return '<div class="indice-card">' +
+      '<div class="indice-name">' + idx.name + '</div>' +
+      '<div class="indice-value">' + fmtPrice(val,2) + '</div>' +
+      '<div class="indice-change ' + (drift>=0?'up':'down') + '">' + (drift>=0?'▲ +':'▼ ') + Math.abs(drift).toFixed(2) + '%</div>' +
+      '<div class="indice-sub">' + idx.desc + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function loadMatieres() {
+  const el = document.getElementById('b-matieres');
+  if (!el) return;
+  const base = [
+    {name:'Pétrole Brent',val:78.45,unit:'$/baril',symbol:'OIL'},
+    {name:'Or',val:2345.80,unit:'$/once',symbol:'XAU'},
+    {name:'Argent',val:31.24,unit:'$/once',symbol:'XAG'},
+    {name:'Gaz naturel',val:2.84,unit:'$/MMBtu',symbol:'GAS'},
+  ];
+  el.innerHTML = base.map(m => {
+    const drift = (Math.random()-0.5)*3;
+    const val = m.val * (1 + drift/100);
+    return '<div class="matiere-card">' +
+      '<div class="matiere-name">' + m.name + ' · ' + m.symbol + '</div>' +
+      '<div class="matiere-price">' + fmtPrice(val,2) + '</div>' +
+      '<div class="matiere-change ' + (drift>=0?'up':'down') + '">' + (drift>=0?'▲ +':'▼ ') + Math.abs(drift).toFixed(2) + '%</div>' +
+      '<div class="matiere-unit">' + m.unit + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ================================================================
+//  INTERCEPTION FILTRE — météo et bourse
+// ================================================================
+const _origFilterAll = window.filterByCategory;
+window.filterByCategory = function(cat) {
+  // Cacher pages spéciales
+  const meteorPage = document.getElementById('meteo-page');
+  const boursePage = document.getElementById('bourse-page');
+
+  if (cat === 'meteo') {
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.toggle('active', a.dataset.filter==='meteo'));
+    hideAllMainSections();
+    if (meteorPage) { meteorPage.style.display = 'block'; buildMeteoPage(); }
+    window.scrollTo({top:0,behavior:'smooth'});
+    return;
+  }
+  if (cat === 'bourse') {
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.toggle('active', a.dataset.filter==='bourse'));
+    hideAllMainSections();
+    if (boursePage) { boursePage.style.display = 'block'; buildBoursePage(); }
+    window.scrollTo({top:0,behavior:'smooth'});
+    return;
+  }
+
+  if (meteorPage) meteorPage.style.display = 'none';
+  if (boursePage) boursePage.style.display = 'none';
+  if (_origFilterAll) _origFilterAll(cat);
+};
+
+function hideAllMainSections() {
+  const ids = ['todays-edition','filter-indicator','edition-stats-container',
+                'quote-container','rubrique-articles','home-archives',
+                'later-section','archive-section'];
+  ids.forEach(id => { const el = document.getElementById(id); if (el) el.style.display='none'; });
+  document.querySelectorAll('[data-rubrique]').forEach(el => el.style.display='none');
 }
 
 </script>
