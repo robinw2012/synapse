@@ -1198,6 +1198,63 @@ footer ul a:hover { color: var(--paper); }
     font-family: var(--sans); font-size: 0.8rem;
   }
 
+
+  /* ===== DOUBLE NAV ===== */
+  .nav { border-bottom: none; position: sticky; top: 0; z-index: 100; }
+
+  /* Barre principale (services) */
+  .nav-services {
+    background: var(--ink);
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem; height: 48px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .nav-brand {
+    font-family: var(--display); font-size: 1.1rem;
+    font-weight: 900; color: var(--paper);
+    letter-spacing: -0.02em;
+  }
+  .nav-services-left { display: flex; align-items: center; gap: 1rem; }
+  .nav-services-right { display: flex; align-items: center; gap: 0.6rem; }
+
+  .nav-service-btn {
+    display: flex; align-items: center; gap: 0.45rem;
+    padding: 0.4rem 1rem; border-radius: 3px;
+    font-family: var(--sans); font-size: 0.72rem;
+    font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; text-decoration: none;
+    transition: opacity 0.2s; border-bottom: none !important;
+  }
+  .nav-service-btn:hover { opacity: 0.85; }
+  .nav-meteo-btn { background: #3a7fc4; color: #fff; }
+  .nav-bourse-btn { background: var(--gold); color: var(--ink); }
+  .nav-service-icon { font-size: 1rem; }
+
+  /* Barre rubriques */
+  .nav-rubriques {
+    background: var(--paper);
+    border-bottom: 1px solid var(--border-dark);
+    box-shadow: 0 1px 0 var(--border);
+  }
+  .nav-rubriques .nav-links { max-width: var(--max); margin: 0 auto; padding: 0 2rem; }
+  .nav-inner { display: none; } /* plus utilisé */
+
+  /* Search button dans la barre sombre */
+  .nav-services .search-trigger {
+    border-color: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.6);
+  }
+  .nav-services .search-trigger:hover { color: #fff; border-color: rgba(255,255,255,0.5); }
+
+  @media (max-width: 640px) {
+    .nav-services { padding: 0 1rem; height: 44px; }
+    .nav-brand { font-size: 0.95rem; }
+    .nav-service-btn span:last-child { display: none; }
+    .nav-service-btn { padding: 0.4rem 0.6rem; }
+    .nav-rubriques .nav-links { padding: 0 0.8rem; }
+  }
+
 </style>
 
 
@@ -1255,7 +1312,8 @@ footer ul a:hover { color: var(--paper); }
 
 <!-- NAV -->
 <nav class=nav>
-  <div class=nav-inner>
+  <!-- Barre secondaire : rubriques -->
+  <div class="nav-rubriques">
     <div class=nav-links>
       <a href=# class=active data-filter=une id="nav-une">À la Une</a>
       <a href=# data-filter=politique id="nav-politique">Politique</a>
@@ -1266,9 +1324,26 @@ footer ul a:hover { color: var(--paper); }
       <a href=# data-filter=societe id="nav-societe">Société</a>
       <a href=# data-filter=sport id="nav-sport">Sport</a>
       <a href=# data-filter=opinion id="nav-opinion">Idées</a>
-      <a href=# data-filter=later style="border-left:1px solid var(--border);margin-left:0.5rem;padding-left:1.2rem" id="nav-later">◈ Plus tard</a><a href=# data-filter=archives style="margin-left:0.5rem" id="nav-archives" onclick="event.preventDefault();(window.filterByCategory||filterByCategory)('archives')">Archives</a><a href=# data-filter=meteo id="nav-meteo" onclick="event.preventDefault();(window.filterByCategory||filterByCategory)('meteo')" style="margin-left:0.8rem;background:var(--accent);color:#fff!important;padding:0.25rem 0.9rem;border-radius:3px;font-size:0.68rem;letter-spacing:0.12em;border-bottom:none!important">☁ Météo</a><a href=# data-filter=bourse id="nav-bourse" onclick="event.preventDefault();(window.filterByCategory||filterByCategory)('bourse')" style="margin-left:0.4rem;background:var(--gold);color:var(--ink)!important;padding:0.25rem 0.9rem;border-radius:3px;font-size:0.68rem;letter-spacing:0.12em;border-bottom:none!important">↗ Bourse</a>
+      <a href=# data-filter=later id="nav-later" onclick="event.preventDefault();(window.filterByCategory||filterByCategory)('later')" style="border-left:1px solid var(--border);margin-left:0.5rem;padding-left:1.2rem">◈ Plus tard</a>
+      <a href=# data-filter=archives id="nav-archives" onclick="event.preventDefault();(window.filterByCategory||filterByCategory)('archives')">Archives</a>
     </div>
-    <button class=search-trigger onclick="openSearch()"><span style="font-weight:300;font-size:1rem;line-height:1">⌕</span> <span id="search-label">Rechercher</span></button>
+  </div>
+  <!-- Barre principale : services -->
+  <div class="nav-services">
+    <div class="nav-services-left">
+      <span class="nav-brand">SYNAPSE</span>
+    </div>
+    <div class="nav-services-right">
+      <a href=# data-filter=meteo id="nav-meteo" class="nav-service-btn nav-meteo-btn" onclick="event.preventDefault();(window.filterByCategory||filterByCategory)('meteo')">
+        <span class="nav-service-icon">☁</span>
+        <span>Météo</span>
+      </a>
+      <a href=# data-filter=bourse id="nav-bourse" class="nav-service-btn nav-bourse-btn" onclick="event.preventDefault();(window.filterByCategory||filterByCategory)('bourse')">
+        <span class="nav-service-icon">↗</span>
+        <span>Bourse</span>
+      </a>
+      <button class=search-trigger onclick="openSearch()"><span style="font-weight:300;font-size:1rem;line-height:1">⌕</span> <span id="search-label">Rechercher</span></button>
+    </div>
   </div>
 </nav>
 
